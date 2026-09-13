@@ -43,6 +43,13 @@ z codziennymi odczytami — czyli dokładnie tam, gdzie liczona jest charakterys
 Historia 2019–2026: zostaje z czasem nominalnym 17:30, brak danych do odtworzenia faktycznych godzin.
 "odczyty" potrzebuje sygnału, że czas jest nominalny — osobna kolumna albo data graniczna migracji.
 
+**Rozstrzygnięcie (2026-09-13) dla wpisu ręcznego w PWA:** pole daty i godziny
+jest zawsze edytowalne, domyślnie wypełnione bieżącym czasem telefonu w
+momencie dokonywania wpisu (nie sztywno, bez możliwości korekty). Już tak
+działa w ekranie potwierdzenia odczytu — nie wymaga zmian w kodzie. Dotyczy
+wyłącznie ścieżki ręcznej; czas z EXIF dla ścieżki ze zdjęciem to osobna
+sprawa (patrz punkt 2).
+
 ### 4. Do sprawdzenia przed migracją historii
 Czy w starym pliku (układ: jedna zakładka na sezon) godzina odczytu była w ogóle zapisywana,
 czy 17:30 to konwencja doklejona przy eksporcie. Jeśli to drugie — rzeczywisty rozrzut godzin
