@@ -5,7 +5,7 @@ import { odczytajUstawienia, zapiszUstawienia, czyUstawieniaZapisane } from './u
 import { WERSJA_APLIKACJI } from './wersja.js';
 import { MEDIA, MEDIA_ZE_ZDJECIEM } from './media.js';
 import { wyslijOdczyt } from './webhook.js';
-import { zrobZdjecie } from './aparat.js';
+import { zrobZdjecie, wybierzZGalerii } from './aparat.js';
 
 document.getElementById('numer-wersji').textContent = WERSJA_APLIKACJI;
 
@@ -15,6 +15,7 @@ const ekranWyboruMetody = document.getElementById('ekran-wybor-metody');
 const ekranPotwierdzenia = document.getElementById('ekran-potwierdzenia');
 const wyborMetodyTytul = document.getElementById('wybor-metody-tytul');
 const przyciskZdjecie = document.getElementById('przycisk-zdjecie');
+const przyciskGaleria = document.getElementById('przycisk-galeria');
 const przyciskRecznie = document.getElementById('przycisk-recznie');
 const przyciskAnulujWybor = document.getElementById('przycisk-anuluj-wybor');
 const podgladZdjecia = document.getElementById('podglad-zdjecia');
@@ -135,17 +136,21 @@ przyciskAnulujWybor.addEventListener('click', () => {
   pokazEkran(ekranStart);
 });
 
-// Aparat pyta o zdjęcie od razu; kompresja i zmniejszenie są w js/aparat.js.
-// Wynik na razie trzeba przepisać ręcznie, patrząc na podgląd — bez modelu.
-przyciskZdjecie.addEventListener('click', async () => {
+// Kompresja i zmniejszenie zdjęcia są w js/aparat.js — tu tylko wybieramy
+// źródło (aparat albo galeria). Wynik na razie trzeba przepisać ręcznie,
+// patrząc na podgląd — model wizyjny dojdzie w punkcie 6.
+async function obslozWyborZdjecia(pobierzZdjecie) {
   try {
-    const { url } = await zrobZdjecie(wybraneMedium);
+    const { url } = await pobierzZdjecie(wybraneMedium);
     otworzPotwierdzenie(wybraneMedium, 'foto', url);
   } catch (blad) {
-    console.error('Nie udało się zrobić zdjęcia:', blad);
+    console.error('Nie udało się uzyskać zdjęcia:', blad);
     pokazEkran(ekranStart);
   }
-});
+}
+
+przyciskZdjecie.addEventListener('click', () => obslozWyborZdjecia(zrobZdjecie));
+przyciskGaleria.addEventListener('click', () => obslozWyborZdjecia(wybierzZGalerii));
 
 function zwolnijPodgladZdjecia() {
   if (adresUrlPodgladuZdjecia) {

@@ -3,6 +3,22 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.5.1 — 2026-09-13
+
+### Dodane
+- Trzecia opcja na ekranie wyboru metody dla gazu: „🖼️ Wybierz z galerii” —
+  do przepisania odczytu ze zdjęcia zrobionego wcześniej (np. przez kogoś
+  innego), bez otwierania aparatu. Realizuje ścieżkę 3 z BACKLOG.md
+  (sekcja „PWA: trzy ścieżki wpisywania odczytu”).
+- `js/aparat.js`: wspólna funkcja wewnętrzna dla aparatu i galerii — różni
+  je tylko obecność atrybutu `capture` na wejściu pliku. Zweryfikowane
+  w teście, że ścieżka „z galerii” faktycznie nie ustawia `capture`.
+
+Ścieżka 2 z tej samej sekcji backlogu (OCR) wciąż czeka na punkt 6.
+`zrodlo` w arkuszu i zapis linku do zdjęcia na Dysku to osobna sprawa —
+webhook i tak dostaje tylko `metoda: "foto"`, nie rozróżnia jeszcze,
+czy zdjęcie było świeże czy z galerii.
+
 ## 0.5.0 — 2026-09-13
 
 ### Dodane

@@ -36,9 +36,16 @@ Wymagania:
   Stare i nowe wpisy znaczą co innego — wymaga rozstrzygnięcia przy migracji.
 
 ### 2. PWA: trzy ścieżki wpisywania odczytu
-1. Wpis ręczny.
-2. Zdjęcie licznika + automatyczny odczyt wskazania (OCR).
-3. Otwarcie istniejącego zdjęcia i ręczne przepisanie z niego.
+1. [x] Wpis ręczny.
+2. [ ] Zdjęcie licznika + automatyczny odczyt wskazania (OCR) — czeka na punkt 6.
+3. [x] Otwarcie istniejącego zdjęcia (z galerii) i ręczne przepisanie z niego.
+
+Ścieżki 1 i 3 działają dla gazu (jedyne medium na liście `MEDIA_ZE_ZDJECIEM`
+w `js/media.js`) — ekran wyboru metody ma „Zrób zdjęcie” / „Wybierz z
+galerii” / „Wpisz ręcznie”. Webhook na razie nie rozróżnia zdjęcia świeżego
+od wybranego z galerii — obie idą jako `metoda: "foto"`. Poniższe wymagania
+(kolumna `zrodlo`, link do zdjęcia na Dysku) jeszcze nie są zrobione —
+dotyczą zmian w Apps Script, nie tylko w PWA.
 
 Wymagania:
 - Zdjęcie zapisywane niezależnie od ścieżki; w "odczyty" kolumna z linkiem do pliku na Dysku.

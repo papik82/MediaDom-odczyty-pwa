@@ -1,7 +1,8 @@
-// Moduł aparatu: robi zdjęcie i zmniejsza je przed dalszym użyciem.
-// Przyjmuje `medium` jako parametr (zgodnie z CLAUDE.md), choć na razie go
-// nie używa — przyda się, gdy w punkcie 6 dojdzie wywołanie modelu wizyjnego
-// z podpowiedzią dobraną do konkretnego licznika.
+// Moduł aparatu: dostarcza zdjęcie licznika (świeże albo z galerii) i
+// zmniejsza je przed dalszym użyciem. Funkcje przyjmują `medium` jako
+// parametr (zgodnie z CLAUDE.md), choć na razie go nie używają — przyda
+// się, gdy w punkcie 6 dojdzie wywołanie modelu wizyjnego z podpowiedzią
+// dobraną do konkretnego licznika.
 
 // Zdjęcie z telefonu bywa wielkości kilku megabajtów — za duże, żeby wysłać
 // je jako base64 w treści żądania do Apps Script. Zmniejszamy dłuższy bok do
@@ -22,15 +23,17 @@ async function zmniejszZdjecie(plik, maksymalnyBok = 1000, jakosc = 0.8) {
   });
 }
 
-// Otwiera aparat telefonu (capture="environment" wymusza tylną kamerę),
-// zwraca zmniejszone zdjęcie jako Blob i jako URL do podglądu w <img>.
-// Odrzuca obietnicę, gdy użytkownik zamknie aparat bez zrobienia zdjęcia.
-export function zrobZdjecie(medium) {
+// Wspólna logika dla "zrób zdjęcie" i "wybierz z galerii" — różni je tylko
+// atrybut `capture` na wejściu pliku. Bez niego przeglądarka pokazuje pełny
+// wybór (aparat albo galeria/pliki), z nim od razu otwiera tylną kamerę.
+function otworzWyborZdjecia(medium, uzyjAparatu) {
   return new Promise((rozwiaz, odrzuc) => {
     const wejscie = document.createElement('input');
     wejscie.type = 'file';
     wejscie.accept = 'image/*';
-    wejscie.capture = 'environment';
+    if (uzyjAparatu) {
+      wejscie.capture = 'environment';
+    }
     wejscie.style.display = 'none';
 
     wejscie.addEventListener(
@@ -39,7 +42,7 @@ export function zrobZdjecie(medium) {
         const plik = wejscie.files[0];
         wejscie.remove();
         if (!plik) {
-          odrzuc(new Error('Nie zrobiono zdjęcia.'));
+          odrzuc(new Error('Nie wybrano zdjęcia.'));
           return;
         }
         try {
@@ -55,4 +58,17 @@ export function zrobZdjecie(medium) {
     document.body.appendChild(wejscie);
     wejscie.click();
   });
+}
+
+// Otwiera aparat telefonu (tylna kamera), zwraca zmniejszone zdjęcie jako
+// Blob i jako URL do podglądu w <img>. Odrzuca obietnicę, gdy użytkownik
+// zamknie aparat bez zrobienia zdjęcia.
+export function zrobZdjecie(medium) {
+  return otworzWyborZdjecia(medium, true);
+}
+
+// Otwiera galerię/pliki telefonu zamiast aparatu — do przepisania odczytu
+// ze zdjęcia zrobionego wcześniej (np. gdy ktoś inny sfotografował licznik).
+export function wybierzZGalerii(medium) {
+  return otworzWyborZdjecia(medium, false);
 }
