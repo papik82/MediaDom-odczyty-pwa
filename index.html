@@ -38,6 +38,27 @@
           <span class="kafelek__nazwa">Woda</span>
         </button>
       </div>
+      <p id="komunikat-start" class="komunikat-sukces ukryty"></p>
+    </section>
+
+    <!-- Ekran potwierdzenia odczytu — wartość oraz data i godzina, obie
+         edytowalne. Wysyłka do webhooka dojdzie w kolejnym kroku. -->
+    <section id="ekran-potwierdzenia" class="ekran ukryty">
+      <h2 id="potwierdzenie-tytul"></h2>
+      <form id="formularz-potwierdzenia">
+        <label class="pole-formularza">
+          Stan licznika (<span id="potwierdzenie-jednostka"></span>)
+          <input type="number" id="pole-stan" inputmode="decimal" min="0" required>
+        </label>
+        <label class="pole-formularza">
+          Data i godzina odczytu
+          <input type="datetime-local" id="pole-data-godzina" required>
+        </label>
+        <div class="przyciski-formularza">
+          <button type="submit" class="przycisk-glowny">Zatwierdź</button>
+          <button type="button" id="przycisk-anuluj-potwierdzenie" class="przycisk-drugorzedny">Anuluj</button>
+        </div>
+      </form>
     </section>
 
     <!-- Ekran ustawień — adres webhooka i token, zapisywane w localStorage. -->
