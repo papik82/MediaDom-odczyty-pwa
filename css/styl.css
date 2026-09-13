@@ -1,0 +1,144 @@
+/* Style aplikacji — pisane pod ekran telefonu, obsługa jedną ręką.
+   Duże, łatwe do trafienia elementy, minimum przewijania. */
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #f4f6f8;
+  color: #1a1a1a;
+}
+
+.ukryty {
+  display: none !important;
+}
+
+/* Nagłówek z tytułem i przyciskiem do ustawień. */
+.naglowek {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: #1565c0;
+  color: #fff;
+}
+
+.naglowek__tytul {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.przycisk-ikona {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+main {
+  padding: 1.25rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Kafelki mediów — duże, w siatce 2x2, żeby kciuk sięgał wszędzie. */
+.kafelki {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.kafelek {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  aspect-ratio: 1 / 1;
+  border: none;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.kafelek:active {
+  background: #e3f0fd;
+}
+
+.kafelek__ikona {
+  font-size: 2.5rem;
+}
+
+/* Formularz ustawień. */
+.opis {
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.pole-formularza {
+  display: block;
+  margin-top: 1.25rem;
+  font-weight: 600;
+}
+
+.pole-formularza input {
+  display: block;
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.przyciski-formularza {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.przycisk-glowny,
+.przycisk-drugorzedny {
+  padding: 0.9rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.przycisk-glowny {
+  background: #1565c0;
+  color: #fff;
+}
+
+.przycisk-drugorzedny {
+  background: #e0e0e0;
+  color: #1a1a1a;
+}
+
+.komunikat {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b3261e;
+}

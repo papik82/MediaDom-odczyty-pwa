@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Odczyty mediów</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="ikony/ikona.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#1565c0">
+  <link rel="stylesheet" href="css/styl.css">
+</head>
+<body>
+
+  <header class="naglowek">
+    <h1 class="naglowek__tytul">Odczyty mediów</h1>
+    <button id="przycisk-ustawienia" class="przycisk-ikona" aria-label="Ustawienia" title="Ustawienia">⚙</button>
+  </header>
+
+  <main>
+
+    <!-- Ekran startowy — cztery kafelki, po jednym na każde medium. -->
+    <section id="ekran-start" class="ekran">
+      <div class="kafelki">
+        <button class="kafelek" data-medium="gaz">
+          <span class="kafelek__ikona">🔥</span>
+          <span class="kafelek__nazwa">Gaz</span>
+        </button>
+        <button class="kafelek" data-medium="prad_t1">
+          <span class="kafelek__ikona">⚡</span>
+          <span class="kafelek__nazwa">Prąd T1</span>
+        </button>
+        <button class="kafelek" data-medium="prad_t2">
+          <span class="kafelek__ikona">⚡</span>
+          <span class="kafelek__nazwa">Prąd T2</span>
+        </button>
+        <button class="kafelek" data-medium="woda">
+          <span class="kafelek__ikona">💧</span>
+          <span class="kafelek__nazwa">Woda</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Ekran ustawień — adres webhooka i token, zapisywane w localStorage. -->
+    <section id="ekran-ustawienia" class="ekran ukryty">
+      <h2>Ustawienia</h2>
+      <p class="opis">
+        Adres webhooka i token łączą aplikację z Arkuszem Google. Wpisujesz je
+        raz — zostają zapisane tylko w tej przeglądarce, na tym telefonie.
+      </p>
+      <form id="formularz-ustawien">
+        <label class="pole-formularza">
+          Adres webhooka
+          <input type="url" id="pole-adres" placeholder="https://script.google.com/macros/s/..." required>
+        </label>
+        <label class="pole-formularza">
+          Token
+          <input type="text" id="pole-token" placeholder="token dostępu" required>
+        </label>
+        <div class="przyciski-formularza">
+          <button type="submit" class="przycisk-glowny">Zapisz</button>
+          <button type="button" id="przycisk-anuluj" class="przycisk-drugorzedny">Anuluj</button>
+        </div>
+        <p id="komunikat-ustawien" class="komunikat ukryty"></p>
+      </form>
+    </section>
+
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
