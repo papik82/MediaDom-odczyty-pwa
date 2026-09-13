@@ -198,19 +198,11 @@ Wyświetlacz jest odblaskowy, bez podświetlenia, często pod szybką.
 
 ---
 
-## Kolejność pracy
+## Plan pracy i backlog
 
-1. Szkielet PWA: manifest, service worker, ekran startowy z kafelkami.
-2. Ekran ustawień i zapis konfiguracji w `localStorage`.
-3. Ekran potwierdzenia: wartość, data i godzina, oba pola edytowalne.
-4. Ręczny wpis odczytu dla wszystkich czterech mediów. Sprawdza całą
-   komunikację z webhookiem od początku do końca.
-5. Aparat dla gazu: zdjęcie, zmniejszenie, wysyłka — na razie z ręcznym
-   wpisaniem wyniku, bez modelu.
-6. Akcja `odczytaj_foto` w Apps Script i podpięcie Gemini.
-7. Kolejka offline.
-
-Po punkcie 4 aplikacja jest już użyteczna. Reszta to wygoda.
+Kolejność wdrażania, co już zrobione i otwarte pomysły/decyzje na przyszłość
+są w [BACKLOG.md](BACKLOG.md) — jedno miejsce, nie duplikuj tego tutaj.
+Wydane zmiany trafiają do [CHANGELOG.md](CHANGELOG.md).
 
 ---
 

@@ -1,10 +1,28 @@
-# Backlog
+# Plan prac i backlog
 
-Notatki i decyzje do przyszłej pracy — nierozstrzygnięte pytania i pomysły
-spisane, żeby nie zgubić kontekstu między sesjami. Nic z poniższego nie jest
-jeszcze zaimplementowane.
+Jedno miejsce na to, co zrobione, co w toku i co dalej — żeby nie trzymać
+tego samego w dwóch plikach. Rzeczy już wydane trafiają do
+[CHANGELOG.md](CHANGELOG.md); tu zostaje plan i otwarte pomysły/decyzje.
 
-## Backlog — 2026-09-13
+## Plan prac (kolejność wdrażania PWA)
+
+1. [x] Szkielet PWA: manifest, service worker, ekran startowy z kafelkami.
+2. [x] Ekran ustawień i zapis konfiguracji w `localStorage`.
+3. [x] Ekran potwierdzenia: wartość, data i godzina, oba pola edytowalne.
+4. [ ] Ręczny wpis odczytu dla wszystkich czterech mediów. Sprawdza całą
+   komunikację z webhookiem od początku do końca.
+5. [ ] Aparat dla gazu: zdjęcie, zmniejszenie, wysyłka — na razie z ręcznym
+   wpisaniem wyniku, bez modelu.
+6. [ ] Akcja `odczytaj_foto` w Apps Script i podpięcie Gemini.
+7. [ ] Kolejka offline.
+
+Po punkcie 4 aplikacja jest już użyteczna. Reszta to wygoda.
+
+## Backlog — pomysły i decyzje na przyszłość
+
+Nierozstrzygnięte pytania i pomysły spisane, żeby nie zgubić kontekstu
+między sesjami. Nic z poniższego nie jest jeszcze zaimplementowane, chyba
+że przy punkcie jest wyraźna adnotacja „Rozstrzygnięcie”.
 
 ### 1. PWA: wpisy zmiany stanu kotła
 Aplikacja ma pozwalać dodawać wpisy do dziennika "kociol", nie tylko odczyty mediów.
@@ -46,9 +64,9 @@ Historia 2019–2026: zostaje z czasem nominalnym 17:30, brak danych do odtworze
 **Rozstrzygnięcie (2026-09-13) dla wpisu ręcznego w PWA:** pole daty i godziny
 jest zawsze edytowalne, domyślnie wypełnione bieżącym czasem telefonu w
 momencie dokonywania wpisu (nie sztywno, bez możliwości korekty). Już tak
-działa w ekranie potwierdzenia odczytu — nie wymaga zmian w kodzie. Dotyczy
-wyłącznie ścieżki ręcznej; czas z EXIF dla ścieżki ze zdjęciem to osobna
-sprawa (patrz punkt 2).
+działa w ekranie potwierdzenia odczytu (punkt 3 planu prac powyżej) — nie
+wymaga zmian w kodzie. Dotyczy wyłącznie ścieżki ręcznej; czas z EXIF dla
+ścieżki ze zdjęciem to osobna sprawa (patrz punkt 2).
 
 ### 4. Do sprawdzenia przed migracją historii
 Czy w starym pliku (układ: jedna zakładka na sezon) godzina odczytu była w ogóle zapisywana,
