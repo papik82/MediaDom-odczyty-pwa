@@ -9,7 +9,7 @@ tego samego w dwóch plikach. Rzeczy już wydane trafiają do
 1. [x] Szkielet PWA: manifest, service worker, ekran startowy z kafelkami.
 2. [x] Ekran ustawień i zapis konfiguracji w `localStorage`.
 3. [x] Ekran potwierdzenia: wartość, data i godzina, oba pola edytowalne.
-4. [ ] Ręczny wpis odczytu dla wszystkich czterech mediów. Sprawdza całą
+4. [x] Ręczny wpis odczytu dla wszystkich czterech mediów. Sprawdza całą
    komunikację z webhookiem od początku do końca.
 5. [ ] Aparat dla gazu: zdjęcie, zmniejszenie, wysyłka — na razie z ręcznym
    wpisaniem wyniku, bez modelu.

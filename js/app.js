@@ -1,11 +1,10 @@
 // Sterowanie ekranami aplikacji: przełączanie widoków, obsługa kafelków,
-// formularza ustawień i ekranu potwierdzenia odczytu. Wysyłka do webhooka
-// dojdzie w kolejnym kroku — na razie formularz potwierdzenia tylko
-// przygotowuje dane i wraca na ekran startowy.
+// formularza ustawień, ekranu potwierdzenia odczytu i wysyłki do webhooka.
 
 import { odczytajUstawienia, zapiszUstawienia, czyUstawieniaZapisane } from './ustawienia.js';
 import { WERSJA_APLIKACJI } from './wersja.js';
 import { MEDIA } from './media.js';
+import { wyslijOdczyt } from './webhook.js';
 
 document.getElementById('numer-wersji').textContent = WERSJA_APLIKACJI;
 
@@ -27,6 +26,8 @@ const formularzPotwierdzenia = document.getElementById('formularz-potwierdzenia'
 const poleStan = document.getElementById('pole-stan');
 const poleDataGodzina = document.getElementById('pole-data-godzina');
 const przyciskAnulujPotwierdzenie = document.getElementById('przycisk-anuluj-potwierdzenie');
+const przyciskZatwierdz = document.getElementById('przycisk-zatwierdz');
+const komunikatPotwierdzenia = document.getElementById('komunikat-potwierdzenia');
 
 let wybraneMedium = null;
 
@@ -84,6 +85,7 @@ function otworzPotwierdzenie(medium) {
   poleStan.value = '';
   poleDataGodzina.value = sformatujDataGodzinaLokalnie(new Date());
   komunikatStart.classList.add('ukryty');
+  komunikatPotwierdzenia.classList.add('ukryty');
   pokazEkran(ekranPotwierdzenia);
 }
 
@@ -101,10 +103,12 @@ przyciskAnulujPotwierdzenie.addEventListener('click', () => {
   pokazEkran(ekranStart);
 });
 
-// Wysyłka do webhooka dojdzie w kolejnym kroku (punkt 4) — na razie tylko
-// przygotowujemy dokładnie taki obiekt, jaki wtedy trzeba będzie wysłać,
-// i pokazujemy go na ekranie startowym, żeby było widać, że dane się zgadzają.
-formularzPotwierdzenia.addEventListener('submit', (zdarzenie) => {
+function pokazBladPotwierdzenia(tresc) {
+  komunikatPotwierdzenia.textContent = tresc;
+  komunikatPotwierdzenia.classList.remove('ukryty');
+}
+
+formularzPotwierdzenia.addEventListener('submit', async (zdarzenie) => {
   zdarzenie.preventDefault();
   const opisMedium = MEDIA[wybraneMedium];
   const odczyt = {
@@ -115,12 +119,35 @@ formularzPotwierdzenia.addEventListener('submit', (zdarzenie) => {
     foto_url: '',
     uwagi: '',
   };
-  console.log('Przygotowany odczyt (wysyłka dojdzie w kolejnym kroku):', odczyt);
-  komunikatStart.textContent =
-    `Przygotowano: ${opisMedium.nazwa} — ${poleStan.value} ${opisMedium.jednostka}. ` +
-    'Wysyłka do arkusza zadziała po dodaniu komunikacji z webhookiem.';
-  komunikatStart.classList.remove('ukryty');
-  pokazEkran(ekranStart);
+
+  komunikatPotwierdzenia.classList.add('ukryty');
+  przyciskZatwierdz.disabled = true;
+  przyciskZatwierdz.textContent = 'Wysyłanie…';
+
+  try {
+    const odpowiedz = await wyslijOdczyt(odczyt);
+
+    if (!odpowiedz.ok) {
+      // wymaga_potwierdzenia = stan niższy niż poprzedni odczyt — zostajemy
+      // na ekranie, żeby użytkownik mógł poprawić wartość i spróbować ponownie.
+      pokazBladPotwierdzenia(odpowiedz.blad || 'Webhook odrzucił odczyt.');
+      return;
+    }
+
+    komunikatStart.textContent =
+      `Zapisano: ${opisMedium.nazwa} — ${poleStan.value} ${opisMedium.jednostka} ` +
+      `(poprzedni stan: ${odpowiedz.poprzedni_stan}, przyrost: ${odpowiedz.przyrost}).`;
+    komunikatStart.classList.remove('ukryty');
+    pokazEkran(ekranStart);
+  } catch (blad) {
+    console.error('Nie udało się wysłać odczytu:', blad);
+    pokazBladPotwierdzenia(
+      'Nie udało się wysłać odczytu — sprawdź połączenie z internetem i spróbuj ponownie.'
+    );
+  } finally {
+    przyciskZatwierdz.disabled = false;
+    przyciskZatwierdz.textContent = 'Zatwierdź';
+  }
 });
 
 // Przy pierwszym uruchomieniu, bez zapisanych ustawień, od razu pokazujemy

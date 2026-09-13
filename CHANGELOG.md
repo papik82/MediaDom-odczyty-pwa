@@ -3,6 +3,19 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.4.0 — 2026-09-13
+
+### Dodane
+- `js/webhook.js` — rzeczywista wysyłka odczytu do webhooka Apps Script
+  (`akcja: "odczyt"`), zamyka punkt 4 planu prac. Działa dla wszystkich
+  czterech mediów wpisywanych ręcznie.
+- Obsługa odpowiedzi webhooka na ekranie potwierdzenia: sukces wraca na
+  ekran startowy z poprzednim stanem i przyrostem; odrzucenie (np. stan
+  niższy niż poprzedni — `wymaga_potwierdzenia`) i błąd sieci zostają na
+  ekranie potwierdzenia z komunikatem, żeby można było poprawić i wysłać
+  ponownie bez przepisywania wszystkiego od nowa.
+- Przycisk „Zatwierdź” blokuje się i pokazuje „Wysyłanie…” na czas żądania.
+
 ## 0.3.1 — 2026-09-13
 
 ### Zmienione
