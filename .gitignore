@@ -1,0 +1,4 @@
+# Sekrety lokalne — adres webhooka i token do testów. Nigdy nie trafiają
+# do repozytorium (GitHub Pages serwuje pliki publicznie), zostają tylko
+# na tym komputerze.
+sekrety.local.json
