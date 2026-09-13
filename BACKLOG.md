@@ -11,7 +11,7 @@ tego samego w dwóch plikach. Rzeczy już wydane trafiają do
 3. [x] Ekran potwierdzenia: wartość, data i godzina, oba pola edytowalne.
 4. [x] Ręczny wpis odczytu dla wszystkich czterech mediów. Sprawdza całą
    komunikację z webhookiem od początku do końca.
-5. [ ] Aparat dla gazu: zdjęcie, zmniejszenie, wysyłka — na razie z ręcznym
+5. [x] Aparat dla gazu: zdjęcie, zmniejszenie, wysyłka — na razie z ręcznym
    wpisaniem wyniku, bez modelu.
 6. [ ] Akcja `odczytaj_foto` w Apps Script i podpięcie Gemini.
 7. [ ] Kolejka offline.

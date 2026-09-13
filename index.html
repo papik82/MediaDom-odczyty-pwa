@@ -41,10 +41,24 @@
       <p id="komunikat-start" class="komunikat-sukces ukryty"></p>
     </section>
 
+    <!-- Ekran wyboru metody — tylko dla mediów z listy MEDIA_ZE_ZDJECIEM
+         (na dziś: gaz). Reszta mediów pomija ten ekran, idzie od razu
+         do ręcznego wpisu. -->
+    <section id="ekran-wybor-metody" class="ekran ukryty">
+      <h2 id="wybor-metody-tytul"></h2>
+      <div class="przyciski-formularza">
+        <button type="button" id="przycisk-zdjecie" class="przycisk-glowny">📷 Zrób zdjęcie</button>
+        <button type="button" id="przycisk-recznie" class="przycisk-drugorzedny">✏️ Wpisz ręcznie</button>
+        <button type="button" id="przycisk-anuluj-wybor" class="przycisk-drugorzedny">Anuluj</button>
+      </div>
+    </section>
+
     <!-- Ekran potwierdzenia odczytu — wartość oraz data i godzina, obie
-         edytowalne. Wysyłka do webhooka dojdzie w kolejnym kroku. -->
+         edytowalne. Przy odczycie ze zdjęcia pokazuje jego podgląd, żeby
+         można było przepisać wskazanie — model wizyjny dojdzie w punkcie 6. -->
     <section id="ekran-potwierdzenia" class="ekran ukryty">
       <h2 id="potwierdzenie-tytul"></h2>
+      <img id="podglad-zdjecia" class="podglad-zdjecia ukryty" alt="Zdjęcie licznika">
       <form id="formularz-potwierdzenia">
         <label class="pole-formularza">
           Stan licznika (<span id="potwierdzenie-jednostka"></span>)

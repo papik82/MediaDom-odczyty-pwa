@@ -3,14 +3,21 @@
 
 import { odczytajUstawienia, zapiszUstawienia, czyUstawieniaZapisane } from './ustawienia.js';
 import { WERSJA_APLIKACJI } from './wersja.js';
-import { MEDIA } from './media.js';
+import { MEDIA, MEDIA_ZE_ZDJECIEM } from './media.js';
 import { wyslijOdczyt } from './webhook.js';
+import { zrobZdjecie } from './aparat.js';
 
 document.getElementById('numer-wersji').textContent = WERSJA_APLIKACJI;
 
 const ekranStart = document.getElementById('ekran-start');
 const ekranUstawien = document.getElementById('ekran-ustawienia');
+const ekranWyboruMetody = document.getElementById('ekran-wybor-metody');
 const ekranPotwierdzenia = document.getElementById('ekran-potwierdzenia');
+const wyborMetodyTytul = document.getElementById('wybor-metody-tytul');
+const przyciskZdjecie = document.getElementById('przycisk-zdjecie');
+const przyciskRecznie = document.getElementById('przycisk-recznie');
+const przyciskAnulujWybor = document.getElementById('przycisk-anuluj-wybor');
+const podgladZdjecia = document.getElementById('podglad-zdjecia');
 const przyciskUstawienia = document.getElementById('przycisk-ustawienia');
 const przyciskAnuluj = document.getElementById('przycisk-anuluj');
 const formularzUstawien = document.getElementById('formularz-ustawien');
@@ -30,9 +37,11 @@ const przyciskZatwierdz = document.getElementById('przycisk-zatwierdz');
 const komunikatPotwierdzenia = document.getElementById('komunikat-potwierdzenia');
 
 let wybraneMedium = null;
+let metodaAktualnegoOdczytu = 'reczny';
+let adresUrlPodgladuZdjecia = null;
 
 function pokazEkran(ekranDoPokazania) {
-  for (const ekran of [ekranStart, ekranUstawien, ekranPotwierdzenia]) {
+  for (const ekran of [ekranStart, ekranUstawien, ekranWyboruMetody, ekranPotwierdzenia]) {
     ekran.classList.toggle('ukryty', ekran !== ekranDoPokazania);
   }
 }
@@ -73,9 +82,12 @@ formularzUstawien.addEventListener('submit', (zdarzenie) => {
 });
 
 // Kliknięcie kafelka otwiera ekran potwierdzenia z bieżącą datą i godziną —
-// użytkownik może je poprawić, gdy odczyt robi z opóźnieniem.
-function otworzPotwierdzenie(medium) {
+// użytkownik może je poprawić, gdy odczyt robi z opóźnieniem. `urlZdjecia`
+// pokazuje podgląd zrobionego zdjęcia, żeby dało się z niego przepisać
+// wskazanie — sam model wizyjny dojdzie w punkcie 6.
+function otworzPotwierdzenie(medium, metoda, urlZdjecia = null) {
   wybraneMedium = medium;
+  metodaAktualnegoOdczytu = metoda;
   const opisMedium = MEDIA[medium];
   potwierdzenieTytul.textContent = opisMedium.nazwa;
   potwierdzenieJednostka.textContent = opisMedium.jednostka;
@@ -86,6 +98,16 @@ function otworzPotwierdzenie(medium) {
   poleDataGodzina.value = sformatujDataGodzinaLokalnie(new Date());
   komunikatStart.classList.add('ukryty');
   komunikatPotwierdzenia.classList.add('ukryty');
+
+  zwolnijPodgladZdjecia();
+  if (urlZdjecia) {
+    adresUrlPodgladuZdjecia = urlZdjecia;
+    podgladZdjecia.src = urlZdjecia;
+    podgladZdjecia.classList.remove('ukryty');
+  } else {
+    podgladZdjecia.classList.add('ukryty');
+  }
+
   pokazEkran(ekranPotwierdzenia);
 }
 
@@ -95,11 +117,45 @@ kafelki.forEach((kafelek) => {
       otworzUstawienia();
       return;
     }
-    otworzPotwierdzenie(kafelek.dataset.medium);
+    wybraneMedium = kafelek.dataset.medium;
+    if (MEDIA_ZE_ZDJECIEM.includes(wybraneMedium)) {
+      wyborMetodyTytul.textContent = MEDIA[wybraneMedium].nazwa;
+      pokazEkran(ekranWyboruMetody);
+    } else {
+      otworzPotwierdzenie(wybraneMedium, 'reczny');
+    }
   });
 });
 
+przyciskRecznie.addEventListener('click', () => {
+  otworzPotwierdzenie(wybraneMedium, 'reczny');
+});
+
+przyciskAnulujWybor.addEventListener('click', () => {
+  pokazEkran(ekranStart);
+});
+
+// Aparat pyta o zdjęcie od razu; kompresja i zmniejszenie są w js/aparat.js.
+// Wynik na razie trzeba przepisać ręcznie, patrząc na podgląd — bez modelu.
+przyciskZdjecie.addEventListener('click', async () => {
+  try {
+    const { url } = await zrobZdjecie(wybraneMedium);
+    otworzPotwierdzenie(wybraneMedium, 'foto', url);
+  } catch (blad) {
+    console.error('Nie udało się zrobić zdjęcia:', blad);
+    pokazEkran(ekranStart);
+  }
+});
+
+function zwolnijPodgladZdjecia() {
+  if (adresUrlPodgladuZdjecia) {
+    URL.revokeObjectURL(adresUrlPodgladuZdjecia);
+    adresUrlPodgladuZdjecia = null;
+  }
+}
+
 przyciskAnulujPotwierdzenie.addEventListener('click', () => {
+  zwolnijPodgladZdjecia();
   pokazEkran(ekranStart);
 });
 
@@ -115,7 +171,7 @@ formularzPotwierdzenia.addEventListener('submit', async (zdarzenie) => {
     medium: wybraneMedium,
     stan: parseFloat(poleStan.value),
     data_godzina: `${poleDataGodzina.value}:00`,
-    metoda: 'reczny',
+    metoda: metodaAktualnegoOdczytu,
     foto_url: '',
     uwagi: '',
   };
@@ -138,6 +194,7 @@ formularzPotwierdzenia.addEventListener('submit', async (zdarzenie) => {
       `Zapisano: ${opisMedium.nazwa} — ${poleStan.value} ${opisMedium.jednostka} ` +
       `(poprzedni stan: ${odpowiedz.poprzedni_stan}, przyrost: ${odpowiedz.przyrost}).`;
     komunikatStart.classList.remove('ukryty');
+    zwolnijPodgladZdjecia();
     pokazEkran(ekranStart);
   } catch (blad) {
     console.error('Nie udało się wysłać odczytu:', blad);

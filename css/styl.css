@@ -92,6 +92,15 @@ main {
   line-height: 1.4;
 }
 
+/* Podgląd zdjęcia licznika na ekranie potwierdzenia — do przepisania
+   wskazania, dopóki nie ma modelu wizyjnego (punkt 6). */
+.podglad-zdjecia {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 1rem;
+}
+
 .pole-formularza {
   display: block;
   margin-top: 1.25rem;

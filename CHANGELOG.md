@@ -3,6 +3,23 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.5.0 — 2026-09-13
+
+### Dodane
+- Aparat dla gazu (punkt 5 planu prac): kafelek Gazu pokazuje wybór
+  „Zrób zdjęcie” / „Wpisz ręcznie” zamiast od razu iść do ręcznego wpisu —
+  reszta mediów bez zmian, bo lista mediów ze zdjęciem (`MEDIA_ZE_ZDJECIEM`
+  w `js/media.js`) na razie obejmuje tylko gaz.
+- `js/aparat.js` — otwiera aparat telefonu (tylna kamera), zmniejsza zdjęcie
+  do maks. 1000 px dłuższego boku i kompresuje do JPEG jakości 0.8 (test:
+  zdjęcie 3000×2000/4,5 MB → 1000×667/8,4 KB).
+- Ekran potwierdzenia pokazuje podgląd zrobionego zdjęcia, żeby dało się
+  z niego przepisać wskazanie licznika. Model wizyjny (OCR) jeszcze nie
+  istnieje — to punkt 6; na razie wartość zawsze wpisuje się ręcznie.
+- Odczyt ze zdjęcia wysyła się z `metoda: "foto"` (zamiast `"reczny"`),
+  `foto_url` zostaje puste — zdjęć na razie nie przechowujemy, zgodnie
+  z CLAUDE.md.
+
 ## 0.4.0 — 2026-09-13
 
 ### Dodane
