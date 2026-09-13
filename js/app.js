@@ -3,6 +3,9 @@
 // nie wysyłają — to dojdzie w kolejnych krokach.
 
 import { odczytajUstawienia, zapiszUstawienia, czyUstawieniaZapisane } from './ustawienia.js';
+import { WERSJA_APLIKACJI } from './wersja.js';
+
+document.getElementById('numer-wersji').textContent = WERSJA_APLIKACJI;
 
 const ekranStart = document.getElementById('ekran-start');
 const ekranUstawien = document.getElementById('ekran-ustawienia');

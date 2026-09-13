@@ -142,3 +142,12 @@ main {
   background: #fdecea;
   color: #b3261e;
 }
+
+/* Numer wersji — zawsze widoczny na dole, żeby łatwo sprawdzić, czy telefon
+   ma najnowszą wersję aplikacji po odświeżeniu. */
+.stopka {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: #888;
+}
