@@ -20,18 +20,19 @@ Windows 10, PHPStorm, Claude Code w PowerShell.
 
 ## Co aplikacja ma robić
 
-**Cztery media, każde niezależne.** Ekran startowy ma cztery kafelki:
+**Pięć mediów, każde niezależne.** Ekran startowy ma pięć kafelków:
 
 | kafelek | kod medium | częstotliwość | wprowadzanie |
 |---|---|---|---|
 | Gaz | `gaz` | codziennie w sezonie grzewczym | zdjęcie, galeria lub ręcznie |
 | Prąd T1 | `prad_t1` | raz w miesiącu | zdjęcie, galeria lub ręcznie |
 | Prąd T2 | `prad_t2` | raz w miesiącu | zdjęcie, galeria lub ręcznie |
+| Prąd suma | `prad_suma` | raz w miesiącu | zdjęcie, galeria lub ręcznie |
 | Woda | `woda` | raz w miesiącu | zdjęcie, galeria lub ręcznie |
 
-Taryfy prądu to osobne media, nie warianty jednego — dzięki temu każde ma
-własny poprzedni stan, własną kontrolę chronologii i nie wymaga prowadzenia
-użytkownika przez dwa ujęcia pod rząd.
+Taryfy prądu (i suma) to osobne media, nie warianty jednego — dzięki temu
+każde ma własny poprzedni stan, własną kontrolę chronologii i nie wymaga
+prowadzenia użytkownika przez kilka ujęć pod rząd.
 
 **Zdjęcie dla wszystkich mediów.** Zaczęło się od samego gazu, potem
 rozszerzone na resztę (2026-09-14) — mechanizm jest generyczny: moduł
@@ -85,7 +86,7 @@ zdjęć na razie nie przechowujemy.
 w strefie Europe/Warsaw, tak samo jak dane z importów. Pole jest wymagane;
 gdy go zabraknie, webhook użyje czasu serwera.
 
-`medium` przyjmuje: `gaz`, `prad_t1`, `prad_t2`, `woda`.
+`medium` przyjmuje: `gaz`, `prad_t1`, `prad_t2`, `prad_suma`, `woda`.
 `metoda` przyjmuje: `foto`, `reczny`.
 
 Odpowiedź: `{ ok, wiersz, poprzedni_stan, przyrost }` albo

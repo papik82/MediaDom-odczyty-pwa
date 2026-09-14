@@ -3,6 +3,20 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.9.0 — 2026-09-14
+
+### Dodane
+- Piąte medium: **Prąd suma** (`prad_suma`), kWh, bez miejsc po przecinku —
+  ta sama funkcjonalność co reszta (zdjęcie/galeria/ręcznie, własny
+  poprzedni stan i kontrola chronologii). Dodanie sprowadziło się do
+  jednego wpisu w `js/media.js` (`MEDIA` i `MEDIA_ZE_ZDJECIEM`) plus
+  kafelka w `index.html` — dokładnie tak, jak zakładała architektura
+  z CLAUDE.md. Ikona kafelka: ta sama błyskawica co Prąd T1/T2.
+  CLAUDE.md zaktualizowane (tabela mediów, lista wartości `medium`).
+
+Backend nie wymagał zmian — `zapiszOdczyt` w Apps Script nie waliduje
+`medium` względem sztywnej listy, przyjmuje dowolny ciąg znaków.
+
 ## 0.8.2 — 2026-09-14
 
 ### Naprawione
