@@ -156,14 +156,17 @@ Zapis:
   "krzywa_grzewcza": 1.2,
   "przesuniecie": -3,
   "temp_cwu": 48,
-  "cyrkulacja": "06:00-08:00, 18:30-22:00",
+  "cyrkulacja": "4:30 - 22:00, 18:30 - 22:00",
   "obowiazuje_od": "2026-09-14T11:27:00" }
 ```
 
 `tryb` przyjmuje: `off`, `cwu`, `co`, `cwu_co`.
 `cyrkulacja` — zero, jeden albo kilka przedziałów czasu w dobie, sklejone
-w jeden tekst: `"HH:MM-HH:MM, HH:MM-HH:MM"` (pusty string, gdy brak
-przedziałów). To jedna kolumna w arkuszu, nie osobna zakładka.
+w jeden tekst: `"H:MM - H:MM, H:MM - H:MM"` (bez zera wiodącego przy
+godzinie, spacje wokół myślnika, przecinek między przedziałami; pusty
+string, gdy brak przedziałów) — dokładnie taki format, w jakim wcześniej
+ręcznie wpisywane były wpisy zaimportowane z archiwum do zakładki `kociol`.
+To jedna kolumna w arkuszu, nie osobna zakładka.
 `obowiazuje_od` — jak w odczytach: czas lokalny bez strefy, Europe/Warsaw.
 
 Odpowiedź: `{ ok: true, wiersz, zapisano }`.
@@ -180,16 +183,22 @@ Odpowiedź, gdy zakładka `kociol` ma już jakiś wiersz:
 { "ok": true, "brak": false,
   "obowiazuje_od": "2026-09-10T18:00:00",
   "tryb": "co", "krzywa_grzewcza": 1.4, "przesuniecie": -2,
-  "temp_cwu": 45, "cyrkulacja": "07:00-09:00, 19:00-21:00" }
+  "temp_cwu": 45, "cyrkulacja": "7:00 - 9:00, 19:00 - 21:00" }
 ```
 
 Gdy zakładka jest pusta: `{ "ok": true, "brak": true }`. PWA wtedy nie ma
 punktu odniesienia i nie blokuje wysyłki (nie ma z czym porównać) — dotyczy
 też sytuacji offline, gdy tego zapytania w ogóle nie udało się wykonać.
 
-**Zakładka `kociol` musi istnieć w arkuszu, z wierszem nagłówka** (tak samo
-jak `odczyty`) i kolumnami w tej kolejności: `obowiazuje_od`, `tryb`,
-`krzywa_grzewcza`, `przesuniecie`, `temp_cwu`, `cyrkulacja`.
+**Zakładka `kociol` już istnieje** (zaimportowana z archiwum, potwierdzone
+2026-09-14), z kolumnami w tej kolejności: `obowiazuje_od`, `tryb`,
+`krzywa` (nazwa nagłówka w arkuszu — w JSON-ie to `krzywa_grzewcza`,
+nazwa pola nie musi zgadzać się z tekstem nagłówka, bo skrypt zapisuje po
+pozycji kolumny, nie po nazwie), `przesuniecie`, `temp_cwu`, `cyrkulacja`,
+`uwagi` (siódma kolumna, PWA jej nie ustawia). Zakładka `sezon` dociąga
+`tryb`/`krzywa`/`przesuniecie`/`temp_cwu` z `kociol` przez gotowe formuły
+`INDEX/MATCH` po dacie — nowy wiersz w `kociol` wystarczy, żeby `sezon`
+sam się zaktualizował, nic dodatkowego nie trzeba dopisywać.
 
 ---
 

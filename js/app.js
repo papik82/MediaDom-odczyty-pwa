@@ -123,15 +123,34 @@ formularzUstawien.addEventListener('submit', (zdarzenie) => {
 //
 // Cyrkulacja to zero, jeden albo kilka przedziałów czasu na dobę — trzymamy
 // je jako wiersze w DOM (dodawane/usuwane przyciskiem) i przy zapisie
-// spłaszczamy do jednego tekstu w komórce arkusza: "06:00-08:00, 18:00-22:00".
+// spłaszczamy do jednego tekstu w komórce arkusza: "4:30 - 22:00" — bez
+// zera wiodącego przy godzinie i ze spacjami wokół myślnika, dokładnie tak,
+// jak wpisy zaimportowane wcześniej ręcznie do zakładki "kociol". Kilka
+// przedziałów w jednej dobie sklejamy przecinkiem — to już nasze rozszerzenie,
+// w archiwum każdy wiersz miał tylko jeden przedział.
+
+// <input type="time"> wymaga dwucyfrowej godziny (value="04:30"), więc przy
+// wczytywaniu z arkusza ("4:30") trzeba ją dopełnić zerem — inaczej
+// przeglądarka po cichu zignoruje wartość i pole zostanie puste.
+function dopelnijGodzine(godzina) {
+  const [h, m] = (godzina || '').split(':');
+  if (h === undefined || m === undefined) return '';
+  return `${h.padStart(2, '0')}:${m}`;
+}
+
+// Odwrotnie — do zapisu w stylu arkusza zdejmujemy zero wiodące.
+function skrocGodzine(godzina) {
+  const [h, m] = godzina.split(':');
+  return `${parseInt(h, 10)}:${m}`;
+}
 
 function dodajPrzedzialCyrkulacji(godzinaOd = '', godzinaDo = '') {
   const wiersz = document.createElement('div');
   wiersz.className = 'przedzial-cyrkulacji';
   wiersz.innerHTML = `
-    <input type="time" class="cyrkulacja-od" value="${godzinaOd}">
+    <input type="time" class="cyrkulacja-od" value="${dopelnijGodzine(godzinaOd)}">
     <span class="przedzial-cyrkulacji__lacznik">–</span>
-    <input type="time" class="cyrkulacja-do" value="${godzinaDo}">
+    <input type="time" class="cyrkulacja-do" value="${dopelnijGodzine(godzinaDo)}">
     <button type="button" class="przycisk-usun-przedzial" aria-label="Usuń przedział">✕</button>
   `;
   wiersz.querySelector('.przycisk-usun-przedzial').addEventListener('click', () => wiersz.remove());
@@ -152,9 +171,11 @@ function odczytajPrzedzialyCyrkulacji() {
 }
 
 function serializujCyrkulacje(przedzialy) {
-  return przedzialy.map((p) => `${p.od}-${p.do}`).join(', ');
+  return przedzialy.map((p) => `${skrocGodzine(p.od)} - ${skrocGodzine(p.do)}`).join(', ');
 }
 
+// Odporne na format z zera wiodącym i bez niego, ze spacjami wokół myślnika
+// albo bez — split('-') i trim() ogarniają obie wersje (nasza i archiwalna).
 function sparsujCyrkulacje(tekst) {
   if (!tekst) return [];
   return tekst.split(',').map((kawalek) => kawalek.trim()).filter(Boolean).map((kawalek) => {
@@ -181,9 +202,9 @@ async function wczytajOstatnieNastawyKotla() {
 
     ostatnieNastawyKotla = {
       tryb: wynik.tryb || 'off',
-      krzywa_grzewcza: String(wynik.krzywa_grzewcza ?? ''),
-      przesuniecie: String(wynik.przesuniecie ?? ''),
-      temp_cwu: String(wynik.temp_cwu ?? ''),
+      krzywa_grzewcza: wynik.krzywa_grzewcza ?? null,
+      przesuniecie: wynik.przesuniecie ?? null,
+      temp_cwu: wynik.temp_cwu ?? null,
       cyrkulacja: wynik.cyrkulacja || '',
     };
   } catch (blad) {
@@ -220,23 +241,37 @@ przyciskAnulujKociol.addEventListener('click', () => {
   pokazEkran(ekranStart);
 });
 
+// Puste pole -> null (nie NaN z parseFloat('')) — "krzywa grzewcza" i
+// "przesunięcie" są null przy samym CWU (bez CO), zgodnie z archiwum.
+function liczbaAlboNull(tekst) {
+  return tekst === '' ? null : parseFloat(tekst);
+}
+
+// Do porównania "czy coś się zmieniło" — null, undefined i NaN (np. gdyby
+// pole zawierało coś niepoprawnego) traktujemy jako ten sam, pusty stan.
+function doPorownania(wartosc) {
+  if (wartosc === null || wartosc === undefined) return '';
+  if (typeof wartosc === 'number' && Number.isNaN(wartosc)) return '';
+  return String(wartosc);
+}
+
 formularzKotla.addEventListener('submit', async (zdarzenie) => {
   zdarzenie.preventDefault();
 
   const daneKotla = {
     tryb: poleTryb.value,
-    krzywa_grzewcza: parseFloat(poleKrzywa.value),
-    przesuniecie: parseFloat(polePrzesuniecie.value),
-    temp_cwu: parseFloat(poleTempCwu.value),
+    krzywa_grzewcza: liczbaAlboNull(poleKrzywa.value),
+    przesuniecie: liczbaAlboNull(polePrzesuniecie.value),
+    temp_cwu: liczbaAlboNull(poleTempCwu.value),
     cyrkulacja: serializujCyrkulacje(odczytajPrzedzialyCyrkulacji()),
     obowiazuje_od: `${poleObowiazujeOd.value}:00`,
   };
 
   const bezZmian = ostatnieNastawyKotla
     && ostatnieNastawyKotla.tryb === daneKotla.tryb
-    && ostatnieNastawyKotla.krzywa_grzewcza === String(daneKotla.krzywa_grzewcza)
-    && ostatnieNastawyKotla.przesuniecie === String(daneKotla.przesuniecie)
-    && ostatnieNastawyKotla.temp_cwu === String(daneKotla.temp_cwu)
+    && doPorownania(ostatnieNastawyKotla.krzywa_grzewcza) === doPorownania(daneKotla.krzywa_grzewcza)
+    && doPorownania(ostatnieNastawyKotla.przesuniecie) === doPorownania(daneKotla.przesuniecie)
+    && doPorownania(ostatnieNastawyKotla.temp_cwu) === doPorownania(daneKotla.temp_cwu)
     && ostatnieNastawyKotla.cyrkulacja === daneKotla.cyrkulacja;
 
   if (bezZmian) {

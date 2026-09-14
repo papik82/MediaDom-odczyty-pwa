@@ -3,6 +3,26 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.11.1 — 2026-09-14
+
+### Zmienione
+- Format zapisu cyrkulacji dopasowany do stylu już istniejącego w arkuszu
+  (`kociol`, zaimportowane z archiwum): `"4:30 - 22:00"` — bez zera
+  wiodącego przy godzinie, spacje wokół myślnika — zamiast wcześniejszego
+  `"04:30-22:00"`. Kilka przedziałów nadal łączone przecinkiem (rozszerzenie
+  PWA, w archiwum zawsze był jeden przedział na wiersz).
+
+### Naprawione
+- Pola „Krzywa grzewcza” i „Przesunięcie” w formularzu kotła były oznaczone
+  jako wymagane, ale w archiwum tryb `cwu` (sama ciepła woda, bez CO)
+  legalnie ma je puste — natywna walidacja przeglądarki blokowała wysyłkę
+  formularza w tym trybie, zanim doszło do jakiejkolwiek naszej logiki.
+  Znalezione przy okazji testowania zmiany formatu cyrkulacji.
+- Puste pole liczbowe dawało `NaN` (z `parseFloat('')`), a nie `null` —
+  psuło to zarówno wykrywanie „czy coś się zmieniło” (nigdy nie zgadzało
+  się z podpowiedzią), jak i sam zapis (`Number(NaN)` w Apps Script). Teraz
+  puste pole to wprost `null` w wysyłanym JSON-ie.
+
 ## 0.11.0 — 2026-09-14
 
 ### Dodane
