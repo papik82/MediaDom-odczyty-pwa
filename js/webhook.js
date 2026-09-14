@@ -8,7 +8,7 @@ import { odczytajUstawienia } from './ustawienia.js';
 // Script Web App nie obsługuje zapytań OPTIONS (preflight), więc przeglądarka
 // nie może wysłać zwykłego JSON-a przez fetch. "text/plain" nie wymaga
 // preflightu, a Apps Script i tak parsuje treść jako JSON po swojej stronie.
-export async function wyslijOdczyt(odczyt) {
+async function wyslijDoWebhooka(cialoBezTokenu) {
   const ustawienia = odczytajUstawienia();
   if (!ustawienia) {
     throw new Error('Brak zapisanych ustawień webhooka.');
@@ -19,8 +19,7 @@ export async function wyslijOdczyt(odczyt) {
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({
       token: ustawienia.token,
-      akcja: 'odczyt',
-      ...odczyt,
+      ...cialoBezTokenu,
     }),
   });
 
@@ -29,4 +28,16 @@ export async function wyslijOdczyt(odczyt) {
   }
 
   return odpowiedz.json();
+}
+
+export function wyslijOdczyt(odczyt) {
+  return wyslijDoWebhooka({ akcja: 'odczyt', ...odczyt });
+}
+
+// Rozpoznanie wskazania licznika ze zdjęcia przez model wizyjny (Gemini,
+// po stronie Apps Script — klucz API nigdy nie trafia do przeglądarki).
+// Ta akcja niczego nie zapisuje do arkusza; zapis to osobne wywołanie
+// wyslijOdczyt, dopiero po potwierdzeniu wartości przez użytkownika.
+export function rozpoznajZdjecie(medium, obrazBase64) {
+  return wyslijDoWebhooka({ akcja: 'odczytaj_foto', medium, obraz: obrazBase64 });
 }

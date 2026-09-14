@@ -4,8 +4,8 @@
 import { odczytajUstawienia, zapiszUstawienia, czyUstawieniaZapisane } from './ustawienia.js';
 import { WERSJA_APLIKACJI } from './wersja.js';
 import { MEDIA, MEDIA_ZE_ZDJECIEM } from './media.js';
-import { wyslijOdczyt } from './webhook.js';
-import { zrobZdjecie, wybierzZGalerii } from './aparat.js';
+import { wyslijOdczyt, rozpoznajZdjecie } from './webhook.js';
+import { zrobZdjecie, wybierzZGalerii, blobDoBase64 } from './aparat.js';
 
 document.getElementById('numer-wersji').textContent = WERSJA_APLIKACJI;
 
@@ -41,6 +41,10 @@ const komunikatPotwierdzenia = document.getElementById('komunikat-potwierdzenia'
 let wybraneMedium = null;
 let metodaAktualnegoOdczytu = 'reczny';
 let adresUrlPodgladuZdjecia = null;
+// Rośnie przy każdym otwarciu ekranu potwierdzenia — pozwala rozpoznajIWypelnij
+// poznać, że użytkownik zdążył zamknąć ten ekran (albo otworzyć kolejny),
+// zanim odpowiedź modelu wróciła, i nie wpisywać wyniku w złe miejsce.
+let generacjaPotwierdzenia = 0;
 
 function pokazEkran(ekranDoPokazania) {
   for (const ekran of [ekranStart, ekranUstawien, ekranWyboruMetody, ekranPotwierdzenia]) {
@@ -98,6 +102,7 @@ formularzUstawien.addEventListener('submit', (zdarzenie) => {
 function otworzPotwierdzenie(medium, metoda, urlZdjecia = null) {
   wybraneMedium = medium;
   metodaAktualnegoOdczytu = metoda;
+  generacjaPotwierdzenia++;
   const opisMedium = MEDIA[medium];
   potwierdzenieTytul.textContent = opisMedium.nazwa;
   potwierdzenieJednostka.textContent = opisMedium.jednostka;
@@ -146,15 +151,58 @@ przyciskAnulujWybor.addEventListener('click', () => {
 });
 
 // Kompresja i zmniejszenie zdjęcia są w js/aparat.js — tu tylko wybieramy
-// źródło (aparat albo galeria). Wynik na razie trzeba przepisać ręcznie,
-// patrząc na podgląd — model wizyjny dojdzie w punkcie 6.
+// źródło (aparat albo galeria), otwieramy ekran potwierdzenia z podglądem
+// i od razu w tle wysyłamy zdjęcie do rozpoznania (akcja "odczytaj_foto").
 async function obslozWyborZdjecia(pobierzZdjecie) {
+  let wynikZdjecia;
   try {
-    const { url } = await pobierzZdjecie(wybraneMedium);
-    otworzPotwierdzenie(wybraneMedium, 'foto', url);
+    wynikZdjecia = await pobierzZdjecie(wybraneMedium);
   } catch (blad) {
     console.error('Nie udało się uzyskać zdjęcia:', blad);
     pokazEkran(ekranStart);
+    return;
+  }
+
+  const { medium, blob, url } = wynikZdjecia;
+  otworzPotwierdzenie(medium, 'foto', url);
+  await rozpoznajIWypelnij(medium, blob, generacjaPotwierdzenia);
+}
+
+// Model niczego nie zapisuje — tylko proponuje wartość do pola, które i tak
+// trzeba zatwierdzić ręcznie. Przy niskiej pewności albo niedopasowanym
+// zdjęciu (pasuje: false) pole zostaje puste i pokazujemy ostrzeżenie,
+// zamiast po cichu przyjąć niepewny wynik (zgodnie z CLAUDE.md).
+async function rozpoznajIWypelnij(medium, blob, generacja) {
+  poleStan.disabled = true;
+  poleStan.placeholder = 'Rozpoznawanie odczytu…';
+  przyciskZatwierdz.disabled = true;
+
+  try {
+    const obrazBase64 = await blobDoBase64(blob);
+    const wynik = await rozpoznajZdjecie(medium, obrazBase64);
+
+    if (generacja !== generacjaPotwierdzenia) return; // ekran zdążył się zmienić
+
+    if (wynik.ok && wynik.pasuje && wynik.pewnosc !== 'niska' && typeof wynik.stan === 'number') {
+      poleStan.value = wynik.stan;
+      if (wynik.pewnosc === 'srednia') {
+        pokazBladPotwierdzenia('Średnia pewność odczytu — sprawdź wartość na zdjęciu przed zatwierdzeniem.');
+      }
+    } else {
+      const powod = (wynik.ok ? wynik.problem : wynik.blad) || 'nie udało się jednoznacznie odczytać wskazania';
+      pokazBladPotwierdzenia(`Model nie jest pewny odczytu (${powod}) — sprawdź zdjęcie i wpisz wartość ręcznie.`);
+    }
+  } catch (blad) {
+    console.error('Nie udało się rozpoznać zdjęcia:', blad);
+    if (generacja === generacjaPotwierdzenia) {
+      pokazBladPotwierdzenia('Nie udało się rozpoznać zdjęcia — wpisz odczyt ręcznie.');
+    }
+  } finally {
+    if (generacja === generacjaPotwierdzenia) {
+      poleStan.disabled = false;
+      poleStan.placeholder = '';
+      przyciskZatwierdz.disabled = false;
+    }
   }
 }
 

@@ -13,7 +13,7 @@ tego samego w dwóch plikach. Rzeczy już wydane trafiają do
    komunikację z webhookiem od początku do końca.
 5. [x] Aparat dla gazu: zdjęcie, zmniejszenie, wysyłka — na razie z ręcznym
    wpisaniem wyniku, bez modelu.
-6. [ ] Akcja `odczytaj_foto` w Apps Script i podpięcie Gemini.
+6. [x] Akcja `odczytaj_foto` w Apps Script i podpięcie Gemini.
 7. [ ] Kolejka offline.
 
 Po punkcie 4 aplikacja jest już użyteczna. Reszta to wygoda.
@@ -37,16 +37,20 @@ Wymagania:
 
 ### 2. PWA: trzy ścieżki wpisywania odczytu
 1. [x] Wpis ręczny.
-2. [ ] Zdjęcie licznika + automatyczny odczyt wskazania (OCR) — czeka na punkt 6.
+2. [x] Zdjęcie licznika + automatyczny odczyt wskazania (OCR) — Gemini przez
+   Apps Script, akcja `odczytaj_foto` (2026-09-14).
 3. [x] Otwarcie istniejącego zdjęcia (z galerii) i ręczne przepisanie z niego.
 
-Ścieżki 1 i 3 działają dla wszystkich czterech mediów (2026-09-14 — lista
-`MEDIA_ZE_ZDJECIEM` w `js/media.js` rozszerzona z samego gazu) — ekran
-wyboru metody ma „Zrób zdjęcie” / „Wybierz z galerii” / „Wpisz ręcznie”.
-Webhook na razie nie rozróżnia zdjęcia świeżego
-od wybranego z galerii — obie idą jako `metoda: "foto"`. Poniższe wymagania
-(kolumna `zrodlo`, link do zdjęcia na Dysku) jeszcze nie są zrobione —
-dotyczą zmian w Apps Script, nie tylko w PWA.
+Wszystkie trzy ścieżki działają dla wszystkich czterech mediów — ekran
+wyboru metody ma „Zrób zdjęcie” / „Wybierz z galerii” / „Wpisz ręcznie”,
+obie ścieżki ze zdjęciem (świeże i z galerii) przechodzą przez ten sam OCR.
+Model niczego nie zapisuje sam — tylko podpowiada wartość w polu „Stan
+licznika”, którą trzeba zatwierdzić; przy `pasuje: false` albo pewności
+`niska` pole zostaje puste z ostrzeżeniem zamiast cichej akceptacji.
+Webhook na razie nie rozróżnia zdjęcia świeżego od wybranego z galerii —
+obie idą jako `metoda: "foto"`. Poniższe wymagania (kolumna `zrodlo`, link
+do zdjęcia na Dysku) jeszcze nie są zrobione — dotyczą dalszych zmian
+w Apps Script, nie samego OCR.
 
 Wymagania:
 - Zdjęcie zapisywane niezależnie od ścieżki; w "odczyty" kolumna z linkiem do pliku na Dysku.

@@ -72,3 +72,16 @@ export function zrobZdjecie(medium) {
 export function wybierzZGalerii(medium) {
   return otworzWyborZdjecia(medium, false);
 }
+
+// Zamienia zdjęcie na base64 do wysłania w treści JSON do Apps Script
+// (akcja "odczytaj_foto"). FileReader.readAsDataURL daje ciąg w postaci
+// "data:image/jpeg;base64,XXXX" — odcinamy nagłówek przed przecinkiem,
+// bo backend oczekuje samego base64.
+export function blobDoBase64(blob) {
+  return new Promise((rozwiaz, odrzuc) => {
+    const czytnik = new FileReader();
+    czytnik.onload = () => rozwiaz(czytnik.result.split(',')[1]);
+    czytnik.onerror = () => odrzuc(czytnik.error);
+    czytnik.readAsDataURL(blob);
+  });
+}

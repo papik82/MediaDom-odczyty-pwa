@@ -3,6 +3,30 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.7.0 — 2026-09-14
+
+### Dodane
+- Model wizyjny (Gemini, po stronie Apps Script) rozpoznaje wskazanie
+  licznika ze zdjęcia — zamyka punkt 6 planu prac. `js/webhook.js`:
+  `rozpoznajZdjecie(medium, obrazBase64)` woła nową akcję `odczytaj_foto`.
+  `js/aparat.js`: `blobDoBase64` koduje zmniejszone zdjęcie do base64.
+- Po zrobieniu/wybraniu zdjęcia ekran potwierdzenia sam wysyła je do
+  rozpoznania: pole „Stan licznika” pokazuje „Rozpoznawanie odczytu…”,
+  a po odpowiedzi wypełnia się propozycją modelu — nadal trzeba kliknąć
+  „Zatwierdź”, model niczego nie zapisuje sam.
+- Gdy `pasuje` jest `false` albo `pewność` to `niska`, pole zostaje puste
+  i pokazuje się komunikat z treścią `problem` — zgodnie z CLAUDE.md,
+  niepewny wynik nigdy nie trafia do pola po cichu. Przy pewności
+  `średniej` pole wypełnia się, ale z ostrzeżeniem do sprawdzenia.
+- Zabezpieczenie przed wyścigiem: jeśli użytkownik zdąży zamknąć ekran
+  potwierdzenia (Anuluj/home) zanim model odpowie, spóźniona odpowiedź
+  jest ignorowana zamiast wpisać wartość w already-zamknięty ekran.
+
+Zweryfikowane na żywo z prawdziwym webhookiem i kluczem Gemini (curl):
+poprawne odrzucenie obrazu bez licznika (`pasuje: false`, `pewność: wysoka`)
+oraz pełna ścieżka sukcesu przetestowana w przeglądarce z odpowiedzią
+o kształcie zgodnym z tym, co faktycznie zwraca backend.
+
 ## 0.6.1 — 2026-09-14
 
 ### Dodane
