@@ -133,12 +133,21 @@ main {
 
 .przycisk-glowny,
 .przycisk-drugorzedny {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   padding: 0.9rem;
   font-size: 1.05rem;
   font-weight: 600;
   border-radius: 10px;
   border: none;
   cursor: pointer;
+}
+
+.ikona-przycisku {
+  width: 22px;
+  height: 22px;
 }
 
 .przycisk-glowny:disabled {

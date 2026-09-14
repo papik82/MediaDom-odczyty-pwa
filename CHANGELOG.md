@@ -3,6 +3,15 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.8.1 — 2026-09-14
+
+### Zmienione
+- Emoji na ekranie wyboru metody wpisu (📷🖼️✏️) zastąpione ikonami SVG
+  w tej samej stylistyce: `ikony/aparat.svg` (biała, na niebieskim
+  przycisku), `ikony/galeria.svg` i `ikony/recznie.svg` (ciemne, na
+  szarych przyciskach). Przyciski `.przycisk-glowny`/`.przycisk-drugorzedny`
+  teraz flex (ikona + tekst wyśrodkowane w rzędzie).
+
 ## 0.8.0 — 2026-09-14
 
 ### Zmienione
