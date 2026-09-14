@@ -3,6 +3,16 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.8.0 — 2026-09-14
+
+### Zmienione
+- Emoji na kafelkach mediów (🔥💧⚡) i w nagłówku (🏠⚙) zastąpione własnymi
+  ikonami SVG w tej samej stylistyce co ikona aplikacji (grube, zaokrąglone
+  linie): `ikony/gaz.svg`, `ikony/woda.svg`, `ikony/prad.svg` (wspólna dla
+  obu taryf), `ikony/home.svg`, `ikony/ustawienia.svg`. Emoji renderują się
+  różnie zależnie od systemu/przeglądarki — własne ikony wyglądają tak samo
+  wszędzie i spójnie z ikoną aplikacji.
+
 ## 0.7.2 — 2026-09-14
 
 ### Zmienione
