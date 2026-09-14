@@ -65,7 +65,8 @@ Apps Script (webhook)  -->  Arkusz Google "Media dom"
     +-->  model wizyjny (klucz API we właściwościach skryptu)
 ```
 
-Backend **już istnieje i działa**. Trzeba dołożyć jedną akcję, reszta gotowa.
+Backend **już istnieje i działa**. Odczyty i OCR są gotowe; dziennik zmian
+kotła (`zmiana_kotla` / `ostatni_kociol`, patrz niżej) to akcje do dopisania.
 
 ### Istniejąca akcja zapisu
 
@@ -139,6 +140,57 @@ dopiero po potwierdzeniu przez użytkownika. Rozdzielenie jest celowe: model
 wizyjny bywa niepewny, licznik ma trzy miejsca po przecinku, a pomyłka na
 ostatniej cyfrze psuje analizy.
 
+### Dziennik zmian kotła — dwie akcje do dopisania (2026-09-14)
+
+Kocioł to nie medium do okresowego odczytu, tylko dziennik zmian nastaw —
+osobna karta w PWA (nie kafelek wśród mediów), zapisuje do osobnej zakładki
+arkusza `kociol`. Wpis powstaje tylko wtedy, gdy coś faktycznie się zmieniło
+względem ostatnio zapisanych nastaw — kontrolę robi PWA po stronie klienta
+(porównanie z tym, co zwróci `ostatni_kociol`), nie webhook.
+
+Zapis:
+
+```json
+{ "token": "...", "akcja": "zmiana_kotla",
+  "tryb": "cwu_co",
+  "krzywa_grzewcza": 1.2,
+  "przesuniecie": -3,
+  "temp_cwu": 48,
+  "cyrkulacja": "06:00-08:00, 18:30-22:00",
+  "obowiazuje_od": "2026-09-14T11:27:00" }
+```
+
+`tryb` przyjmuje: `off`, `cwu`, `co`, `cwu_co`.
+`cyrkulacja` — zero, jeden albo kilka przedziałów czasu w dobie, sklejone
+w jeden tekst: `"HH:MM-HH:MM, HH:MM-HH:MM"` (pusty string, gdy brak
+przedziałów). To jedna kolumna w arkuszu, nie osobna zakładka.
+`obowiazuje_od` — jak w odczytach: czas lokalny bez strefy, Europe/Warsaw.
+
+Odpowiedź: `{ ok: true, wiersz, zapisano }`.
+
+Odczyt ostatnich nastaw (do podpowiedzi w formularzu):
+
+```json
+{ "token": "...", "akcja": "ostatni_kociol" }
+```
+
+Odpowiedź, gdy zakładka `kociol` ma już jakiś wiersz:
+
+```json
+{ "ok": true, "brak": false,
+  "obowiazuje_od": "2026-09-10T18:00:00",
+  "tryb": "co", "krzywa_grzewcza": 1.4, "przesuniecie": -2,
+  "temp_cwu": 45, "cyrkulacja": "07:00-09:00, 19:00-21:00" }
+```
+
+Gdy zakładka jest pusta: `{ "ok": true, "brak": true }`. PWA wtedy nie ma
+punktu odniesienia i nie blokuje wysyłki (nie ma z czym porównać) — dotyczy
+też sytuacji offline, gdy tego zapytania w ogóle nie udało się wykonać.
+
+**Zakładka `kociol` musi istnieć w arkuszu, z wierszem nagłówka** (tak samo
+jak `odczyty`) i kolumnami w tej kolejności: `obowiazuje_od`, `tryb`,
+`krzywa_grzewcza`, `przesuniecie`, `temp_cwu`, `cyrkulacja`.
+
 ---
 
 ## Bezpieczeństwo — rzecz najważniejsza
@@ -191,16 +243,17 @@ Wyświetlacz jest odblaskowy, bez podświetlenia, często pod szybką.
 /
 ├── index.html
 ├── manifest.json
-├── sw.js                  service worker, cache aplikacji
+├── sw.js                  service worker, cache aplikacji (cache-first, całościowo)
 ├── css/
 │   └── styl.css
 ├── js/
-│   ├── app.js             sterowanie ekranami
+│   ├── app.js             sterowanie wszystkimi ekranami
 │   ├── ustawienia.js      adres webhooka i token w localStorage
-│   ├── webhook.js         komunikacja z Apps Script, kolejka offline
-│   ├── aparat.js          zdjęcie, zmniejszanie, kompresja
-│   └── walidacja.js       kontrola sensowności odczytu
-├── ikony/
+│   ├── media.js           metadane mediów (nazwa, jednostka, zdjęcie: tak/nie)
+│   ├── webhook.js         komunikacja z Apps Script (odczyt, OCR, kocioł)
+│   ├── aparat.js          zdjęcie: aparat/galeria, zmniejszanie, base64
+│   └── kolejka.js         kolejka offline w localStorage (odczyty i kocioł)
+├── ikony/                 SVG w jednym stylu (ikona aplikacji + ikony UI)
 └── CLAUDE.md
 ```
 

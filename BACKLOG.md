@@ -25,15 +25,24 @@ między sesjami. Nic z poniższego nie jest jeszcze zaimplementowane, chyba
 że przy punkcie jest wyraźna adnotacja „Rozstrzygnięcie”.
 
 ### 1. PWA: wpisy zmiany stanu kotła
-Aplikacja ma pozwalać dodawać wpisy do dziennika "kociol", nie tylko odczyty mediów.
-Pola: tryb (off / cwu / co / cwu_co), krzywa grzewcza, przesunięcie, temperatura CWU, cyrkulacja.
+[x] Strona PWA gotowa (2026-09-14) — karta „Kocioł” na ekranie startowym,
+formularz z podpowiedzią ostatnich nastaw (tryb, krzywa grzewcza,
+przesunięcie, temp. CWU, cyrkulacja jako lista przedziałów czasu),
+wysyłka tylko przy faktycznej zmianie, kolejka offline współdzielona
+z odczytami. Kontrakt (`zmiana_kotla` / `ostatni_kociol`) opisany
+w CLAUDE.md — **czeka na dopisanie po stronie Apps Script** (te akcje
+jeszcze nie istnieją na serwerze) i na założenie zakładki `kociol`
+z wierszem nagłówka.
 
-Wymagania:
+Otwarte:
 - Formularz podpowiada ostatnio obowiązujące nastawy; zmieniam jedno pole, reszta przepisuje się sama.
 - Wpis powstaje tylko gdy coś się faktycznie zmieniło (to dziennik zmian, nie odczyt okresowy).
 - Konwencja daty: `obowiazuje_od` = moment faktycznej zmiany nastawy, BEZ przesunięcia o jeden odczyt wstecz.
   Uwaga: archiwum ma przesunięcie o jeden odczyt wstecz (wpisy opisywały okres kończący się danym odczytem).
   Stare i nowe wpisy znaczą co innego — wymaga rozstrzygnięcia przy migracji.
+  PWA już implementuje konwencję bez przesunięcia (`obowiazuje_od` = czas
+  faktycznej zmiany) — rozstrzygnięcie dotyczy tylko migracji archiwum,
+  nie nowych wpisów.
 
 ### 2. PWA: trzy ścieżki wpisywania odczytu
 1. [x] Wpis ręczny.

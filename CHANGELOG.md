@@ -3,6 +3,36 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.11.0 — 2026-09-14
+
+### Dodane
+- Nowy moduł: **dziennik zmian nastaw kotła** (backlog, punkt 1). Osobna
+  karta „Kocioł" na ekranie startowym, wyraźnie odróżniona od kafelków
+  mediów — to dziennik zmian, nie okresowy odczyt.
+- Formularz: tryb (off/cwu/co/cwu_co), krzywa grzewcza, przesunięcie,
+  temperatura CWU, cyrkulacja jako lista przedziałów czasu (można dodać
+  kilka na dobę, każdy z osobnym polem od–do). Przy otwarciu formularz
+  pyta webhook o ostatnio zapisane nastawy (`ostatni_kociol`) i wypełnia
+  się nimi — zmieniasz tylko to, co faktycznie inne.
+- Wysyłka (`zmiana_kotla`) idzie tylko, gdy formularz różni się od
+  podpowiedzianych nastaw — inaczej komunikat „Brak zmian… nic nie
+  wysłano" bez zbędnego wiersza w arkuszu.
+- `js/webhook.js`: wydzielona generyczna funkcja `wyslij()`, używana teraz
+  przez odczyty, OCR i kocioł; `js/kolejka.js` (bez zmian API) obsługuje
+  oba typy wpisów jednolicie — offline działa tak samo dla kotła jak dla
+  odczytów.
+- CLAUDE.md: opisany kontrakt `zmiana_kotla` / `ostatni_kociol` (akcje do
+  dopisania w Apps Script) oraz wymagana zakładka `kociol` z nagłówkiem
+  i kolejnością kolumn. Przy okazji poprawiona nieaktualna struktura
+  katalogów (był tam plik `walidacja.js`, który nigdy nie powstał —
+  zastąpiony rzeczywistą listą, w tym `kolejka.js`).
+
+Przetestowane (mockowany fetch — akcje jeszcze nie istnieją w Apps Script,
+użytkownik dopisze je sam): podpowiedź z poprzednich nastaw łącznie
+z odtworzeniem kilku przedziałów cyrkulacji z tekstu, wykrycie braku zmian,
+wysyłka po zmianie jednego pola, kolejkowanie offline i późniejsza
+automatyczna wysyłka przez tę samą, wspólną kolejkę co odczyty.
+
 ## 0.10.0 — 2026-09-14
 
 ### Dodane

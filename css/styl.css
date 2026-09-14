@@ -92,6 +92,89 @@ main {
   height: 44px;
 }
 
+/* Karta kotła — celowo inny kształt niż kwadratowe kafelki mediów, żeby
+   było widać, że to coś innego (dziennik zmian, nie okresowy odczyt). */
+.karta-kociol {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: none;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  text-align: left;
+  cursor: pointer;
+}
+
+.karta-kociol:active {
+  background: #e3f0fd;
+}
+
+.karta-kociol__ikona {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.karta-kociol__tekst {
+  display: flex;
+  flex-direction: column;
+}
+
+.karta-kociol__tytul {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.karta-kociol__opis {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Przedziały czasowe cyrkulacji — lista dynamicznie dodawanych/usuwanych
+   wierszy, może ich być kilka na dobę. */
+.blok-cyrkulacji {
+  margin-top: 1.25rem;
+}
+
+.etykieta-cyrkulacji {
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.przedzial-cyrkulacji {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.przedzial-cyrkulacji input[type="time"] {
+  flex: 1;
+  padding: 0.6rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.przedzial-cyrkulacji__lacznik {
+  color: #666;
+}
+
+.przycisk-usun-przedzial {
+  background: none;
+  border: none;
+  color: #b3261e;
+  font-size: 1.3rem;
+  line-height: 1;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+}
+
 /* Formularz ustawień. */
 .opis {
   color: #555;

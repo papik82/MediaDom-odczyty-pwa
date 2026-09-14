@@ -4,7 +4,7 @@
 import { odczytajUstawienia, zapiszUstawienia, czyUstawieniaZapisane } from './ustawienia.js';
 import { WERSJA_APLIKACJI } from './wersja.js';
 import { MEDIA, MEDIA_ZE_ZDJECIEM } from './media.js';
-import { wyslijOdczyt, rozpoznajZdjecie } from './webhook.js';
+import { wyslij, wyslijOdczyt, rozpoznajZdjecie, zapiszKociol, pobierzOstatnieNastawyKotla } from './webhook.js';
 import { zrobZdjecie, wybierzZGalerii, blobDoBase64 } from './aparat.js';
 import { dodajDoKolejki, liczbaWKolejce, pobierzKolejke, usunPierwszyZKolejki } from './kolejka.js';
 
@@ -40,6 +40,28 @@ const przyciskAnulujPotwierdzenie = document.getElementById('przycisk-anuluj-pot
 const przyciskZatwierdz = document.getElementById('przycisk-zatwierdz');
 const komunikatPotwierdzenia = document.getElementById('komunikat-potwierdzenia');
 
+const ekranKociol = document.getElementById('ekran-kociol');
+const przyciskKociol = document.getElementById('przycisk-kociol');
+const formularzKotla = document.getElementById('formularz-kotla');
+const poleTryb = document.getElementById('pole-tryb');
+const poleKrzywa = document.getElementById('pole-krzywa');
+const polePrzesuniecie = document.getElementById('pole-przesuniecie');
+const poleTempCwu = document.getElementById('pole-temp-cwu');
+const listaCyrkulacji = document.getElementById('lista-cyrkulacji');
+const przyciskDodajPrzedzial = document.getElementById('przycisk-dodaj-przedzial');
+const poleObowiazujeOd = document.getElementById('pole-obowiazuje-od');
+const przyciskZapiszKociol = document.getElementById('przycisk-zapisz-kociol');
+const przyciskAnulujKociol = document.getElementById('przycisk-anuluj-kociol');
+const komunikatKotla = document.getElementById('komunikat-kotla');
+
+const ETYKIETY_TRYBU = { off: 'Wyłączony', cwu: 'CWU', co: 'CO', cwu_co: 'CWU + CO' };
+
+// Nastawy pobrane z webhooka przy otwarciu ekranu — punkt odniesienia do
+// wykrywania, czy formularz w ogóle się różni (wpis ma sens tylko wtedy).
+// null = brak punktu odniesienia (pusty arkusz albo offline) — wtedy nie
+// blokujemy wysyłki, bo nie ma z czym porównać.
+let ostatnieNastawyKotla = null;
+
 let wybraneMedium = null;
 let metodaAktualnegoOdczytu = 'reczny';
 let adresUrlPodgladuZdjecia = null;
@@ -49,7 +71,7 @@ let adresUrlPodgladuZdjecia = null;
 let generacjaPotwierdzenia = 0;
 
 function pokazEkran(ekranDoPokazania) {
-  for (const ekran of [ekranStart, ekranUstawien, ekranWyboruMetody, ekranPotwierdzenia]) {
+  for (const ekran of [ekranStart, ekranUstawien, ekranWyboruMetody, ekranPotwierdzenia, ekranKociol]) {
     ekran.classList.toggle('ukryty', ekran !== ekranDoPokazania);
   }
 }
@@ -95,6 +117,163 @@ formularzUstawien.addEventListener('submit', (zdarzenie) => {
   zdarzenie.preventDefault();
   zapiszUstawienia(poleAdres.value, poleToken.value);
   pokazEkran(ekranStart);
+});
+
+// --- Kocioł: dziennik zmian nastaw, nie okresowy odczyt ------------------
+//
+// Cyrkulacja to zero, jeden albo kilka przedziałów czasu na dobę — trzymamy
+// je jako wiersze w DOM (dodawane/usuwane przyciskiem) i przy zapisie
+// spłaszczamy do jednego tekstu w komórce arkusza: "06:00-08:00, 18:00-22:00".
+
+function dodajPrzedzialCyrkulacji(godzinaOd = '', godzinaDo = '') {
+  const wiersz = document.createElement('div');
+  wiersz.className = 'przedzial-cyrkulacji';
+  wiersz.innerHTML = `
+    <input type="time" class="cyrkulacja-od" value="${godzinaOd}">
+    <span class="przedzial-cyrkulacji__lacznik">–</span>
+    <input type="time" class="cyrkulacja-do" value="${godzinaDo}">
+    <button type="button" class="przycisk-usun-przedzial" aria-label="Usuń przedział">✕</button>
+  `;
+  wiersz.querySelector('.przycisk-usun-przedzial').addEventListener('click', () => wiersz.remove());
+  listaCyrkulacji.appendChild(wiersz);
+}
+
+przyciskDodajPrzedzial.addEventListener('click', () => dodajPrzedzialCyrkulacji());
+
+// Tylko przedziały z obiema wypełnionymi godzinami — pusty wiersz (ktoś
+// kliknął "dodaj" i się rozmyślił) po prostu pomijamy przy zapisie.
+function odczytajPrzedzialyCyrkulacji() {
+  return Array.from(listaCyrkulacji.querySelectorAll('.przedzial-cyrkulacji'))
+    .map((wiersz) => ({
+      od: wiersz.querySelector('.cyrkulacja-od').value,
+      do: wiersz.querySelector('.cyrkulacja-do').value,
+    }))
+    .filter((p) => p.od && p.do);
+}
+
+function serializujCyrkulacje(przedzialy) {
+  return przedzialy.map((p) => `${p.od}-${p.do}`).join(', ');
+}
+
+function sparsujCyrkulacje(tekst) {
+  if (!tekst) return [];
+  return tekst.split(',').map((kawalek) => kawalek.trim()).filter(Boolean).map((kawalek) => {
+    const [od, do_] = kawalek.split('-').map((s) => s.trim());
+    return { od: od || '', do: do_ || '' };
+  });
+}
+
+async function wczytajOstatnieNastawyKotla() {
+  try {
+    const wynik = await pobierzOstatnieNastawyKotla();
+
+    if (!wynik.ok || wynik.brak) {
+      ostatnieNastawyKotla = null; // pusty arkusz — nie ma punktu odniesienia
+      return;
+    }
+
+    poleTryb.value = wynik.tryb || 'off';
+    poleKrzywa.value = wynik.krzywa_grzewcza ?? '';
+    polePrzesuniecie.value = wynik.przesuniecie ?? '';
+    poleTempCwu.value = wynik.temp_cwu ?? '';
+    listaCyrkulacji.innerHTML = '';
+    sparsujCyrkulacje(wynik.cyrkulacja).forEach((p) => dodajPrzedzialCyrkulacji(p.od, p.do));
+
+    ostatnieNastawyKotla = {
+      tryb: wynik.tryb || 'off',
+      krzywa_grzewcza: String(wynik.krzywa_grzewcza ?? ''),
+      przesuniecie: String(wynik.przesuniecie ?? ''),
+      temp_cwu: String(wynik.temp_cwu ?? ''),
+      cyrkulacja: wynik.cyrkulacja || '',
+    };
+  } catch (blad) {
+    // Offline albo webhook nie odpowiada — zostajemy przy pustym formularzu
+    // i nie blokujemy wysyłki, bo nie mamy z czym porównać.
+    console.error('Nie udało się pobrać poprzednich nastaw kotła:', blad);
+    ostatnieNastawyKotla = null;
+  }
+}
+
+function otworzKociol() {
+  komunikatKotla.classList.add('ukryty');
+  komunikatStart.classList.add('ukryty');
+  poleTryb.value = 'off';
+  poleKrzywa.value = '';
+  polePrzesuniecie.value = '';
+  poleTempCwu.value = '';
+  poleObowiazujeOd.value = sformatujDataGodzinaLokalnie(new Date());
+  listaCyrkulacji.innerHTML = '';
+  ostatnieNastawyKotla = null;
+  pokazEkran(ekranKociol);
+  wczytajOstatnieNastawyKotla();
+}
+
+przyciskKociol.addEventListener('click', () => {
+  if (!czyUstawieniaZapisane()) {
+    otworzUstawienia();
+    return;
+  }
+  otworzKociol();
+});
+
+przyciskAnulujKociol.addEventListener('click', () => {
+  pokazEkran(ekranStart);
+});
+
+formularzKotla.addEventListener('submit', async (zdarzenie) => {
+  zdarzenie.preventDefault();
+
+  const daneKotla = {
+    tryb: poleTryb.value,
+    krzywa_grzewcza: parseFloat(poleKrzywa.value),
+    przesuniecie: parseFloat(polePrzesuniecie.value),
+    temp_cwu: parseFloat(poleTempCwu.value),
+    cyrkulacja: serializujCyrkulacje(odczytajPrzedzialyCyrkulacji()),
+    obowiazuje_od: `${poleObowiazujeOd.value}:00`,
+  };
+
+  const bezZmian = ostatnieNastawyKotla
+    && ostatnieNastawyKotla.tryb === daneKotla.tryb
+    && ostatnieNastawyKotla.krzywa_grzewcza === String(daneKotla.krzywa_grzewcza)
+    && ostatnieNastawyKotla.przesuniecie === String(daneKotla.przesuniecie)
+    && ostatnieNastawyKotla.temp_cwu === String(daneKotla.temp_cwu)
+    && ostatnieNastawyKotla.cyrkulacja === daneKotla.cyrkulacja;
+
+  if (bezZmian) {
+    komunikatKotla.textContent = 'Brak zmian względem poprzednich nastaw — nic nie wysłano.';
+    komunikatKotla.classList.remove('ukryty');
+    return;
+  }
+
+  komunikatKotla.classList.add('ukryty');
+  przyciskZapiszKociol.disabled = true;
+  przyciskZapiszKociol.textContent = 'Wysyłanie…';
+
+  try {
+    const odpowiedz = await zapiszKociol(daneKotla);
+
+    if (!odpowiedz.ok) {
+      komunikatKotla.textContent = odpowiedz.blad || 'Webhook odrzucił zmianę nastaw.';
+      komunikatKotla.classList.remove('ukryty');
+      return;
+    }
+
+    komunikatStart.textContent = `Zapisano zmianę nastaw kotła: ${ETYKIETY_TRYBU[daneKotla.tryb] || daneKotla.tryb}.`;
+    komunikatStart.classList.remove('ukryty');
+    pokazEkran(ekranStart);
+  } catch (blad) {
+    // Brak sieci — jak przy odczytach, dokładamy do wspólnej kolejki offline.
+    console.error('Nie udało się wysłać zmiany nastaw kotła, dokładam do kolejki offline:', blad);
+    dodajDoKolejki({ akcja: 'zmiana_kotla', ...daneKotla });
+    aktualizujKomunikatKolejki();
+    komunikatStart.textContent =
+      'Brak połączenia — zmiana nastaw kotła zapisana lokalnie, wyśle się sama, gdy wróci internet.';
+    komunikatStart.classList.remove('ukryty');
+    pokazEkran(ekranStart);
+  } finally {
+    przyciskZapiszKociol.disabled = false;
+    przyciskZapiszKociol.textContent = 'Zapisz zmianę';
+  }
 });
 
 // Kliknięcie kafelka otwiera ekran potwierdzenia z bieżącą datą i godziną —
@@ -231,11 +410,19 @@ function pokazBladPotwierdzenia(tresc) {
 function aktualizujKomunikatKolejki() {
   const ile = liczbaWKolejce();
   if (ile > 0) {
-    komunikatKolejka.textContent = `W kolejce offline: ${ile} odczytów do wysłania — pójdą same, gdy wróci internet.`;
+    komunikatKolejka.textContent = `W kolejce offline: ${ile} wpisów do wysłania — pójdą same, gdy wróci internet.`;
     komunikatKolejka.classList.remove('ukryty');
   } else {
     komunikatKolejka.classList.add('ukryty');
   }
+}
+
+// Krótki, czytelny opis wpisu z kolejki do komunikatów o wysyłce/odrzuceniu.
+function opiszWpisKolejki(wpis) {
+  if (wpis.akcja === 'zmiana_kotla') {
+    return `Kocioł: ${ETYKIETY_TRYBU[wpis.tryb] || wpis.tryb}`;
+  }
+  return `${(MEDIA[wpis.medium] || {}).nazwa || wpis.medium} ${wpis.stan}`;
 }
 
 // Wysyła po kolei to, co czeka w kolejce offline, od najstarszego wpisu —
@@ -258,7 +445,7 @@ async function przetworzKolejkeOffline() {
       const [pierwszy] = pobierzKolejke();
       let odpowiedz;
       try {
-        odpowiedz = await wyslijOdczyt(pierwszy);
+        odpowiedz = await wyslij(pierwszy);
       } catch (blad) {
         console.error('Kolejka offline: wciąż brak połączenia.', blad);
         break;
@@ -279,14 +466,14 @@ async function przetworzKolejkeOffline() {
 
   if (odrzucone.length > 0) {
     const opis = odrzucone
-      .map((o) => `${(MEDIA[o.medium] || {}).nazwa || o.medium} ${o.stan} (${o.blad})`)
+      .map((o) => `${opiszWpisKolejki(o)} (${o.blad})`)
       .join('; ');
     komunikatStart.textContent =
       `Kolejka offline: wysłano ${wyslanychOk}, odrzucono ${odrzucone.length} — ` +
       `wpisz ponownie ręcznie: ${opis}`;
     komunikatStart.classList.remove('ukryty');
   } else if (wyslanychOk > 0) {
-    komunikatStart.textContent = `Wysłano z kolejki offline: ${wyslanychOk} odczyt(ów).`;
+    komunikatStart.textContent = `Wysłano z kolejki offline: ${wyslanychOk} wpis(ów).`;
     komunikatStart.classList.remove('ukryty');
   }
 }
@@ -328,7 +515,7 @@ formularzPotwierdzenia.addEventListener('submit', async (zdarzenie) => {
     // czekania na zasięg, zapisujemy lokalnie i wysyłamy automatycznie
     // przy najbliższej okazji (patrz js/kolejka.js).
     console.error('Nie udało się wysłać odczytu, dokładam do kolejki offline:', blad);
-    dodajDoKolejki(odczyt);
+    dodajDoKolejki({ akcja: 'odczyt', ...odczyt });
     aktualizujKomunikatKolejki();
     komunikatStart.textContent =
       `Brak połączenia — ${opisMedium.nazwa} ${poleStan.value} ${opisMedium.jednostka} ` +

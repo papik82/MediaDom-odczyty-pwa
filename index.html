@@ -47,6 +47,18 @@
           <span class="kafelek__nazwa">Prąd suma</span>
         </button>
       </div>
+
+      <!-- Kocioł to nie medium do okresowego odczytu, tylko dziennik zmian
+           nastaw — celowo osobna karta poniżej kafelków, nie kolejny kafelek
+           w siatce. -->
+      <button id="przycisk-kociol" class="karta-kociol">
+        <img class="karta-kociol__ikona" src="ikony/kociol.svg" alt="">
+        <span class="karta-kociol__tekst">
+          <span class="karta-kociol__tytul">Kocioł</span>
+          <span class="karta-kociol__opis">Zmiana nastaw</span>
+        </span>
+      </button>
+
       <p id="komunikat-start" class="komunikat-sukces ukryty"></p>
       <p id="komunikat-kolejka" class="komunikat-kolejka ukryty"></p>
     </section>
@@ -90,6 +102,55 @@
           <button type="button" id="przycisk-anuluj-potwierdzenie" class="przycisk-drugorzedny">Anuluj</button>
         </div>
         <p id="komunikat-potwierdzenia" class="komunikat ukryty"></p>
+      </form>
+    </section>
+
+    <!-- Ekran kotła — dziennik zmian nastaw, nie okresowy odczyt. Formularz
+         podpowiada ostatnio zapisane wartości (pobrane z webhooka); wysyłka
+         idzie tylko wtedy, gdy coś faktycznie się różni od tej podpowiedzi. -->
+    <section id="ekran-kociol" class="ekran ukryty">
+      <h2>Kocioł</h2>
+      <form id="formularz-kotla">
+        <label class="pole-formularza">
+          Tryb
+          <select id="pole-tryb">
+            <option value="off">Wyłączony</option>
+            <option value="cwu">CWU</option>
+            <option value="co">CO</option>
+            <option value="cwu_co">CWU + CO</option>
+          </select>
+        </label>
+        <label class="pole-formularza">
+          Krzywa grzewcza
+          <input type="number" id="pole-krzywa" inputmode="decimal" step="0.1" min="0" required>
+        </label>
+        <label class="pole-formularza">
+          Przesunięcie
+          <input type="number" id="pole-przesuniecie" inputmode="numeric" step="1" required>
+        </label>
+        <label class="pole-formularza">
+          Temperatura CWU (°C)
+          <input type="number" id="pole-temp-cwu" inputmode="numeric" step="1" min="0" required>
+        </label>
+
+        <div class="blok-cyrkulacji">
+          <p class="etykieta-cyrkulacji">Cyrkulacja — przedziały czasu</p>
+          <div id="lista-cyrkulacji"></div>
+          <button type="button" id="przycisk-dodaj-przedzial" class="przycisk-drugorzedny">
+            + Dodaj przedział
+          </button>
+        </div>
+
+        <label class="pole-formularza">
+          Obowiązuje od
+          <input type="datetime-local" id="pole-obowiazuje-od" required>
+        </label>
+
+        <div class="przyciski-formularza">
+          <button type="submit" id="przycisk-zapisz-kociol" class="przycisk-glowny">Zapisz zmianę</button>
+          <button type="button" id="przycisk-anuluj-kociol" class="przycisk-drugorzedny">Anuluj</button>
+        </div>
+        <p id="komunikat-kotla" class="komunikat ukryty"></p>
       </form>
     </section>
 
