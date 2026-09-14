@@ -8,11 +8,25 @@
 
   <rect width="512" height="512" rx="112" fill="url(#tlo)"/>
 
-  <!-- Wskazówka miernika — czytelny symbol "odczytu", uniwersalny dla
-       gazu, prądu i wody, prosty przy małych rozmiarach ikony. -->
-  <path d="M136 316 A120 120 0 0 1 376 316" fill="none" stroke="#ffffff"
-        stroke-width="26" stroke-linecap="round"/>
-  <line x1="256" y1="316" x2="322" y2="226" stroke="#ffffff"
+  <!-- Dach — grubość linii jak łuk manometru (26). Linia dachu wypuszczona
+       poza ścianę (okap) o 26 wzdłuż tej samej linii, ta sama grubość co
+       dach. Ściana zaczyna się dokładnie tam, gdzie leżałby nieprzedłużony
+       narożnik dachu (136/376, 211), więc dach wizualnie wystaje ponad nią. -->
+  <path d="M117 229 L256 101 L395 229" fill="none" stroke="#ffffff"
+        stroke-width="26" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Symboliczne ściany, krótkie odcinki zwieszone z dachu, wyraźnie nad
+       łukiem manometru. -->
+  <line x1="136" y1="211" x2="136" y2="269" stroke="#ffffff"
         stroke-width="22" stroke-linecap="round"/>
-  <circle cx="256" cy="316" r="24" fill="#ffffff"/>
+  <line x1="376" y1="211" x2="376" y2="269" stroke="#ffffff"
+        stroke-width="22" stroke-linecap="round"/>
+
+  <!-- Manometr — wskazówka, oś i łuk. Symbol "odczytu", uniwersalny dla
+       gazu, prądu i wody. -->
+  <path d="M136 387 A120 120 0 0 1 376 387" fill="none" stroke="#ffffff"
+        stroke-width="26" stroke-linecap="round"/>
+  <line x1="256" y1="387" x2="303" y2="322" stroke="#ffffff"
+        stroke-width="22" stroke-linecap="round"/>
+  <circle cx="256" cy="387" r="24" fill="#ffffff"/>
 </svg>

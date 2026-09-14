@@ -3,6 +3,16 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.7.2 — 2026-09-14
+
+### Zmienione
+- Ikona aplikacji: dach domu nad manometrem (zamiast samego manometru).
+  Kilka iteracji dopracowanych wspólnie z użytkownikiem — dach wyżej
+  i wyraźnie odsunięty od łuku, krótkie symboliczne ścianki dokładnie nad
+  podstawami łuku (bez dotykania go), strzałka skrócona, żeby nie wchodziła
+  w pas łuku, okap grubości łuku wystający poza ścianę. Manometr sam
+  w sobie bez zmian kształtu/rozmiaru przez całą iterację.
+
 ## 0.7.1 — 2026-09-14
 
 ### Zmienione
