@@ -1,7 +1,7 @@
 // Service worker — cache powłoki aplikacji, żeby PWA dało się otworzyć offline.
 // Wersję trzeba podbić przy każdej zmianie plików z listy PLIKI_POWLOKI,
 // inaczej przeglądarka będzie serwować starą wersję z cache.
-const WERSJA_CACHE = 'odczyty-v14';
+const WERSJA_CACHE = 'odczyty-v15';
 
 const PLIKI_POWLOKI = [
   './',
@@ -47,23 +47,19 @@ self.addEventListener('activate', (zdarzenie) => {
   self.clients.claim();
 });
 
-// Żądania: najpierw cache (offline ma działać natychmiast), w tle spróbuj sieci
-// i zaktualizuj cache, gdyby coś się zmieniło.
+// Żądania: czysty cache-first, bez dopisywania świeżych odpowiedzi do
+// cache w locie. Poprzednia wersja aktualizowała każdy plik osobno w tle,
+// więc telefon mógł dostać mieszankę: nowy index.html z odwołaniami do
+// nowych ikon, ale stary css/styl.css sprzed reguły ich rozmiaru — stąd
+// "olbrzymie ikony" mimo widocznych nowych kształtów. Cache ma się
+// zmieniać wyłącznie całością, przy instalacji nowej wersji (WERSJA_CACHE
+// wyżej) — nigdy pojedynczymi plikami przy okazji zwykłego żądania.
 self.addEventListener('fetch', (zdarzenie) => {
   if (zdarzenie.request.method !== 'GET') return;
 
   zdarzenie.respondWith(
-    caches.match(zdarzenie.request).then((odpowiedzCache) => {
-      const zSieci = fetch(zdarzenie.request)
-        .then((odpowiedzSieci) => {
-          caches.open(WERSJA_CACHE).then((cache) => {
-            cache.put(zdarzenie.request, odpowiedzSieci.clone());
-          });
-          return odpowiedzSieci;
-        })
-        .catch(() => odpowiedzCache);
-
-      return odpowiedzCache || zSieci;
-    })
+    caches.match(zdarzenie.request).then(
+      (odpowiedzCache) => odpowiedzCache || fetch(zdarzenie.request)
+    )
   );
 });

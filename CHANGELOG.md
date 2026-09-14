@@ -3,6 +3,22 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.8.2 — 2026-09-14
+
+### Naprawione
+- **Błąd cache service workera**: strategia „cache-first + aktualizuj w tle”
+  aktualizowała każdy plik osobno przy okazji zwykłych żądań, więc telefon
+  mógł dostać niespójną mieszankę wersji — np. nowy `index.html` (z nowymi
+  ikonami) razem ze starym `css/styl.css` (bez reguły ich rozmiaru) i starym
+  `js/wersja.js` (stąd np. widoczny numer wersji nie zgadzający się z tym,
+  co faktycznie było na ekranie). Objaw zgłoszony przez użytkownika:
+  „olbrzymie” ikony na kafelkach mimo poprawnego kodu w repozytorium.
+  `sw.js` działa teraz na czystym cache-first bez podmiany pojedynczych
+  plików w locie — cache zmienia się wyłącznie całością, przy instalacji
+  nowej wersji. Jeśli telefon nadal pokazuje starą/zepsutą wersję po tej
+  aktualizacji, jednorazowo wyczyść dane strony (albo usuń i dodaj PWA
+  ponownie do ekranu głównego), żeby wyjść ze starego, zepsutego cache.
+
 ## 0.8.1 — 2026-09-14
 
 ### Zmienione
