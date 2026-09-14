@@ -19,6 +19,7 @@ const przyciskGaleria = document.getElementById('przycisk-galeria');
 const przyciskRecznie = document.getElementById('przycisk-recznie');
 const przyciskAnulujWybor = document.getElementById('przycisk-anuluj-wybor');
 const podgladZdjecia = document.getElementById('podglad-zdjecia');
+const przyciskHome = document.getElementById('przycisk-home');
 const przyciskUstawienia = document.getElementById('przycisk-ustawienia');
 const przyciskAnuluj = document.getElementById('przycisk-anuluj');
 const formularzUstawien = document.getElementById('formularz-ustawien');
@@ -71,6 +72,14 @@ function otworzUstawienia() {
 }
 
 przyciskUstawienia.addEventListener('click', otworzUstawienia);
+
+// Przycisk „home” jest widoczny na każdym ekranie i zawsze wraca do
+// kafelków — sprząta podgląd zdjęcia, żeby nie zostawiać wycieku URL-a,
+// gdy ktoś wyjdzie w trakcie robienia zdjęcia.
+przyciskHome.addEventListener('click', () => {
+  zwolnijPodgladZdjecia();
+  pokazEkran(ekranStart);
+});
 
 przyciskAnuluj.addEventListener('click', () => {
   pokazEkran(ekranStart);

@@ -1,7 +1,7 @@
 // Service worker — cache powłoki aplikacji, żeby PWA dało się otworzyć offline.
 // Wersję trzeba podbić przy każdej zmianie plików z listy PLIKI_POWLOKI,
 // inaczej przeglądarka będzie serwować starą wersję z cache.
-const WERSJA_CACHE = 'odczyty-v8';
+const WERSJA_CACHE = 'odczyty-v9';
 
 const PLIKI_POWLOKI = [
   './',

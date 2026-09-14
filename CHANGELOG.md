@@ -3,6 +3,12 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.6.1 — 2026-09-14
+
+### Dodane
+- Przycisk „🏠” w nagłówku, widoczny na każdym ekranie — zawsze wraca do
+  kafelków (sprząta po drodze podgląd zdjęcia, jeśli był otwarty).
+
 ## 0.6.0 — 2026-09-14
 
 ### Zmienione
