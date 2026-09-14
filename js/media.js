@@ -10,5 +10,7 @@ export const MEDIA = {
 };
 
 // Media, dla których ekran startowy ma zaproponować zdjęcie licznika
-// zamiast (albo obok) ręcznego wpisu. Na dziś tylko gaz — zgodnie z CLAUDE.md.
-export const MEDIA_ZE_ZDJECIEM = ['gaz'];
+// zamiast (albo obok) ręcznego wpisu. Rozszerzone z samego gazu na
+// wszystkie media (2026-09-14) — sam mechanizm (wybór metody, aparat,
+// galeria, podgląd) jest generyczny, nie wymagał zmian poza tą listą.
+export const MEDIA_ZE_ZDJECIEM = ['gaz', 'prad_t1', 'prad_t2', 'woda'];

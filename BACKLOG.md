@@ -40,9 +40,10 @@ Wymagania:
 2. [ ] Zdjęcie licznika + automatyczny odczyt wskazania (OCR) — czeka na punkt 6.
 3. [x] Otwarcie istniejącego zdjęcia (z galerii) i ręczne przepisanie z niego.
 
-Ścieżki 1 i 3 działają dla gazu (jedyne medium na liście `MEDIA_ZE_ZDJECIEM`
-w `js/media.js`) — ekran wyboru metody ma „Zrób zdjęcie” / „Wybierz z
-galerii” / „Wpisz ręcznie”. Webhook na razie nie rozróżnia zdjęcia świeżego
+Ścieżki 1 i 3 działają dla wszystkich czterech mediów (2026-09-14 — lista
+`MEDIA_ZE_ZDJECIEM` w `js/media.js` rozszerzona z samego gazu) — ekran
+wyboru metody ma „Zrób zdjęcie” / „Wybierz z galerii” / „Wpisz ręcznie”.
+Webhook na razie nie rozróżnia zdjęcia świeżego
 od wybranego z galerii — obie idą jako `metoda: "foto"`. Poniższe wymagania
 (kolumna `zrodlo`, link do zdjęcia na Dysku) jeszcze nie są zrobione —
 dotyczą zmian w Apps Script, nie tylko w PWA.

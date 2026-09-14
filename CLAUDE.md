@@ -24,20 +24,26 @@ Windows 10, PHPStorm, Claude Code w PowerShell.
 
 | kafelek | kod medium | częstotliwość | wprowadzanie |
 |---|---|---|---|
-| Gaz | `gaz` | codziennie w sezonie grzewczym | **zdjęcie** lub ręcznie |
-| Prąd T1 | `prad_t1` | raz w miesiącu | ręcznie |
-| Prąd T2 | `prad_t2` | raz w miesiącu | ręcznie |
-| Woda | `woda` | raz w miesiącu | ręcznie |
+| Gaz | `gaz` | codziennie w sezonie grzewczym | zdjęcie, galeria lub ręcznie |
+| Prąd T1 | `prad_t1` | raz w miesiącu | zdjęcie, galeria lub ręcznie |
+| Prąd T2 | `prad_t2` | raz w miesiącu | zdjęcie, galeria lub ręcznie |
+| Woda | `woda` | raz w miesiącu | zdjęcie, galeria lub ręcznie |
 
 Taryfy prądu to osobne media, nie warianty jednego — dzięki temu każde ma
 własny poprzedni stan, własną kontrolę chronologii i nie wymaga prowadzenia
 użytkownika przez dwa ujęcia pod rząd.
 
-**Zdjęcie na razie tylko dla gazu.** Pozostałe media wprowadzasz ręcznie.
-Ale moduł aparatu i wywołanie modelu wizyjnego mają przyjmować `medium`
-jako parametr, a lista mediów obsługujących zdjęcie ma być jedną stałą
-w konfiguracji. Dołożenie wodomierza ma wtedy oznaczać dopisanie podpowiedzi
-dla modelu i jednego wpisu na liście — bez przebudowy.
+**Zdjęcie dla wszystkich mediów.** Zaczęło się od samego gazu, potem
+rozszerzone na resztę (2026-09-14) — mechanizm jest generyczny: moduł
+aparatu i lista mediów obsługujących zdjęcie (`MEDIA_ZE_ZDJECIEM` w
+`js/media.js`) przyjmują `medium` jako parametr/wpis, więc rozszerzenie nie
+wymagało przebudowy, tylko dopisania do listy. Ekran wyboru metody ma trzy
+opcje: zrób zdjęcie, wybierz z galerii, wpisz ręcznie. Model wizyjny (OCR)
+na razie nie istnieje — niezależnie od tego, jak zdjęcie powstało, wartość
+zawsze wpisuje się ręcznie, patrząc na podgląd. Podpowiedzi dla modelu
+w Apps Script (patrz niżej) są na dziś wypełnione tylko dla gazu — dołożenie
+ich dla wody i prądu to osobna sprawa, niezależna od tego, że PWA już
+pozwala zrobić im zdjęcie.
 
 **Data i godzina odczytu.** Odczyt nie zawsze wypada o 17:30. Ekran
 potwierdzenia pokazuje bieżącą datę i godzinę wypełnioną automatycznie,
@@ -167,7 +173,8 @@ Wyświetlacz jest odblaskowy, bez podświetlenia, często pod szybką.
 - **Czysty JavaScript, bez frameworków i bez kroku budowania.** GitHub Pages
   serwuje pliki statyczne, a ja uczę się na tym kodzie.
 - Jeden plik HTML, jeden CSS, JavaScript w modułach ES.
-- Aparat przez `<input type="file" accept="image/*" capture="environment">`.
+- Aparat przez `<input type="file" accept="image/*" capture="environment">`;
+  wybór z galerii to ten sam input bez atrybutu `capture`.
 - Zdjęcie zmniejszane w przeglądarce do ok. 1000 px dłuższego boku i kompresowane
   do JPEG jakości 0,8 przed wysyłką — inaczej base64 urośnie do kilku megabajtów
   i Apps Script się na tym wywróci.

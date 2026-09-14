@@ -3,6 +3,18 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.6.0 — 2026-09-14
+
+### Zmienione
+- Ekran wyboru metody (zrób zdjęcie / wybierz z galerii / wpisz ręcznie)
+  rozszerzony z samego gazu na wszystkie cztery media — zmiana jednej
+  stałej `MEDIA_ZE_ZDJECIEM` w `js/media.js`, bez przebudowy reszty
+  aplikacji, dokładnie jak zakładało CLAUDE.md. Model wizyjny (OCR) wciąż
+  nie istnieje (punkt 6) — dla wszystkich mediów wartość na razie wpisuje
+  się ręcznie, patrząc na podgląd zdjęcia.
+- CLAUDE.md zaktualizowane: tabela mediów i opis „zdjęcie tylko dla gazu”
+  odzwierciedlają nową decyzję.
+
 ## 0.5.1 — 2026-09-13
 
 ### Dodane
