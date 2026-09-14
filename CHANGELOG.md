@@ -3,6 +3,27 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.10.0 — 2026-09-14
+
+### Dodane
+- Kolejka offline (punkt 7 planu prac — ostatni z głównego planu z
+  CLAUDE.md). Gdy wysyłka odczytu zawiedzie z powodu braku sieci (nie
+  odrzucenia przez webhook), odczyt trafia do `localStorage`
+  (`js/kolejka.js`) zamiast wymuszać czekanie na zasięg. Wysyłka
+  automatyczna: przy starcie aplikacji i przy każdym powrocie połączenia
+  (`window.addEventListener('online', …)`), zawsze od najstarszego wpisu —
+  webhook sprawdza chronologię per medium, więc kolejność się liczy.
+- Ekran startowy pokazuje, ile odczytów czeka w kolejce. Po wysłaniu:
+  komunikat ile poszło; jeśli webhook odrzucił któryś wpis (np. nieaktualna
+  już chronologia), pole zostaje usunięte z kolejki (dalsze automatyczne
+  próby i tak by nie pomogły) i użytkownik dostaje jasny opis, żeby wpisać
+  go ponownie ręcznie — zamiast cichej utraty albo nieskończonych retry.
+
+Przetestowane: błąd sieci → wpis w kolejce + komunikat; powrót "online" →
+poprawna wysyłka i czyszczenie kolejki; dwa wpisy w kolejce z jednym
+odrzuceniem → zachowana kolejność FIFO, jeden wysłany, drugi zgłoszony
+z powodem odrzucenia.
+
 ## 0.9.0 — 2026-09-14
 
 ### Dodane

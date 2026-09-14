@@ -173,6 +173,18 @@ main {
   color: #b3261e;
 }
 
+/* Ile odczytów czeka w kolejce offline na wysłanie — neutralny,
+   informacyjny ton (nie błąd, nie sukces, tylko "jeszcze w drodze"). */
+.komunikat-kolejka {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: #fff4e0;
+  color: #8a5a00;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
 .komunikat-sukces {
   margin-top: 1.25rem;
   padding: 0.75rem;

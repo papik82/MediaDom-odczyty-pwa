@@ -14,9 +14,9 @@ tego samego w dwóch plikach. Rzeczy już wydane trafiają do
 5. [x] Aparat dla gazu: zdjęcie, zmniejszenie, wysyłka — na razie z ręcznym
    wpisaniem wyniku, bez modelu.
 6. [x] Akcja `odczytaj_foto` w Apps Script i podpięcie Gemini.
-7. [ ] Kolejka offline.
+7. [x] Kolejka offline.
 
-Po punkcie 4 aplikacja jest już użyteczna. Reszta to wygoda.
+Cały plan z CLAUDE.md zrealizowany. Dalsze pomysły — patrz backlog niżej.
 
 ## Backlog — pomysły i decyzje na przyszłość
 

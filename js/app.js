@@ -6,6 +6,7 @@ import { WERSJA_APLIKACJI } from './wersja.js';
 import { MEDIA, MEDIA_ZE_ZDJECIEM } from './media.js';
 import { wyslijOdczyt, rozpoznajZdjecie } from './webhook.js';
 import { zrobZdjecie, wybierzZGalerii, blobDoBase64 } from './aparat.js';
+import { dodajDoKolejki, liczbaWKolejce, pobierzKolejke, usunPierwszyZKolejki } from './kolejka.js';
 
 document.getElementById('numer-wersji').textContent = WERSJA_APLIKACJI;
 
@@ -27,6 +28,7 @@ const poleAdres = document.getElementById('pole-adres');
 const poleToken = document.getElementById('pole-token');
 const komunikatUstawien = document.getElementById('komunikat-ustawien');
 const komunikatStart = document.getElementById('komunikat-start');
+const komunikatKolejka = document.getElementById('komunikat-kolejka');
 const kafelki = document.querySelectorAll('.kafelek');
 
 const potwierdzenieTytul = document.getElementById('potwierdzenie-tytul');
@@ -226,6 +228,69 @@ function pokazBladPotwierdzenia(tresc) {
   komunikatPotwierdzenia.classList.remove('ukryty');
 }
 
+function aktualizujKomunikatKolejki() {
+  const ile = liczbaWKolejce();
+  if (ile > 0) {
+    komunikatKolejka.textContent = `W kolejce offline: ${ile} odczytów do wysłania — pójdą same, gdy wróci internet.`;
+    komunikatKolejka.classList.remove('ukryty');
+  } else {
+    komunikatKolejka.classList.add('ukryty');
+  }
+}
+
+// Wysyła po kolei to, co czeka w kolejce offline, od najstarszego wpisu —
+// webhook sprawdza chronologię per medium, więc kolejność się liczy.
+// Błąd sieci przerywa pętlę (spróbujemy przy następnej okazji); odrzucenie
+// przez webhook (np. nieaktualna już chronologia) usuwa wpis z kolejki —
+// nie da się tego naprawić automatycznym powtórzeniem, więc informujemy
+// zamiast próbować bez końca.
+let przetwarzanieKolejkiWToku = false;
+
+async function przetworzKolejkeOffline() {
+  if (przetwarzanieKolejkiWToku) return;
+  przetwarzanieKolejkiWToku = true;
+
+  let wyslanychOk = 0;
+  const odrzucone = [];
+
+  try {
+    while (pobierzKolejke().length > 0) {
+      const [pierwszy] = pobierzKolejke();
+      let odpowiedz;
+      try {
+        odpowiedz = await wyslijOdczyt(pierwszy);
+      } catch (blad) {
+        console.error('Kolejka offline: wciąż brak połączenia.', blad);
+        break;
+      }
+
+      usunPierwszyZKolejki();
+      if (odpowiedz.ok) {
+        wyslanychOk++;
+      } else {
+        odrzucone.push({ ...pierwszy, blad: odpowiedz.blad });
+      }
+    }
+  } finally {
+    przetwarzanieKolejkiWToku = false;
+  }
+
+  aktualizujKomunikatKolejki();
+
+  if (odrzucone.length > 0) {
+    const opis = odrzucone
+      .map((o) => `${(MEDIA[o.medium] || {}).nazwa || o.medium} ${o.stan} (${o.blad})`)
+      .join('; ');
+    komunikatStart.textContent =
+      `Kolejka offline: wysłano ${wyslanychOk}, odrzucono ${odrzucone.length} — ` +
+      `wpisz ponownie ręcznie: ${opis}`;
+    komunikatStart.classList.remove('ukryty');
+  } else if (wyslanychOk > 0) {
+    komunikatStart.textContent = `Wysłano z kolejki offline: ${wyslanychOk} odczyt(ów).`;
+    komunikatStart.classList.remove('ukryty');
+  }
+}
+
 formularzPotwierdzenia.addEventListener('submit', async (zdarzenie) => {
   zdarzenie.preventDefault();
   const opisMedium = MEDIA[wybraneMedium];
@@ -259,10 +324,18 @@ formularzPotwierdzenia.addEventListener('submit', async (zdarzenie) => {
     zwolnijPodgladZdjecia();
     pokazEkran(ekranStart);
   } catch (blad) {
-    console.error('Nie udało się wysłać odczytu:', blad);
-    pokazBladPotwierdzenia(
-      'Nie udało się wysłać odczytu — sprawdź połączenie z internetem i spróbuj ponownie.'
-    );
+    // Brak sieci (a nie odrzucenie przez webhook) — zamiast zmuszać do
+    // czekania na zasięg, zapisujemy lokalnie i wysyłamy automatycznie
+    // przy najbliższej okazji (patrz js/kolejka.js).
+    console.error('Nie udało się wysłać odczytu, dokładam do kolejki offline:', blad);
+    dodajDoKolejki(odczyt);
+    aktualizujKomunikatKolejki();
+    komunikatStart.textContent =
+      `Brak połączenia — ${opisMedium.nazwa} ${poleStan.value} ${opisMedium.jednostka} ` +
+      'zapisane lokalnie, wyśle się samo, gdy wróci internet.';
+    komunikatStart.classList.remove('ukryty');
+    zwolnijPodgladZdjecia();
+    pokazEkran(ekranStart);
   } finally {
     przyciskZatwierdz.disabled = false;
     przyciskZatwierdz.textContent = 'Zatwierdź';
@@ -275,6 +348,19 @@ pokazEkran(czyUstawieniaZapisane() ? ekranStart : ekranUstawien);
 if (!czyUstawieniaZapisane()) {
   przyciskAnuluj.classList.add('ukryty');
 }
+
+// Kolejka offline: pokaż, ile czeka, i spróbuj wysłać od razu przy starcie
+// (na wypadek, gdyby zasięg wrócił, zanim ktoś znów otworzył aplikację),
+// a potem przy każdym powrocie połączenia — bez czekania na kolejny start.
+aktualizujKomunikatKolejki();
+if (czyUstawieniaZapisane()) {
+  przetworzKolejkeOffline();
+}
+window.addEventListener('online', () => {
+  if (czyUstawieniaZapisane()) {
+    przetworzKolejkeOffline();
+  }
+});
 
 // Rejestracja service workera — pozwala otworzyć aplikację bez zasięgu.
 if ('serviceWorker' in navigator) {
