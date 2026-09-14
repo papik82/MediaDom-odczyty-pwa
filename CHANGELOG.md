@@ -3,6 +3,14 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.7.1 — 2026-09-14
+
+### Zmienione
+- Nowa ikona aplikacji (`ikony/ikona.svg`): zaokrąglony kwadrat w niebieskim
+  gradiencie z prostym białym symbolem wskazówki miernika — czytelny nawet
+  w bardzo małych rozmiarach, bezpieczny w masce kołowej (Android). Zmiana
+  ma znaczenie tylko wizualne, format i użycie pliku bez zmian.
+
 ## 0.7.0 — 2026-09-14
 
 ### Dodane
