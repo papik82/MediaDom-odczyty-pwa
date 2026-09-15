@@ -25,18 +25,26 @@ między sesjami. Nic z poniższego nie jest jeszcze zaimplementowane, chyba
 że przy punkcie jest wyraźna adnotacja „Rozstrzygnięcie”.
 
 ### 1. PWA: wpisy zmiany stanu kotła
-[x] Strona PWA gotowa (2026-09-14) — karta „Kocioł” na ekranie startowym,
-formularz z podpowiedzią ostatnich nastaw (tryb, krzywa grzewcza,
-przesunięcie, temp. CWU, cyrkulacja jako lista przedziałów czasu),
-wysyłka tylko przy faktycznej zmianie, kolejka offline współdzielona
-z odczytami. Kontrakt (`zmiana_kotla` / `ostatni_kociol`) opisany
-w CLAUDE.md — **czeka na dopisanie po stronie Apps Script** (te akcje
-jeszcze nie istnieją na serwerze) i na założenie zakładki `kociol`
-z wierszem nagłówka.
+[x] Zrobione w całości (2026-09-15) — PWA (karta „Kocioł”, formularz
+z podpowiedzią ostatnich nastaw, wysyłka tylko przy faktycznej zmianie,
+kolejka offline współdzielona z odczytami) i Apps Script (`zmiana_kotla` /
+`ostatni_kociol`, zakładka `kociol` z realną strukturą kolumn) działają
+end-to-end — przetestowane wielokrotnie na żywo, bezpośrednio na
+prawdziwym arkuszu, nie tylko mockiem.
+
+Przy okazji tych testów znaleziony i naprawiony osobny, niezwiązany bug:
+kolumna `nr_gaz` w `odczyty` nie wypełniała się dla nowych wpisów z PWA
+(przez co `sezon` też się nie aktualizował) — `zapiszOdczyt` nigdy jej nie
+zapisywał. Patrz punkt 7 (uwaga techniczna) po szczegóły ostatecznego
+rozwiązania.
 
 Otwarte:
-- Formularz podpowiada ostatnio obowiązujące nastawy; zmieniam jedno pole, reszta przepisuje się sama.
-- Wpis powstaje tylko gdy coś się faktycznie zmieniło (to dziennik zmian, nie odczyt okresowy).
+- BUG (zgłoszone 2026-09-15): formularz nie zawsze wypełnia się poprawnie
+  ostatnimi nastawami po otwarciu karty „Kocioł” — do zbadania. Podejrzane
+  miejsca: `otworzKociol()` / `wczytajOstatnieNastawyKotla()` w
+  [js/app.js](js/app.js) — zależność od tego, czy `ostatni_kociol` zdąży
+  odpowiedzieć zanim ekran się pokaże, obsługa `brak`/błędu połączenia,
+  parsowanie `cyrkulacja` (`sparsujCyrkulacje`) dla nietypowych formatów.
 - Konwencja daty: `obowiazuje_od` = moment faktycznej zmiany nastawy, BEZ przesunięcia o jeden odczyt wstecz.
   Uwaga: archiwum ma przesunięcie o jeden odczyt wstecz (wpisy opisywały okres kończący się danym odczytem).
   Stare i nowe wpisy znaczą co innego — wymaga rozstrzygnięcia przy migracji.
@@ -98,3 +106,36 @@ jest większy niż zakładane pół godziny i wpływa na wiarygodność historyc
 Zakładka wypełniana ręcznie (kolumny: data, obszar, opis, status) jako miejsce zrzutu pomysłów z telefonu.
 Docelowo webhook przyjmuje typ `pomysl` i dopisuje wiersz — PWA dostaje pole "notatka".
 Niski priorytet.
+
+### 6. PWA: zakładka podglądu wpisanych odczytów
+Ekran (osobna karta, nie kafelek medium) pokazujący ostatnio zapisane
+odczyty z arkusza — żeby sprawdzić z telefonu, co poszło, bez wchodzenia
+do Arkusza Google.
+
+Wymaga nowej akcji odczytu w Apps Script (np. `lista_odczytow`) — kontrakt
+webhooka na razie zna tylko zapis (`odczyt`) i podpowiedź ostatnich nastaw
+kotła (`ostatni_kociol`), nie ma nic do pobierania historii odczytów.
+Do ustalenia: zakres (np. ostatnie N wpisów na medium, czy z filtrem
+medium), które kolumny pokazać (stan, data_godzina, metoda, przyrost),
+czy wynik ma nadpisywać kolejkę offline czy być z niej niezależny.
+
+### 7. Uwaga techniczna: nie pisz formuł do arkusza przez Apps Script
+Ustalone empirycznie (2026-09-15) przy naprawie kolumny `nr_gaz`
+w `odczyty`: zapis formuły przez `Range.setValue(s)` do wiersza, do
+którego w tym samym wywołaniu webhooka trafiają też dane, kończył się
+błędem parsowania („Błąd analizowania formuły” — formuła widoczna
+nieprzetłumaczona, `#ERROR!` w komórce). Sprawdzone i wykluczone jako
+przyczyna: kolejność `copyTo`/`setValues`, zakres kolumn w `copyTo`,
+`SpreadsheetApp.flush()` po `insertRowsAfter`, format liczbowy komórki
+(był poprawny, nie „Zwykły tekst”), świeżość wiersza (psuło się nawet
+w wierszu istniejącym od dawna). Rzeczywistej przyczyny nie udało się
+jednoznacznie ustalić mimo kilku niezależnych testów bezpośrednio
+w arkuszu na żywo.
+
+Przyjęte rozwiązanie: `nr_gaz` w `odczyty` ma formułę wpisaną ręcznie
+z wyprzedzeniem, na zapas wierszy utrzymywany ręcznie w arkuszu —
+`zapiszOdczyt` pisze tylko do kolumn A-F, nigdy do G.
+
+Dotyczy każdej przyszłej kolumny z formułą w arkuszach, do których pisze
+webhook — np. gdyby `zrodlo` (punkt 2) albo coś w `kociol` miało kiedyś
+być formułą, a nie stałą wartością: ta sama pułapka by tam wróciła.
