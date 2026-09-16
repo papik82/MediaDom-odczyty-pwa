@@ -4,7 +4,10 @@
 import { odczytajUstawienia, zapiszUstawienia, czyUstawieniaZapisane } from './ustawienia.js';
 import { WERSJA_APLIKACJI } from './wersja.js';
 import { MEDIA, MEDIA_ZE_ZDJECIEM } from './media.js';
-import { wyslij, wyslijOdczyt, rozpoznajZdjecie, zapiszKociol, pobierzOstatnieNastawyKotla } from './webhook.js';
+import {
+  wyslij, wyslijOdczyt, rozpoznajZdjecie, zapiszKociol, pobierzOstatnieNastawyKotla,
+  pobierzOstatnieOdczyty, pobierzTemperaturyDobowe,
+} from './webhook.js';
 import { zrobZdjecie, wybierzZGalerii, blobDoBase64 } from './aparat.js';
 import { dodajDoKolejki, liczbaWKolejce, pobierzKolejke, usunPierwszyZKolejki } from './kolejka.js';
 
@@ -56,6 +59,13 @@ const przyciskZapiszKociol = document.getElementById('przycisk-zapisz-kociol');
 const przyciskAnulujKociol = document.getElementById('przycisk-anuluj-kociol');
 const komunikatKotla = document.getElementById('komunikat-kotla');
 
+const ekranPodglad = document.getElementById('ekran-podglad');
+const przyciskPodglad = document.getElementById('przycisk-podglad');
+const przyciskZamknijPodglad = document.getElementById('przycisk-zamknij-podglad');
+const listaOstatnichOdczytow = document.getElementById('lista-ostatnich-odczytow');
+const tabelaTemperatur = document.getElementById('tabela-temperatur');
+const komunikatPodgladu = document.getElementById('komunikat-podgladu');
+
 const ETYKIETY_TRYBU = { off: 'Wyłączony', cwu: 'CWU', co: 'CO', cwu_co: 'CWU + CO' };
 
 // Nastawy pobrane z webhooka przy otwarciu ekranu — punkt odniesienia do
@@ -75,9 +85,12 @@ let adresUrlPodgladuZdjecia = null;
 // poznać, że użytkownik zdążył zamknąć ten ekran (albo otworzyć kolejny),
 // zanim odpowiedź modelu wróciła, i nie wpisywać wyniku w złe miejsce.
 let generacjaPotwierdzenia = 0;
+// Ta sama rola co generacjaKotla/generacjaPotwierdzenia — chroni podgląd
+// przed nadpisaniem przez odpowiedź z poprzedniego, już zamkniętego otwarcia.
+let generacjaPodgladu = 0;
 
 function pokazEkran(ekranDoPokazania) {
-  for (const ekran of [ekranStart, ekranUstawien, ekranWyboruMetody, ekranPotwierdzenia, ekranKociol]) {
+  for (const ekran of [ekranStart, ekranUstawien, ekranWyboruMetody, ekranPotwierdzenia, ekranKociol, ekranPodglad]) {
     ekran.classList.toggle('ukryty', ekran !== ekranDoPokazania);
   }
 }
@@ -298,6 +311,134 @@ przyciskKociol.addEventListener('click', () => {
 });
 
 przyciskAnulujKociol.addEventListener('click', () => {
+  pokazEkran(ekranStart);
+});
+
+// --- Podgląd: ostatnie odczyty i temperatury dobowe (punkt 6 backlogu) ---
+//
+// Wyłącznie do odczytu — dwa niezależne zapytania do webhooka, każde może
+// się nie udać osobno (np. jedno się wczyta, drugie pokaże błąd), więc
+// obsługujemy je niezależnie zamiast jednym wspólnym try/catch.
+
+function formatujDataGodzinePodgladu(tekstIso) {
+  const data = tekstIso ? new Date(tekstIso) : null;
+  if (!data || Number.isNaN(data.getTime())) return tekstIso || '—';
+  const dwieCyfry = (l) => String(l).padStart(2, '0');
+  return `${dwieCyfry(data.getDate())}.${dwieCyfry(data.getMonth() + 1)}.${data.getFullYear()} `
+    + `${dwieCyfry(data.getHours())}:${dwieCyfry(data.getMinutes())}`;
+}
+
+function renderujOstatnieOdczyty(odczyty) {
+  listaOstatnichOdczytow.innerHTML = '';
+
+  if (!odczyty || odczyty.length === 0) {
+    const pusto = document.createElement('p');
+    pusto.className = 'komunikat-pusto';
+    pusto.textContent = 'Brak zapisanych odczytów.';
+    listaOstatnichOdczytow.appendChild(pusto);
+    return;
+  }
+
+  odczyty.forEach((o) => {
+    const opisMedium = MEDIA[o.medium];
+    const wiersz = document.createElement('div');
+    wiersz.className = 'wiersz-odczytu';
+    wiersz.innerHTML = `
+      <span class="wiersz-odczytu__data">${formatujDataGodzinePodgladu(o.data_godzina)}</span>
+      <span class="wiersz-odczytu__medium">${opisMedium ? opisMedium.nazwa : o.medium}</span>
+      <span class="wiersz-odczytu__stan">${o.stan}${opisMedium ? ' ' + opisMedium.jednostka : ''}</span>
+    `;
+    listaOstatnichOdczytow.appendChild(wiersz);
+  });
+}
+
+// Kolumny (czujniki) budujemy z tego, co faktycznie przyszło w danych,
+// zamiast zaszywać nazwy na sztywno — czujników przybywało w przeszłości
+// (patrz historia w temp_doba) i mogą dojść kolejne.
+function renderujTemperaturyDobowe(dni) {
+  tabelaTemperatur.innerHTML = '';
+
+  if (!dni || dni.length === 0) {
+    tabelaTemperatur.innerHTML = '<tr><td class="komunikat-pusto">Brak danych o temperaturach.</td></tr>';
+    return;
+  }
+
+  const czujniki = Array.from(new Set(dni.flatMap((d) => Object.keys(d.czujniki || {})))).sort();
+
+  const naglowek = document.createElement('tr');
+  naglowek.innerHTML = '<th>Data</th>' + czujniki.map((cz) => `<th>${cz}</th>`).join('');
+  const thead = document.createElement('thead');
+  thead.appendChild(naglowek);
+  tabelaTemperatur.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  dni.forEach((d) => {
+    const wiersz = document.createElement('tr');
+    const komorki = czujniki.map((cz) => {
+      const wartosc = d.czujniki ? d.czujniki[cz] : undefined;
+      return `<td>${typeof wartosc === 'number' ? wartosc.toFixed(1) + '°' : '—'}</td>`;
+    }).join('');
+    wiersz.innerHTML = `<td>${d.data}</td>${komorki}`;
+    tbody.appendChild(wiersz);
+  });
+  tabelaTemperatur.appendChild(tbody);
+}
+
+async function otworzPodglad() {
+  komunikatStart.classList.add('ukryty');
+  generacjaPodgladu++;
+  const generacja = generacjaPodgladu;
+
+  listaOstatnichOdczytow.innerHTML = '';
+  tabelaTemperatur.innerHTML = '';
+  komunikatPodgladu.classList.add('ukryty');
+  pokazEkran(ekranPodglad);
+
+  const bledy = [];
+
+  try {
+    const wynik = await pobierzOstatnieOdczyty(15);
+    if (generacja !== generacjaPodgladu) return;
+    if (wynik.ok) {
+      renderujOstatnieOdczyty(wynik.odczyty);
+    } else {
+      bledy.push('odczytów (' + (wynik.blad || 'błąd webhooka') + ')');
+    }
+  } catch (blad) {
+    if (generacja !== generacjaPodgladu) return;
+    console.error('Nie udało się pobrać ostatnich odczytów:', blad);
+    bledy.push('odczytów (brak połączenia)');
+  }
+
+  try {
+    const wynik = await pobierzTemperaturyDobowe(14);
+    if (generacja !== generacjaPodgladu) return;
+    if (wynik.ok) {
+      renderujTemperaturyDobowe(wynik.dni);
+    } else {
+      bledy.push('temperatur (' + (wynik.blad || 'błąd webhooka') + ')');
+    }
+  } catch (blad) {
+    if (generacja !== generacjaPodgladu) return;
+    console.error('Nie udało się pobrać temperatur dobowych:', blad);
+    bledy.push('temperatur (brak połączenia)');
+  }
+
+  if (generacja === generacjaPodgladu && bledy.length > 0) {
+    komunikatPodgladu.textContent = 'Nie udało się wczytać: ' + bledy.join(', ') + '.';
+    komunikatPodgladu.classList.remove('ukryty');
+  }
+}
+
+przyciskPodglad.addEventListener('click', () => {
+  if (!czyUstawieniaZapisane()) {
+    otworzUstawienia();
+    return;
+  }
+  otworzPodglad();
+});
+
+przyciskZamknijPodglad.addEventListener('click', () => {
   pokazEkran(ekranStart);
 });
 

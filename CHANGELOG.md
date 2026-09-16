@@ -3,6 +3,33 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.13.0 — 2026-09-16
+
+### Dodane
+- Nowa karta **„Podgląd”** na ekranie startowym (punkt 6 backlogu) — tylko
+  do odczytu, bez wpływu na kolejkę offline ani zapis danych. Dwa
+  niezależne bloki:
+  - **Ostatnie odczyty** — 15 najnowszych wpisów z `odczyty` (wszystkie
+    media razem, najnowsze pierwsze): data i godzina, medium, stan
+    z jednostką.
+  - **Temperatury dobowe** — ostatnie 14 dni z `temp_doba`, tabela
+    z kolumną na każdy czujnik. Kolumny budowane dynamicznie z danych
+    odpowiedzi (nie na sztywno „parter/pietro/zewn”), więc przyszła zmiana
+    zestawu czujników nie wymaga zmian w PWA.
+  - Każdy blok wczytuje się i może zawieść niezależnie od drugiego —
+    błąd jednego (np. brakująca jeszcze akcja po stronie Apps Script)
+    nie blokuje wyświetlenia drugiego.
+- `js/webhook.js`: `pobierzOstatnieOdczyty(ile)` i `pobierzTemperaturyDobowe(dni)`
+  — akcje `ostatnie_odczyty` / `temperatury_dobowe`, kontrakt opisany
+  w CLAUDE.md. **Czeka na dopisanie po stronie Apps Script.**
+- `ikony/podglad.svg` — nowa ikona (mini wykres słupkowy w kółku, w stylu
+  reszty ikon aplikacji).
+
+Przetestowane z mockowanym fetchem (akcje jeszcze nie istnieją w Apps
+Script): renderowanie listy i tabeli z przykładowymi danymi, dynamiczne
+kolumny czujników, komunikat błędu gdy któraś akcja zawiedzie, pusty stan
+gdy arkusz nie ma jeszcze danych.
+
 ## 0.12.0 — 2026-09-16
 
 ### Zmienione

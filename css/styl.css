@@ -328,6 +328,99 @@ main {
   line-height: 1.4;
 }
 
+/* Ekran podglądu — lista ostatnich odczytów i tabela temperatur dobowych,
+   obie tylko do odczytu (punkt 6 backlogu). */
+.podglad__naglowek {
+  margin: 1.5rem 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.lista-odczytow {
+  margin-top: 0.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.wiersz-odczytu {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+
+.wiersz-odczytu:last-child {
+  border-bottom: none;
+}
+
+.wiersz-odczytu__data {
+  color: #666;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.wiersz-odczytu__medium {
+  font-weight: 600;
+  flex: 1;
+}
+
+.wiersz-odczytu__stan {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.komunikat-pusto {
+  padding: 0.9rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Tabela temperatur — może być szersza niż ekran, gdy czujników przybędzie,
+   więc kontener przewija się w poziomie zamiast łamać układ strony. */
+.tabela-temperatur-kontener {
+  margin-top: 0.5rem;
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.tabela-temperatur {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.tabela-temperatur th,
+.tabela-temperatur td {
+  padding: 0.5rem 0.7rem;
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid #eee;
+}
+
+.tabela-temperatur th:first-child,
+.tabela-temperatur td:first-child {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  background: #fff;
+}
+
+.tabela-temperatur thead th {
+  background: #f4f6f8;
+  font-weight: 600;
+  color: #444;
+}
+
+.tabela-temperatur tr:last-child td {
+  border-bottom: none;
+}
+
 /* Numer wersji — zawsze widoczny na dole, żeby łatwo sprawdzić, czy telefon
    ma najnowszą wersję aplikacji po odświeżeniu. */
 .stopka {

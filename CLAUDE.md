@@ -65,8 +65,9 @@ Apps Script (webhook)  -->  Arkusz Google "Media dom"
     +-->  model wizyjny (klucz API we właściwościach skryptu)
 ```
 
-Backend **już istnieje i działa**. Odczyty i OCR są gotowe; dziennik zmian
-kotła (`zmiana_kotla` / `ostatni_kociol`, patrz niżej) to akcje do dopisania.
+Backend **już istnieje i działa**. Odczyty, OCR i dziennik zmian kotła
+(`zmiana_kotla` / `ostatni_kociol`) są gotowe; podgląd (`ostatnie_odczyty`
+/ `temperatury_dobowe`, patrz niżej) to akcje do dopisania.
 
 ### Istniejąca akcja zapisu
 
@@ -93,7 +94,7 @@ gdy go zabraknie, webhook użyje czasu serwera.
 Odpowiedź: `{ ok, wiersz, poprzedni_stan, przyrost }` albo
 `{ ok: false, blad, wymaga_potwierdzenia }`, gdy stan jest niższy od poprzedniego.
 
-### Akcja do dopisania
+### Akcja odczytaj_foto (rozpoznawanie zdjęcia)
 
 ```json
 { "token": "...", "akcja": "odczytaj_foto",
@@ -140,7 +141,7 @@ dopiero po potwierdzeniu przez użytkownika. Rozdzielenie jest celowe: model
 wizyjny bywa niepewny, licznik ma trzy miejsca po przecinku, a pomyłka na
 ostatniej cyfrze psuje analizy.
 
-### Dziennik zmian kotła — dwie akcje do dopisania (2026-09-14)
+### Dziennik zmian kotła (`zmiana_kotla` / `ostatni_kociol`, gotowe od 2026-09-15)
 
 Kocioł to nie medium do okresowego odczytu, tylko dziennik zmian nastaw —
 osobna karta w PWA (nie kafelek wśród mediów), zapisuje do osobnej zakładki
@@ -199,6 +200,58 @@ pozycji kolumny, nie po nazwie), `przesuniecie`, `temp_cwu`, `cyrkulacja`,
 `tryb`/`krzywa`/`przesuniecie`/`temp_cwu` z `kociol` przez gotowe formuły
 `INDEX/MATCH` po dacie — nowy wiersz w `kociol` wystarczy, żeby `sezon`
 sam się zaktualizował, nic dodatkowego nie trzeba dopisywać.
+
+### Podgląd — dwie akcje do dopisania (2026-09-16)
+
+Osobna karta w PWA (nie kafelek), tylko do odczytu — pokazuje ostatnie
+wpisy z `odczyty` i temperatury dobowe z `temp_doba`, żeby sprawdzić
+z telefonu, co poszło do arkusza, bez wchodzenia do Arkusza Google.
+Dwie niezależne akcje (nie jedna łączona), każda się może udać/zawieść
+osobno.
+
+Ostatnie odczyty:
+
+```json
+{ "token": "...", "akcja": "ostatnie_odczyty", "ile": 15 }
+```
+
+`ile` opcjonalne (webhook domyślnie przyjmuje 15, gdy brak albo nie liczba).
+
+Odpowiedź — najnowsze pierwsze:
+
+```json
+{ "ok": true, "odczyty": [
+  { "data_godzina": "2026-09-15T22:30:00", "medium": "gaz", "stan": 95.099,
+    "metoda": "reczny", "uwagi": "" }
+] }
+```
+
+Temperatury dobowe:
+
+```json
+{ "token": "...", "akcja": "temperatury_dobowe", "dni": 14 }
+```
+
+`dni` opcjonalne (domyślnie 14 — stąd "ostatnie dwa tygodnie" w PWA).
+Odpowiedź — najnowsze dni pierwsze, jeden wpis na dzień z temperaturami
+wszystkich czujników z tego dnia w jednym obiekcie:
+
+```json
+{ "ok": true, "dni": [
+  { "data": "2026-09-10", "czujniki": { "parter": 25.20, "pietro": 25.52, "zewn": 14.57 } }
+] }
+```
+
+Nazwy i liczba czujników **nie są zaszyte na sztywno** — PWA buduje kolumny
+tabeli z tego, co faktycznie przyjdzie w odpowiedzi (`temp_doba` miało
+w przeszłości różny zestaw czujników: `parter`+`zewn`, potem samo `zewn`,
+teraz `parter`+`pietro`+`zewn` — patrz historia arkusza). `temp_doba` jest
+wypełniane przez osobny, już istniejący skrypt Apps Script ("Media dom —
+przeliczanie temperatur", inny plik w tym samym projekcie) — te dwie nowe
+akcje tylko czytają, nic tam nie zapisują.
+
+Gdy któraś akcja się nie uda, PWA pokazuje błąd tylko dla tej części ekranu,
+druga (jeśli się udała) i tak się wyświetla.
 
 ---
 
@@ -259,7 +312,7 @@ Wyświetlacz jest odblaskowy, bez podświetlenia, często pod szybką.
 │   ├── app.js             sterowanie wszystkimi ekranami
 │   ├── ustawienia.js      adres webhooka i token w localStorage
 │   ├── media.js           metadane mediów (nazwa, jednostka, zdjęcie: tak/nie)
-│   ├── webhook.js         komunikacja z Apps Script (odczyt, OCR, kocioł)
+│   ├── webhook.js         komunikacja z Apps Script (odczyt, OCR, kocioł, podgląd)
 │   ├── aparat.js          zdjęcie: aparat/galeria, zmniejszanie, base64
 │   └── kolejka.js         kolejka offline w localStorage (odczyty i kocioł)
 ├── ikony/                 SVG w jednym stylu (ikona aplikacji + ikony UI)

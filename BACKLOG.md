@@ -112,17 +112,22 @@ Zakładka wypełniana ręcznie (kolumny: data, obszar, opis, status) jako miejsc
 Docelowo webhook przyjmuje typ `pomysl` i dopisuje wiersz — PWA dostaje pole "notatka".
 Niski priorytet.
 
-### 6. PWA: zakładka podglądu wpisanych odczytów
-Ekran (osobna karta, nie kafelek medium) pokazujący ostatnio zapisane
-odczyty z arkusza — żeby sprawdzić z telefonu, co poszło, bez wchodzenia
-do Arkusza Google.
+### 6. PWA: zakładka podglądu wpisanych odczytów i temperatur
+[x] Strona PWA gotowa (2026-09-16) — karta „Podgląd” na ekranie startowym
+(ta sama konwencja co Kocioł), dwa niezależne bloki: lista ostatnich 15
+odczytów (wszystkie media razem, najnowsze pierwsze) i tabela temperatur
+dobowych z ostatnich 14 dni (kolumna na czujnik — nazwy/liczba czujników
+budowane z tego, co przyjdzie z webhooka, nie na sztywno). Każdy blok
+wczytuje się i zawodzi niezależnie od drugiego. Kontrakt
+(`ostatnie_odczyty` / `temperatury_dobowe`) opisany w CLAUDE.md —
+**czeka na dopisanie po stronie Apps Script** (te akcje jeszcze nie
+istnieją na serwerze; obie tylko czytają, `temp_doba` już istnieje
+i jest wypełniane przez osobny, wcześniej istniejący skrypt).
 
-Wymaga nowej akcji odczytu w Apps Script (np. `lista_odczytow`) — kontrakt
-webhooka na razie zna tylko zapis (`odczyt`) i podpowiedź ostatnich nastaw
-kotła (`ostatni_kociol`), nie ma nic do pobierania historii odczytów.
-Do ustalenia: zakres (np. ostatnie N wpisów na medium, czy z filtrem
-medium), które kolumny pokazać (stan, data_godzina, metoda, przyrost),
-czy wynik ma nadpisywać kolejkę offline czy być z niej niezależny.
+Świadomie pominięte na razie (można dołożyć później, gdy zajdzie potrzeba):
+filtrowanie po medium, kolumna `przyrost` w liście odczytów, wykres zamiast
+tabeli dla temperatur, edycja/usuwanie wpisów z tego ekranu (to tylko
+podgląd, nie zarządzanie danymi).
 
 ### 7. Uwaga techniczna: nie pisz formuł do arkusza przez Apps Script
 Ustalone empirycznie (2026-09-15) przy naprawie kolumny `nr_gaz`
