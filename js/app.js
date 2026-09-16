@@ -61,6 +61,10 @@ const ETYKIETY_TRYBU = { off: 'Wyłączony', cwu: 'CWU', co: 'CO', cwu_co: 'CWU 
 // null = brak punktu odniesienia (pusty arkusz albo offline) — wtedy nie
 // blokujemy wysyłki, bo nie ma z czym porównać.
 let ostatnieNastawyKotla = null;
+// Rośnie przy każdym otwarciu karty „Kocioł” — pozwala wczytajOstatnieNastawyKotla
+// poznać, że użytkownik zdążył zamknąć/otworzyć ekran ponownie, zanim
+// odpowiedź webhooka wróciła, i nie nadpisywać pól nieaktualną odpowiedzią.
+let generacjaKotla = 0;
 
 let wybraneMedium = null;
 let metodaAktualnegoOdczytu = 'reczny';
@@ -184,9 +188,28 @@ function sparsujCyrkulacje(tekst) {
   });
 }
 
-async function wczytajOstatnieNastawyKotla() {
+// Blokuje pola formularza na czas wczytywania podpowiedzi — bez tego,
+// na wolniejszym połączeniu, użytkownik mógł zdążyć coś wpisać zanim
+// odpowiedź webhooka przyszła i po cichu nadpisała jego wpis.
+function ustawWczytywanieKotla(wTrakcie) {
+  poleTryb.disabled = wTrakcie;
+  poleKrzywa.disabled = wTrakcie;
+  polePrzesuniecie.disabled = wTrakcie;
+  poleTempCwu.disabled = wTrakcie;
+  przyciskDodajPrzedzial.disabled = wTrakcie;
+  przyciskZapiszKociol.disabled = wTrakcie;
+  if (wTrakcie) {
+    komunikatKotla.textContent = 'Wczytywanie ostatnich nastaw…';
+    komunikatKotla.classList.remove('ukryty');
+  } else {
+    komunikatKotla.classList.add('ukryty');
+  }
+}
+
+async function wczytajOstatnieNastawyKotla(generacja) {
   try {
     const wynik = await pobierzOstatnieNastawyKotla();
+    if (generacja !== generacjaKotla) return; // ekran zdążył się zmienić
 
     if (!wynik.ok || wynik.brak) {
       ostatnieNastawyKotla = null; // pusty arkusz — nie ma punktu odniesienia
@@ -210,14 +233,17 @@ async function wczytajOstatnieNastawyKotla() {
   } catch (blad) {
     // Offline albo webhook nie odpowiada — zostajemy przy pustym formularzu
     // i nie blokujemy wysyłki, bo nie mamy z czym porównać.
+    if (generacja !== generacjaKotla) return;
     console.error('Nie udało się pobrać poprzednich nastaw kotła:', blad);
     ostatnieNastawyKotla = null;
+  } finally {
+    if (generacja === generacjaKotla) ustawWczytywanieKotla(false);
   }
 }
 
 function otworzKociol() {
-  komunikatKotla.classList.add('ukryty');
   komunikatStart.classList.add('ukryty');
+  generacjaKotla++;
   poleTryb.value = 'off';
   poleKrzywa.value = '';
   polePrzesuniecie.value = '';
@@ -226,7 +252,8 @@ function otworzKociol() {
   listaCyrkulacji.innerHTML = '';
   ostatnieNastawyKotla = null;
   pokazEkran(ekranKociol);
-  wczytajOstatnieNastawyKotla();
+  ustawWczytywanieKotla(true);
+  wczytajOstatnieNastawyKotla(generacjaKotla);
 }
 
 przyciskKociol.addEventListener('click', () => {

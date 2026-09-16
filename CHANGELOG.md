@@ -3,6 +3,19 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.11.2 — 2026-09-16
+
+### Naprawione
+- Formularz „Kocioł” pokazywał domyślne, puste pola natychmiast po otwarciu,
+  a podpowiedź ostatnich nastaw (`ostatni_kociol`) wypełniała je dopiero po
+  odpowiedzi webhooka — bez oczekiwania i bez zabezpieczenia. Na wolniejszym
+  połączeniu użytkownik mógł zdążyć zacząć wpisywać wartości, które
+  spóźniona odpowiedź po cichu nadpisywała (zgłoszony bug: „formularz nie
+  zawsze wypełnia się poprawnie”). Teraz pola są zablokowane z komunikatem
+  „Wczytywanie ostatnich nastaw…” do czasu odpowiedzi, a licznik generacji
+  (analogicznie do `generacjaPotwierdzenia` przy OCR zdjęć) chroni przed
+  nadpisaniem nowszego stanu przez nieaktualną, spóźnioną odpowiedź.
+
 ## 0.11.1 — 2026-09-14
 
 ### Zmienione

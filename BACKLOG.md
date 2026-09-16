@@ -38,13 +38,18 @@ kolumna `nr_gaz` w `odczyty` nie wypełniała się dla nowych wpisów z PWA
 zapisywał. Patrz punkt 7 (uwaga techniczna) po szczegóły ostatecznego
 rozwiązania.
 
+[x] BUG naprawiony (2026-09-16): przyczyną było to, że `otworzKociol()`
+pokazywał ekran z pustymi/domyślnymi polami natychmiast, a podpowiedź
+z `ostatni_kociol` wypełniała je dopiero po odpowiedzi webhooka — bez
+oczekiwania i bez ochrony przed nieaktualną odpowiedzią. Na wolniejszym
+połączeniu użytkownik mógł zdążyć coś wpisać, zanim spóźniona odpowiedź to
+po cichu nadpisała. Naprawione: pola blokują się z komunikatem
+„Wczytywanie ostatnich nastaw…” do czasu odpowiedzi, plus licznik generacji
+(wzorem `generacjaPotwierdzenia` z ekranu OCR) chroni przed nadpisaniem
+przez spóźnioną, nieaktualną odpowiedź przy szybkim ponownym otwarciu
+ekranu. Zweryfikowane w przeglądarce (opóźniony i wyścigowy fetch).
+
 Otwarte:
-- BUG (zgłoszone 2026-09-15): formularz nie zawsze wypełnia się poprawnie
-  ostatnimi nastawami po otwarciu karty „Kocioł” — do zbadania. Podejrzane
-  miejsca: `otworzKociol()` / `wczytajOstatnieNastawyKotla()` w
-  [js/app.js](js/app.js) — zależność od tego, czy `ostatni_kociol` zdąży
-  odpowiedzieć zanim ekran się pokaże, obsługa `brak`/błędu połączenia,
-  parsowanie `cyrkulacja` (`sparsujCyrkulacje`) dla nietypowych formatów.
 - Konwencja daty: `obowiazuje_od` = moment faktycznej zmiany nastawy, BEZ przesunięcia o jeden odczyt wstecz.
   Uwaga: archiwum ma przesunięcie o jeden odczyt wstecz (wpisy opisywały okres kończący się danym odczytem).
   Stare i nowe wpisy znaczą co innego — wymaga rozstrzygnięcia przy migracji.
@@ -139,3 +144,16 @@ z wyprzedzeniem, na zapas wierszy utrzymywany ręcznie w arkuszu —
 Dotyczy każdej przyszłej kolumny z formułą w arkuszach, do których pisze
 webhook — np. gdyby `zrodlo` (punkt 2) albo coś w `kociol` miało kiedyś
 być formułą, a nie stałą wartością: ta sama pułapka by tam wróciła.
+
+### 8. Pomysł organizacyjny: pliki Apps Script w folderze projektu
+Trzymać źródła Apps Script (webhook) jako pliki `.js`/`.gs` w repo PWA,
+zamiast tylko w edytorze Apps Script online — Claude mógłby je samodzielnie
+czytać i modyfikować lokalnie, a gotowe zmiany użytkownik ręcznie
+przenosiłby (wklejał) do Apps Script w Google.
+
+Do ustalenia: gdzie w strukturze katalogów (osobny folder np.
+`apps-script/`, poza `js/`, bo to inny runtime — V8 Apps Script, nie
+przeglądarka), czy trzymać tam też podpowiedzi dla modelu wizyjnego
+(słownik kluczowany medium, patrz CLAUDE.md), i czy/jak pilnować, żeby
+kopia w repo nie rozjechała się z tym, co faktycznie wdrożone w Google
+(ręczne przenoszenie = ryzyko, że repo pokazuje starszą wersję niż produkcja).
