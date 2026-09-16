@@ -207,6 +207,56 @@ main {
   border-radius: 8px;
 }
 
+/* Segmentowy przełącznik trybu kotła — czytelniejszy i szybszy w obsłudze
+   kciukiem niż natywny <select>: cztery równe segmenty w jednym rzędzie,
+   z przesuwającym się wskaźnikiem (pozycja/szerokość liczona w JS na
+   podstawie realnego położenia przycisku — niezależnie od paddingów). */
+.segment-tryb {
+  position: relative;
+  display: flex;
+  margin-top: 0.4rem;
+  padding: 3px;
+  background: #e3e7ec;
+  border-radius: 12px;
+}
+
+.segment-tryb__wskaznik {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  width: 0;
+  background: #1565c0;
+  border-radius: 9px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease, width 0.25s ease;
+}
+
+.segment-tryb__opcja {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding: 0.6rem 0.25rem;
+  border: none;
+  background: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a4a4a;
+  border-radius: 9px;
+  cursor: pointer;
+  text-align: center;
+  transition: color 0.2s ease;
+}
+
+.segment-tryb__opcja[aria-checked="true"] {
+  color: #fff;
+}
+
+.segment-tryb__opcja:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .przyciski-formularza {
   display: flex;
   flex-direction: column;

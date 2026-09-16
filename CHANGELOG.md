@@ -3,6 +3,20 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.12.0 — 2026-09-16
+
+### Zmienione
+- Pole „Tryb” w formularzu kotła zastąpione segmentowym przełącznikiem
+  (cztery przyciski w jednym rzędzie: Wył./CWU/CO/CWU+CO) zamiast natywnego
+  `<select>` — czytelniejsze i szybsze w obsłudze kciukiem, z przesuwającym
+  się wskaźnikiem pod aktualnie wybraną opcją, stylistycznie dopasowanym do
+  koloru przewodniego aplikacji. Pozycja i szerokość wskaźnika liczone
+  w `js/app.js` z realnych wymiarów przycisku (`offsetLeft`/`offsetWidth`),
+  nie ze sztywnych procentów, więc nie rozjedzie się przy innej szerokości
+  ekranu. Reszta logiki formularza (podpowiedź ostatnich nastaw, blokada
+  na czas wczytywania, wykrywanie zmian) bez zmian — `pole-tryb` zastąpione
+  przez `segment-tryb` z tym samym miejscem w przepływie danych.
+
 ## 0.11.2 — 2026-09-16
 
 ### Naprawione

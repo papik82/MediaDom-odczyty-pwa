@@ -111,15 +111,16 @@
     <section id="ekran-kociol" class="ekran ukryty">
       <h2>Kocioł</h2>
       <form id="formularz-kotla">
-        <label class="pole-formularza">
+        <div class="pole-formularza">
           Tryb
-          <select id="pole-tryb">
-            <option value="off">Wyłączony</option>
-            <option value="cwu">CWU</option>
-            <option value="co">CO</option>
-            <option value="cwu_co">CWU + CO</option>
-          </select>
-        </label>
+          <div class="segment-tryb" id="segment-tryb" role="radiogroup" aria-label="Tryb pracy kotła">
+            <span class="segment-tryb__wskaznik" aria-hidden="true"></span>
+            <button type="button" class="segment-tryb__opcja" data-wartosc="off" role="radio" aria-checked="true">Wył.</button>
+            <button type="button" class="segment-tryb__opcja" data-wartosc="cwu" role="radio" aria-checked="false">CWU</button>
+            <button type="button" class="segment-tryb__opcja" data-wartosc="co" role="radio" aria-checked="false">CO</button>
+            <button type="button" class="segment-tryb__opcja" data-wartosc="cwu_co" role="radio" aria-checked="false">CWU+CO</button>
+          </div>
+        </div>
         <label class="pole-formularza">
           Krzywa grzewcza (puste przy samym CWU)
           <input type="number" id="pole-krzywa" inputmode="decimal" step="0.1" min="0">

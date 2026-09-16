@@ -43,7 +43,9 @@ const komunikatPotwierdzenia = document.getElementById('komunikat-potwierdzenia'
 const ekranKociol = document.getElementById('ekran-kociol');
 const przyciskKociol = document.getElementById('przycisk-kociol');
 const formularzKotla = document.getElementById('formularz-kotla');
-const poleTryb = document.getElementById('pole-tryb');
+const segmentTryb = document.getElementById('segment-tryb');
+const wskaznikTrybu = segmentTryb.querySelector('.segment-tryb__wskaznik');
+const opcjeTrybu = Array.from(segmentTryb.querySelectorAll('.segment-tryb__opcja'));
 const poleKrzywa = document.getElementById('pole-krzywa');
 const polePrzesuniecie = document.getElementById('pole-przesuniecie');
 const poleTempCwu = document.getElementById('pole-temp-cwu');
@@ -133,6 +135,34 @@ formularzUstawien.addEventListener('submit', (zdarzenie) => {
 // przedziałów w jednej dobie sklejamy przecinkiem — to już nasze rozszerzenie,
 // w archiwum każdy wiersz miał tylko jeden przedział.
 
+// Segmentowy przełącznik trybu (zastępuje dawny <select>) — jeden przycisk
+// jest zaznaczony (aria-checked), a przesuwany wskaźnik pod spodem dojeżdża
+// pod jego realną pozycję. Liczymy ją z offsetLeft/offsetWidth przycisku
+// zamiast ze sztywnych procentów, żeby nie rozjechało się przy zmianie
+// szerokości ekranu czy długości etykiet.
+function przesunWskaznikTrybu(przycisk) {
+  wskaznikTrybu.style.width = `${przycisk.offsetWidth}px`;
+  wskaznikTrybu.style.transform = `translateX(${przycisk.offsetLeft}px)`;
+}
+
+function ustawTryb(wartosc) {
+  const wybrany = opcjeTrybu.find((p) => p.dataset.wartosc === wartosc) || opcjeTrybu[0];
+  opcjeTrybu.forEach((p) => p.setAttribute('aria-checked', String(p === wybrany)));
+  przesunWskaznikTrybu(wybrany);
+}
+
+function pobierzTryb() {
+  return (opcjeTrybu.find((p) => p.getAttribute('aria-checked') === 'true') || opcjeTrybu[0]).dataset.wartosc;
+}
+
+opcjeTrybu.forEach((przycisk) => {
+  przycisk.addEventListener('click', () => ustawTryb(przycisk.dataset.wartosc));
+});
+
+// Przy starcie wskaźnik musi trafić pod domyślnie zaznaczony przycisk —
+// bez tego stałby w lewym górnym rogu (szerokość/pozycja z JS, nie CSS).
+ustawTryb('off');
+
 // <input type="time"> wymaga dwucyfrowej godziny (value="04:30"), więc przy
 // wczytywaniu z arkusza ("4:30") trzeba ją dopełnić zerem — inaczej
 // przeglądarka po cichu zignoruje wartość i pole zostanie puste.
@@ -192,7 +222,7 @@ function sparsujCyrkulacje(tekst) {
 // na wolniejszym połączeniu, użytkownik mógł zdążyć coś wpisać zanim
 // odpowiedź webhooka przyszła i po cichu nadpisała jego wpis.
 function ustawWczytywanieKotla(wTrakcie) {
-  poleTryb.disabled = wTrakcie;
+  opcjeTrybu.forEach((p) => { p.disabled = wTrakcie; });
   poleKrzywa.disabled = wTrakcie;
   polePrzesuniecie.disabled = wTrakcie;
   poleTempCwu.disabled = wTrakcie;
@@ -216,7 +246,7 @@ async function wczytajOstatnieNastawyKotla(generacja) {
       return;
     }
 
-    poleTryb.value = wynik.tryb || 'off';
+    ustawTryb(wynik.tryb || 'off');
     poleKrzywa.value = wynik.krzywa_grzewcza ?? '';
     polePrzesuniecie.value = wynik.przesuniecie ?? '';
     poleTempCwu.value = wynik.temp_cwu ?? '';
@@ -244,7 +274,6 @@ async function wczytajOstatnieNastawyKotla(generacja) {
 function otworzKociol() {
   komunikatStart.classList.add('ukryty');
   generacjaKotla++;
-  poleTryb.value = 'off';
   poleKrzywa.value = '';
   polePrzesuniecie.value = '';
   poleTempCwu.value = '';
@@ -252,6 +281,10 @@ function otworzKociol() {
   listaCyrkulacji.innerHTML = '';
   ostatnieNastawyKotla = null;
   pokazEkran(ekranKociol);
+  // Wskaźnik trybu liczy swoją pozycję z realnych wymiarów przycisku
+  // (offsetLeft/offsetWidth) — musi więc zostać ustawiony PO pokazEkran,
+  // bo ukryty (display: none) ekran zwraca zerowe wymiary.
+  ustawTryb('off');
   ustawWczytywanieKotla(true);
   wczytajOstatnieNastawyKotla(generacjaKotla);
 }
@@ -286,7 +319,7 @@ formularzKotla.addEventListener('submit', async (zdarzenie) => {
   zdarzenie.preventDefault();
 
   const daneKotla = {
-    tryb: poleTryb.value,
+    tryb: pobierzTryb(),
     krzywa_grzewcza: liczbaAlboNull(poleKrzywa.value),
     przesuniecie: liczbaAlboNull(polePrzesuniecie.value),
     temp_cwu: liczbaAlboNull(poleTempCwu.value),
