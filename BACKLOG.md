@@ -113,11 +113,12 @@ Docelowo webhook przyjmuje typ `pomysl` i dopisuje wiersz — PWA dostaje pole "
 Niski priorytet.
 
 ### 6. PWA: zakładka podglądu wpisanych odczytów i temperatur
-[x] Zrobione w całości (2026-09-16) — karta „Podgląd” na ekranie startowym
-(ta sama konwencja co Kocioł), dwa niezależne bloki: lista ostatnich 15
-odczytów (wszystkie media razem, najnowsze pierwsze) i tabela temperatur
-dobowych z ostatnich 14 dni (kolumna na czujnik — nazwy/liczba czujników
-budowane z tego, co przyjdzie z webhooka, nie na sztywno). Każdy blok
+[x] Zrobione w całości (2026-09-16, zakres rozszerzony do miesiąca tego
+samego dnia) — karta „Podgląd” na ekranie startowym (ta sama konwencja co
+Kocioł), dwa niezależne bloki: lista ostatnich 30 odczytów (wszystkie
+media razem, najnowsze pierwsze) i tabela temperatur dobowych z ostatniego
+miesiąca (kolumna na czujnik — nazwy/liczba czujników budowane z tego,
+co przyjdzie z webhooka, nie na sztywno). Każdy blok
 wczytuje się i zawodzi niezależnie od drugiego. Kontrakt
 (`ostatnie_odczyty` / `temperatury_dobowe`) opisany w CLAUDE.md — wdrożony
 i zweryfikowany na żywo: oba zapytania zwracają prawdziwe dane z arkusza,

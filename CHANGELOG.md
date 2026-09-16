@@ -3,6 +3,17 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.13.1 — 2026-09-16
+
+### Zmienione
+- Zakres ekranu „Podgląd” rozszerzony z dwóch tygodni do miesiąca: lista
+  ostatnich odczytów pokazuje teraz 30 wpisów (było 15), a tabela
+  temperatur dobowych obejmuje ostatnie 30 dni (było 14) — nagłówek
+  zmieniony na „ostatni miesiąc”. Zmiana wyłącznie po stronie PWA
+  (`js/app.js`, `js/webhook.js`) — istniejące akcje `ostatnie_odczyty`
+  i `temperatury_dobowe` już przyjmowały parametr z liczbą, więc backend
+  nie wymagał zmian.
+
 ## 0.13.0 — 2026-09-16
 
 ### Dodane

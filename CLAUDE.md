@@ -212,10 +212,11 @@ osobno.
 Ostatnie odczyty:
 
 ```json
-{ "token": "...", "akcja": "ostatnie_odczyty", "ile": 15 }
+{ "token": "...", "akcja": "ostatnie_odczyty", "ile": 30 }
 ```
 
-`ile` opcjonalne (webhook domyślnie przyjmuje 15, gdy brak albo nie liczba).
+`ile` opcjonalne (webhook domyślnie przyjmuje 15, gdy brak albo nie liczba;
+PWA zawsze wysyła jawnie 30 — ok. miesiąc wpisów).
 
 Odpowiedź — najnowsze pierwsze:
 
@@ -229,10 +230,11 @@ Odpowiedź — najnowsze pierwsze:
 Temperatury dobowe:
 
 ```json
-{ "token": "...", "akcja": "temperatury_dobowe", "dni": 14 }
+{ "token": "...", "akcja": "temperatury_dobowe", "dni": 30 }
 ```
 
-`dni` opcjonalne (domyślnie 14 — stąd "ostatnie dwa tygodnie" w PWA).
+`dni` opcjonalne (webhook domyślnie przyjmuje 14, gdy brak albo nie liczba;
+PWA zawsze wysyła jawnie 30 — stąd "ostatni miesiąc" w interfejsie).
 Odpowiedź — najnowsze dni pierwsze, jeden wpis na dzień z temperaturami
 wszystkich czujników z tego dnia w jednym obiekcie:
 

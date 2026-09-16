@@ -397,7 +397,7 @@ async function otworzPodglad() {
   const bledy = [];
 
   try {
-    const wynik = await pobierzOstatnieOdczyty(15);
+    const wynik = await pobierzOstatnieOdczyty(30);
     if (generacja !== generacjaPodgladu) return;
     if (wynik.ok) {
       renderujOstatnieOdczyty(wynik.odczyty);
@@ -411,7 +411,7 @@ async function otworzPodglad() {
   }
 
   try {
-    const wynik = await pobierzTemperaturyDobowe(14);
+    const wynik = await pobierzTemperaturyDobowe(30);
     if (generacja !== generacjaPodgladu) return;
     if (wynik.ok) {
       renderujTemperaturyDobowe(wynik.dni);

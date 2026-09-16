@@ -58,10 +58,10 @@ export function pobierzOstatnieNastawyKotla() {
 // Ekran podglądu (punkt 6 backlogu) — tylko do odczytu, dwa niezależne
 // zapytania zamiast jednego łączonego: każde ma swój, prosty kontrakt,
 // tak jak reszta akcji w tym pliku.
-export function pobierzOstatnieOdczyty(ile = 15) {
+export function pobierzOstatnieOdczyty(ile = 30) {
   return wyslij({ akcja: 'ostatnie_odczyty', ile });
 }
 
-export function pobierzTemperaturyDobowe(dni = 14) {
+export function pobierzTemperaturyDobowe(dni = 30) {
   return wyslij({ akcja: 'temperatury_dobowe', dni });
 }
