@@ -65,9 +65,9 @@ Apps Script (webhook)  -->  Arkusz Google "Media dom"
     +-->  model wizyjny (klucz API we właściwościach skryptu)
 ```
 
-Backend **już istnieje i działa**. Odczyty, OCR i dziennik zmian kotła
-(`zmiana_kotla` / `ostatni_kociol`) są gotowe; podgląd (`ostatnie_odczyty`
-/ `temperatury_dobowe`, patrz niżej) to akcje do dopisania.
+Backend **już istnieje i działa**. Odczyty, OCR, dziennik zmian kotła
+(`zmiana_kotla` / `ostatni_kociol`) i podgląd (`ostatnie_odczyty` /
+`temperatury_dobowe`) są gotowe i zweryfikowane na żywo.
 
 ### Istniejąca akcja zapisu
 
@@ -201,7 +201,7 @@ pozycji kolumny, nie po nazwie), `przesuniecie`, `temp_cwu`, `cyrkulacja`,
 `INDEX/MATCH` po dacie — nowy wiersz w `kociol` wystarczy, żeby `sezon`
 sam się zaktualizował, nic dodatkowego nie trzeba dopisywać.
 
-### Podgląd — dwie akcje do dopisania (2026-09-16)
+### Podgląd (`ostatnie_odczyty` / `temperatury_dobowe`, gotowe od 2026-09-16)
 
 Osobna karta w PWA (nie kafelek), tylko do odczytu — pokazuje ostatnie
 wpisy z `odczyty` i temperatury dobowe z `temp_doba`, żeby sprawdzić

@@ -17,18 +17,17 @@ zgodne z numerem w `js/wersja.js`.
     odpowiedzi (nie na sztywno „parter/pietro/zewn”), więc przyszła zmiana
     zestawu czujników nie wymaga zmian w PWA.
   - Każdy blok wczytuje się i może zawieść niezależnie od drugiego —
-    błąd jednego (np. brakująca jeszcze akcja po stronie Apps Script)
-    nie blokuje wyświetlenia drugiego.
+    błąd jednego nie blokuje wyświetlenia drugiego.
 - `js/webhook.js`: `pobierzOstatnieOdczyty(ile)` i `pobierzTemperaturyDobowe(dni)`
   — akcje `ostatnie_odczyty` / `temperatury_dobowe`, kontrakt opisany
-  w CLAUDE.md. **Czeka na dopisanie po stronie Apps Script.**
+  w CLAUDE.md. Wdrożone po stronie Apps Script i zweryfikowane na żywo.
 - `ikony/podglad.svg` — nowa ikona (mini wykres słupkowy w kółku, w stylu
   reszty ikon aplikacji).
 
-Przetestowane z mockowanym fetchem (akcje jeszcze nie istnieją w Apps
-Script): renderowanie listy i tabeli z przykładowymi danymi, dynamiczne
-kolumny czujników, komunikat błędu gdy któraś akcja zawiedzie, pusty stan
-gdy arkusz nie ma jeszcze danych.
+Przetestowane najpierw z mockowanym fetchem (renderowanie, dynamiczne
+kolumny czujników, komunikat błędu, pusty stan), a po wdrożeniu akcji
+w Apps Script — na żywo, z prawdziwymi danymi z arkusza (w tym poprawne
+zaokrąglanie „brzydkich” zmiennoprzecinkowych wartości temp_sr).
 
 ## 0.12.0 — 2026-09-16
 
