@@ -64,7 +64,8 @@ const przyciskPodglad = document.getElementById('przycisk-podglad');
 const przyciskZamknijPodglad = document.getElementById('przycisk-zamknij-podglad');
 const listaOstatnichOdczytow = document.getElementById('lista-ostatnich-odczytow');
 const tabelaTemperatur = document.getElementById('tabela-temperatur');
-const komunikatPodgladu = document.getElementById('komunikat-podgladu');
+const statusOdczytow = document.getElementById('status-odczytow');
+const statusTemperatur = document.getElementById('status-temperatur');
 
 const ETYKIETY_TRYBU = { off: 'Wyłączony', cwu: 'CWU', co: 'CO', cwu_co: 'CWU + CO' };
 
@@ -384,50 +385,69 @@ function renderujTemperaturyDobowe(dni) {
   tabelaTemperatur.appendChild(tbody);
 }
 
-async function otworzPodglad() {
+// Wiersz statusu pod nagłówkiem bloku. rodzaj: 'wczytywanie' | 'info' | 'blad'
+// (steruje wyglądem przez klasę status-bloku--<rodzaj>); null chowa wiersz.
+function ustawStatusBloku(element, tekst, rodzaj) {
+  element.className = 'status-bloku';
+  if (!tekst) {
+    element.classList.add('ukryty');
+    element.textContent = '';
+    return;
+  }
+  element.classList.add('status-bloku--' + rodzaj);
+  element.textContent = tekst;
+}
+
+// Wczytuje jeden blok ekranu Podgląd i pokazuje jego stan we własnym wierszu
+// statusu. Mierzy też czas odpowiedzi i wyświetla go po wczytaniu — na razie
+// jako dane do decyzji o buforowaniu (BACKLOG pkt 12): z telefonu nie zajrzymy
+// do konsoli, a chcemy wiedzieć, ile faktycznie trwa każde zapytanie.
+// Spóźniona odpowiedź z poprzedniego otwarcia ekranu jest ignorowana
+// (licznik generacji, jak w ekranie Kocioł).
+async function wczytajBlokPodgladu(generacja, blok) {
+  const start = performance.now();
+  ustawStatusBloku(blok.status, 'Wczytywanie…', 'wczytywanie');
+
+  try {
+    const wynik = await blok.pobierz();
+    if (generacja !== generacjaPodgladu) return;
+
+    if (wynik.ok) {
+      blok.renderuj(wynik);
+      const sekundy = ((performance.now() - start) / 1000).toFixed(1).replace('.', ',');
+      ustawStatusBloku(blok.status, `Wczytano w ${sekundy} s`, 'info');
+    } else {
+      ustawStatusBloku(blok.status,
+        `Nie udało się wczytać (${wynik.blad || 'błąd webhooka'}).`, 'blad');
+    }
+  } catch (blad) {
+    if (generacja !== generacjaPodgladu) return;
+    console.error('Nie udało się wczytać bloku podglądu:', blad);
+    ustawStatusBloku(blok.status, 'Nie udało się wczytać (brak połączenia).', 'blad');
+  }
+}
+
+function otworzPodglad() {
   komunikatStart.classList.add('ukryty');
   generacjaPodgladu++;
   const generacja = generacjaPodgladu;
 
   listaOstatnichOdczytow.innerHTML = '';
   tabelaTemperatur.innerHTML = '';
-  komunikatPodgladu.classList.add('ukryty');
   pokazEkran(ekranPodglad);
 
-  const bledy = [];
-
-  try {
-    const wynik = await pobierzOstatnieOdczyty(30);
-    if (generacja !== generacjaPodgladu) return;
-    if (wynik.ok) {
-      renderujOstatnieOdczyty(wynik.odczyty);
-    } else {
-      bledy.push('odczytów (' + (wynik.blad || 'błąd webhooka') + ')');
-    }
-  } catch (blad) {
-    if (generacja !== generacjaPodgladu) return;
-    console.error('Nie udało się pobrać ostatnich odczytów:', blad);
-    bledy.push('odczytów (brak połączenia)');
-  }
-
-  try {
-    const wynik = await pobierzTemperaturyDobowe(30);
-    if (generacja !== generacjaPodgladu) return;
-    if (wynik.ok) {
-      renderujTemperaturyDobowe(wynik.dni);
-    } else {
-      bledy.push('temperatur (' + (wynik.blad || 'błąd webhooka') + ')');
-    }
-  } catch (blad) {
-    if (generacja !== generacjaPodgladu) return;
-    console.error('Nie udało się pobrać temperatur dobowych:', blad);
-    bledy.push('temperatur (brak połączenia)');
-  }
-
-  if (generacja === generacjaPodgladu && bledy.length > 0) {
-    komunikatPodgladu.textContent = 'Nie udało się wczytać: ' + bledy.join(', ') + '.';
-    komunikatPodgladu.classList.remove('ukryty');
-  }
+  // Oba bloki startują jednocześnie, nie jeden po drugim — są niezależne,
+  // więc czas oczekiwania to dłuższe z dwóch zapytań, a nie ich suma.
+  wczytajBlokPodgladu(generacja, {
+    status: statusOdczytow,
+    pobierz: () => pobierzOstatnieOdczyty(30),
+    renderuj: (wynik) => renderujOstatnieOdczyty(wynik.odczyty),
+  });
+  wczytajBlokPodgladu(generacja, {
+    status: statusTemperatur,
+    pobierz: () => pobierzTemperaturyDobowe(30),
+    renderuj: (wynik) => renderujTemperaturyDobowe(wynik.dni),
+  });
 }
 
 przyciskPodglad.addEventListener('click', () => {

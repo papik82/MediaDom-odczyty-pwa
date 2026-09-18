@@ -57,8 +57,10 @@ rozbieżność z archiwum. Nie zmieniaj go bez ustalenia.**
 
 **Karta podglądu** (nie kafelek) — tylko do odczytu. Pokazuje ostatnie wpisy
 z `odczyty` i temperatury dobowe z `temp_doba`, żeby sprawdzić z telefonu, co
-poszło do arkusza. Dwie niezależne akcje: gdy jedna zawiedzie, druga i tak się
-wyświetla, a błąd pokazuje się tylko dla swojej części ekranu.
+poszło do arkusza. Dwie niezależne akcje, wysyłane równolegle: każdy blok ma
+własny wiersz statusu (wczytywanie / czas wczytania / błąd), więc gdy jedna
+zawiedzie, druga i tak się wyświetla, a błąd pokazuje się tylko dla swojej
+części ekranu.
 
 Nazwy i liczba czujników **nie są zaszyte na sztywno** — kolumny tabeli
 powstają z tego, co przyjdzie w odpowiedzi. Zestaw czujników zmieniał się
@@ -121,14 +123,14 @@ odczyty-pwa/
 ├── css/
 │   └── styl.css
 ├── js/
-│   ├── app.js             sterowanie wszystkimi ekranami
+│   ├── app.js             sterowanie wszystkimi ekranami (w tym karta kotła
+│   │                      i karta podglądu — nie mają osobnych plików)
 │   ├── ustawienia.js      adres webhooka i token w localStorage
 │   ├── media.js           metadane mediów (nazwa, jednostka, zdjęcie: tak/nie)
 │   ├── webhook.js         komunikacja z Apps Script (odczyt, OCR, kocioł, podgląd)
 │   ├── aparat.js          zdjęcie: aparat/galeria, zmniejszanie, base64
 │   ├── kolejka.js         kolejka offline w localStorage
-│   ├── kociol.js          formularz nastaw kotła
-│   └── podglad.js         karta podglądu danych z arkusza
+│   └── wersja.js          numer wersji aplikacji (stopka ekranu startowego)
 ├── ikony/                 SVG w jednym stylu (ikona aplikacji + ikony UI)
 ├── CHANGELOG.md           historia wydań aplikacji
 └── CLAUDE.md

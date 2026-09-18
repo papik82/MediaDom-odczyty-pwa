@@ -3,6 +3,23 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.14.0 — 2026-09-18
+
+### Dodane
+- Ekran „Podgląd”: każdy z dwóch bloków (ostatnie odczyty, temperatury
+  dobowe) ma pod nagłówkiem własny wiersz statusu — „Wczytywanie…” ze
+  znaczkiem w trakcie odpytywania webhooka, „Wczytano w X,X s” po sukcesie
+  i czerwony komunikat błędu tylko przy tym bloku, który zawiódł. Wcześniej
+  ekran w trakcie oczekiwania był po prostu pusty.
+- Czas odpowiedzi każdego zapytania jest mierzony i pokazywany w wierszu
+  statusu — dane do decyzji o buforowaniu wolnych zapytań (BACKLOG pkt 12).
+
+### Zmienione
+- Oba zapytania ekranu Podgląd startują jednocześnie, a nie jedno po drugim
+  (są niezależne), więc czas oczekiwania to dłuższe z nich, nie ich suma.
+- Wspólny komunikat błędu na dole ekranu zastąpiony statusem osobnym
+  dla każdego bloku.
+
 ## 0.13.1 — 2026-09-16
 
 ### Zmienione

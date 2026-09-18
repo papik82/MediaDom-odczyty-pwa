@@ -373,6 +373,39 @@ main {
   white-space: nowrap;
 }
 
+/* Wiersz statusu pod nagłówkiem bloku na ekranie Podgląd: trzy stany —
+   wczytywanie (kręcący się znaczek), informacja o czasie, błąd. */
+.status-bloku {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+.status-bloku--wczytywanie::before {
+  content: '';
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-right: 0.5em;
+  vertical-align: -0.1em;
+  border: 2px solid #bbb;
+  border-top-color: #1565c0;
+  border-radius: 50%;
+  animation: obrot 0.8s linear infinite;
+}
+.status-bloku--blad {
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b3261e;
+  font-size: 0.9rem;
+}
+@keyframes obrot {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .status-bloku--wczytywanie::before { animation-duration: 3s; }
+}
+
 .komunikat-pusto {
   padding: 0.9rem;
   color: #666;

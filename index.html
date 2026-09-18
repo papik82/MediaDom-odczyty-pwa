@@ -175,15 +175,17 @@
     <section id="ekran-podglad" class="ekran ukryty">
       <h2>Podgląd</h2>
 
+      <!-- Każdy z dwóch bloków ma własny wiersz statusu (wczytywanie / czas
+           wczytania / błąd), bo wczytują się niezależnie od siebie. -->
       <h3 class="podglad__naglowek">Ostatnie odczyty</h3>
+      <p id="status-odczytow" class="status-bloku ukryty" role="status"></p>
       <div id="lista-ostatnich-odczytow" class="lista-odczytow"></div>
 
       <h3 class="podglad__naglowek">Temperatury dobowe (ostatni miesiąc)</h3>
+      <p id="status-temperatur" class="status-bloku ukryty" role="status"></p>
       <div class="tabela-temperatur-kontener">
         <table id="tabela-temperatur" class="tabela-temperatur"></table>
       </div>
-
-      <p id="komunikat-podgladu" class="komunikat ukryty"></p>
 
       <div class="przyciski-formularza">
         <button type="button" id="przycisk-zamknij-podglad" class="przycisk-drugorzedny">Zamknij</button>
