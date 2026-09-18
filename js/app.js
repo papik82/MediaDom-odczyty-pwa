@@ -10,6 +10,9 @@ import {
 } from './webhook.js';
 import { zrobZdjecie, wybierzZGalerii, blobDoBase64 } from './aparat.js';
 import { dodajDoKolejki, liczbaWKolejce, pobierzKolejke, usunPierwszyZKolejki } from './kolejka.js';
+import {
+  zapiszBufor, odczytajBufor, wyczyscBufor, wyczyscBuforKlucz, opiszWiek,
+} from './bufor.js';
 
 document.getElementById('numer-wersji').textContent = WERSJA_APLIKACJI;
 
@@ -79,6 +82,22 @@ let ostatnieNastawyKotla = null;
 // odpowiedź webhooka wróciła, i nie nadpisywać pól nieaktualną odpowiedzią.
 let generacjaKotla = 0;
 
+// Pobieranie nastaw kotła Z WYPRZEDZENIEM (BACKLOG pkt 12): aplikacja pyta
+// webhook o ostatnie nastawy już przy starcie i przy powrocie na ekran startowy,
+// żeby po dotknięciu kafelka „Kocioł” dane były gotowe od razu. Wynik trzymamy
+// WYŁĄCZNIE w pamięci (nie w localStorage) i przez krótki czas — nastawy
+// wypełniają formularz, więc nieaktualna podpowiedź z poprzedniej sesji
+// mogłaby skłonić do zapisania złej zmiany.
+const MAKS_WIEK_NASTAW_MS = 5 * 60 * 1000;   // starsze niż to → czekamy na świeże
+const MIN_ODSTEP_POBRANIA_MS = 60 * 1000;    // nie pytaj webhooka częściej niż raz na minutę
+let nastawyKotlaZWyprzedzeniem = null;       // { czas, wynik } — odpowiedź ostatni_kociol
+let pobieranieNastawKotla = null;            // trwające żądanie (Promise) albo null
+// Rośnie, gdy wynik przestaje być wiarygodny (zapis nastaw, zmiana ustawień) —
+// spóźniona odpowiedź z żądania rozpoczętego przed unieważnieniem jest wtedy
+// wyrzucana, zamiast wrócić do pamięci jako nieaktualna.
+let wersjaNastawKotla = 0;
+let czasOstatniejProbyNastawKotla = 0;       // kiedy ostatnio (nie)udanie pytaliśmy webhook
+
 let wybraneMedium = null;
 let metodaAktualnegoOdczytu = 'reczny';
 let adresUrlPodgladuZdjecia = null;
@@ -94,6 +113,9 @@ function pokazEkran(ekranDoPokazania) {
   for (const ekran of [ekranStart, ekranUstawien, ekranWyboruMetody, ekranPotwierdzenia, ekranKociol, ekranPodglad]) {
     ekran.classList.toggle('ukryty', ekran !== ekranDoPokazania);
   }
+  // Każdy powrót na ekran startowy (i start aplikacji) to okazja, żeby
+  // z wyprzedzeniem odświeżyć nastawy kotła — patrz odswiezNastawyKotlaWTle.
+  if (ekranDoPokazania === ekranStart) odswiezNastawyKotlaWTle();
 }
 
 // Format wymagany przez <input type="datetime-local">: "RRRR-MM-DDTGG:MM",
@@ -136,6 +158,10 @@ przyciskAnuluj.addEventListener('click', () => {
 formularzUstawien.addEventListener('submit', (zdarzenie) => {
   zdarzenie.preventDefault();
   zapiszUstawienia(poleAdres.value, poleToken.value);
+  // Nowy adres/token to potencjalnie inny arkusz — dane z poprzedniego
+  // nie mogą się pokazać ani w buforze Podglądu, ani jako nastawy kotła.
+  wyczyscBufor();
+  uniewaznNastawyKotla();
   pokazEkran(ekranStart);
 });
 
@@ -250,9 +276,59 @@ function ustawWczytywanieKotla(wTrakcie) {
   }
 }
 
+// Jedno wspólne żądanie o ostatnie nastawy: jeśli już trwa (np. rozpoczęte
+// z wyprzedzeniem przy starcie), każdy kolejny chętny dołącza do tego samego,
+// zamiast wysyłać drugie. Zwraca odpowiedź webhooka; do pamięci trafia tylko
+// odpowiedź poprawna (ok: true) i nieunieważniona w międzyczasie.
+function pobierzNastawyKotla() {
+  if (pobieranieNastawKotla) return pobieranieNastawKotla;
+  czasOstatniejProbyNastawKotla = Date.now();
+  const wersja = wersjaNastawKotla;
+  const zadanie = pobierzOstatnieNastawyKotla()
+    .then((wynik) => {
+      if (wynik.ok && wersja === wersjaNastawKotla) {
+        nastawyKotlaZWyprzedzeniem = { czas: Date.now(), wynik };
+      }
+      return wynik;
+    })
+    .finally(() => {
+      if (pobieranieNastawKotla === zadanie) pobieranieNastawKotla = null;
+    });
+  pobieranieNastawKotla = zadanie;
+  return zadanie;
+}
+
+// Ciche pobranie w tle — start aplikacji, powrót na ekran startowy, powrót
+// aplikacji na pierwszy plan. Nie częściej niż raz na minutę, żeby nie
+// zasypywać webhooka (Apps Script przy serii szybkich żądań bywa kapryśny),
+// a błąd (offline) jest tu zwyczajnie ignorowany — ekran Kocioł sprawdzi sam.
+function odswiezNastawyKotlaWTle() {
+  if (!czyUstawieniaZapisane()) return;
+  if (pobieranieNastawKotla) return;
+  if (Date.now() - czasOstatniejProbyNastawKotla < MIN_ODSTEP_POBRANIA_MS) return;
+  pobierzNastawyKotla().catch((blad) => {
+    console.error('Pobranie nastaw kotła z wyprzedzeniem nie powiodło się:', blad);
+  });
+}
+
+// Po zapisie nastaw albo zmianie ustawień to, co mamy w pamięci, przestaje
+// być wiarygodne — wyrzucamy je i pozwalamy od razu pobrać nowe.
+function uniewaznNastawyKotla() {
+  wersjaNastawKotla++;
+  nastawyKotlaZWyprzedzeniem = null;
+  pobieranieNastawKotla = null;
+  czasOstatniejProbyNastawKotla = 0;
+}
+
 async function wczytajOstatnieNastawyKotla(generacja) {
   try {
-    const wynik = await pobierzOstatnieNastawyKotla();
+    // Gotowe z wyprzedzenia i niezbyt stare → wypełniamy formularz od ręki,
+    // bez czekania (i bez blokady pól, bo ta zdejmuje się w finally poniżej,
+    // zanim ktokolwiek zdąży cokolwiek wpisać). W przeciwnym razie dołączamy
+    // do trwającego pobierania albo zaczynamy nowe — jak dawniej.
+    const gotowe = nastawyKotlaZWyprzedzeniem;
+    const swieze = gotowe && Date.now() - gotowe.czas <= MAKS_WIEK_NASTAW_MS;
+    const wynik = swieze ? gotowe.wynik : await pobierzNastawyKotla();
     if (generacja !== generacjaKotla) return; // ekran zdążył się zmienić
 
     if (!wynik.ok || wynik.brak) {
@@ -398,32 +474,55 @@ function ustawStatusBloku(element, tekst, rodzaj) {
   element.textContent = tekst;
 }
 
-// Wczytuje jeden blok ekranu Podgląd i pokazuje jego stan we własnym wierszu
-// statusu. Mierzy też czas odpowiedzi i wyświetla go po wczytaniu — na razie
-// jako dane do decyzji o buforowaniu (BACKLOG pkt 12): z telefonu nie zajrzymy
-// do konsoli, a chcemy wiedzieć, ile faktycznie trwa każde zapytanie.
+// Wczytuje jeden blok ekranu Podgląd według wzorca "pokaż stare, odśwież
+// w tle" (BACKLOG pkt 12): jeśli w buforze (js/bufor.js) jest poprzednia
+// odpowiedź, rysujemy ją OD RAZU i dopiero potem odpytujemy webhook; świeża
+// odpowiedź podmienia widok. Dzięki temu ekran nie jest pusty przez 1–2 s
+// (a czasem kilkanaście) po każdym otwarciu. Bez bufora — jak dotąd:
+// "Wczytywanie…" i czekanie.
+//
+// Mierzymy też czas odpowiedzi i pokazujemy go po wczytaniu — dane do oceny,
+// czy bufor rzeczywiście pomaga; z telefonu nie zajrzymy do konsoli.
 // Spóźniona odpowiedź z poprzedniego otwarcia ekranu jest ignorowana
 // (licznik generacji, jak w ekranie Kocioł).
 async function wczytajBlokPodgladu(generacja, blok) {
   const start = performance.now();
-  ustawStatusBloku(blok.status, 'Wczytywanie…', 'wczytywanie');
+  const zBufora = odczytajBufor(blok.klucz);
+
+  if (zBufora) {
+    blok.renderuj(zBufora.dane);
+    ustawStatusBloku(blok.status,
+      `Z pamięci (${opiszWiek(zBufora.czas)}) — odświeżam…`, 'wczytywanie');
+  } else {
+    ustawStatusBloku(blok.status, 'Wczytywanie…', 'wczytywanie');
+  }
+
+  // Błąd przy odświeżaniu NIE kasuje tego, co już pokazaliśmy z bufora —
+  // lepiej stare dane z uczciwym ostrzeżeniem niż pusty ekran.
+  const pokazBlad = (powod) => {
+    const doTego = zBufora ? ` Pokazuję dane z pamięci (${opiszWiek(zBufora.czas)}).` : '';
+    ustawStatusBloku(blok.status, `Nie udało się odświeżyć (${powod}).${doTego}`, 'blad');
+  };
 
   try {
     const wynik = await blok.pobierz();
     if (generacja !== generacjaPodgladu) return;
 
     if (wynik.ok) {
-      blok.renderuj(wynik);
+      zapiszBufor(blok.klucz, wynik);
+      // Jeśli świeże dane są takie same jak z bufora, nie rysujemy drugi raz.
+      if (!zBufora || JSON.stringify(zBufora.dane) !== JSON.stringify(wynik)) {
+        blok.renderuj(wynik);
+      }
       const sekundy = ((performance.now() - start) / 1000).toFixed(1).replace('.', ',');
       ustawStatusBloku(blok.status, `Wczytano w ${sekundy} s`, 'info');
     } else {
-      ustawStatusBloku(blok.status,
-        `Nie udało się wczytać (${wynik.blad || 'błąd webhooka'}).`, 'blad');
+      pokazBlad(wynik.blad || 'błąd webhooka');
     }
   } catch (blad) {
     if (generacja !== generacjaPodgladu) return;
     console.error('Nie udało się wczytać bloku podglądu:', blad);
-    ustawStatusBloku(blok.status, 'Nie udało się wczytać (brak połączenia).', 'blad');
+    pokazBlad('brak połączenia');
   }
 }
 
@@ -440,11 +539,13 @@ function otworzPodglad() {
   // więc czas oczekiwania to dłuższe z dwóch zapytań, a nie ich suma.
   wczytajBlokPodgladu(generacja, {
     status: statusOdczytow,
+    klucz: 'ostatnie_odczyty',
     pobierz: () => pobierzOstatnieOdczyty(30),
     renderuj: (wynik) => renderujOstatnieOdczyty(wynik.odczyty),
   });
   wczytajBlokPodgladu(generacja, {
     status: statusTemperatur,
+    klucz: 'temperatury_dobowe',
     pobierz: () => pobierzTemperaturyDobowe(30),
     renderuj: (wynik) => renderujTemperaturyDobowe(wynik.dni),
   });
@@ -516,12 +617,19 @@ formularzKotla.addEventListener('submit', async (zdarzenie) => {
 
     komunikatStart.textContent = `Zapisano zmianę nastaw kotła: ${ETYKIETY_TRYBU[daneKotla.tryb] || daneKotla.tryb}.`;
     komunikatStart.classList.remove('ukryty');
+    uniewaznNastawyKotla();   // powrót na ekran startowy pobierze świeże nastawy
     pokazEkran(ekranStart);
   } catch (blad) {
     // Brak sieci — jak przy odczytach, dokładamy do wspólnej kolejki offline.
     console.error('Nie udało się wysłać zmiany nastaw kotła, dokładam do kolejki offline:', blad);
     dodajDoKolejki({ akcja: 'zmiana_kotla', ...daneKotla });
     aktualizujKomunikatKolejki();
+    // Punktem odniesienia na najbliższe otwarcia są teraz nastawy, które
+    // właśnie zapisaliśmy lokalnie (arkusz jeszcze ich nie zna) — inaczej
+    // ekran podpowiedziałby stare i pozwolił wysłać tę samą zmianę drugi raz.
+    uniewaznNastawyKotla();
+    nastawyKotlaZWyprzedzeniem = { czas: Date.now(), wynik: { ok: true, brak: false, ...daneKotla } };
+    czasOstatniejProbyNastawKotla = Date.now();
     komunikatStart.textContent =
       'Brak połączenia — zmiana nastaw kotła zapisana lokalnie, wyśle się sama, gdy wróci internet.';
     komunikatStart.classList.remove('ukryty');
@@ -719,6 +827,8 @@ async function przetworzKolejkeOffline() {
   }
 
   aktualizujKomunikatKolejki();
+  // Wysłane z kolejki wpisy zmieniły zawartość arkusza — patrz uwaga przy zapisie.
+  if (wyslanychOk > 0) wyczyscBuforKlucz('ostatnie_odczyty');
 
   if (odrzucone.length > 0) {
     const opis = odrzucone
@@ -760,6 +870,9 @@ formularzPotwierdzenia.addEventListener('submit', async (zdarzenie) => {
       return;
     }
 
+    // Lista ostatnich odczytów w buforze jest już nieaktualna (doszedł nowy
+    // wpis) — wyrzucamy ją, żeby Podgląd nie pokazał najpierw listy bez niego.
+    wyczyscBuforKlucz('ostatnie_odczyty');
     komunikatStart.textContent =
       `Zapisano: ${opisMedium.nazwa} — ${poleStan.value} ${opisMedium.jednostka} ` +
       `(poprzedni stan: ${odpowiedz.poprzedni_stan}, przyrost: ${odpowiedz.przyrost}).`;
@@ -799,6 +912,14 @@ aktualizujKomunikatKolejki();
 if (czyUstawieniaZapisane()) {
   przetworzKolejkeOffline();
 }
+// Telefon trzyma zainstalowaną aplikację w tle godzinami — po powrocie na
+// pierwszy plan odświeżamy nastawy kotła (throttling wewnątrz funkcji) i tylko
+// wtedy, gdy widać ekran startowy; inaczej odświeży je powrót na start.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && !ekranStart.classList.contains('ukryty')) {
+    odswiezNastawyKotlaWTle();
+  }
+});
 window.addEventListener('online', () => {
   if (czyUstawieniaZapisane()) {
     przetworzKolejkeOffline();

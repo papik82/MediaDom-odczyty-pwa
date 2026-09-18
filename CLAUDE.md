@@ -45,8 +45,11 @@ automatycznie, z możliwością ręcznej korekty przed wysłaniem. Wysyłamy ten
 znacznik, a nie czas serwera — ΔT liczy się dokładnie między momentami
 odczytów, więc godzina musi być prawdziwa.
 
-**Karta kotła** (nie kafelek wśród mediów) — formularz zmiany nastaw. Przy
-wejściu pobiera ostatnie nastawy przez `ostatni_kociol` i nimi wypełnia pola.
+**Karta kotła** (nie kafelek wśród mediów) — formularz zmiany nastaw. Ostatnie
+nastawy (`ostatni_kociol`) pobiera **z wyprzedzeniem** — przy starcie, powrocie
+na ekran startowy i powrocie z tła — trzyma je tylko w pamięci (do 5 min)
+i wypełnia nimi pola od razu po wejściu; nigdy z `localStorage`, bo
+nieaktualna podpowiedź mogłaby dać zapis złej zmiany.
 Wysyła **tylko wtedy, gdy coś faktycznie się zmieniło** — porównanie robi
 aplikacja po stronie klienta, nie webhook. Gdy punktu odniesienia brak
 (pusta zakładka albo brak zasięgu), wysyłka nie jest blokowana.
@@ -57,7 +60,9 @@ rozbieżność z archiwum. Nie zmieniaj go bez ustalenia.**
 
 **Karta podglądu** (nie kafelek) — tylko do odczytu. Pokazuje ostatnie wpisy
 z `odczyty` i temperatury dobowe z `temp_doba`, żeby sprawdzić z telefonu, co
-poszło do arkusza. Dwie niezależne akcje, wysyłane równolegle: każdy blok ma
+poszło do arkusza. Dwie niezależne akcje, wysyłane równolegle, z buforem w
+`localStorage` (`js/bufor.js`) — ekran od razu pokazuje poprzednie dane,
+świeże je podmieniają: każdy blok ma
 własny wiersz statusu (wczytywanie / czas wczytania / błąd), więc gdy jedna
 zawiedzie, druga i tak się wyświetla, a błąd pokazuje się tylko dla swojej
 części ekranu.
@@ -130,6 +135,7 @@ odczyty-pwa/
 │   ├── webhook.js         komunikacja z Apps Script (odczyt, OCR, kocioł, podgląd)
 │   ├── aparat.js          zdjęcie: aparat/galeria, zmniejszanie, base64
 │   ├── kolejka.js         kolejka offline w localStorage
+│   ├── bufor.js           bufor odpowiedzi Podglądu w localStorage
 │   └── wersja.js          numer wersji aplikacji (stopka ekranu startowego)
 ├── ikony/                 SVG w jednym stylu (ikona aplikacji + ikony UI)
 ├── CHANGELOG.md           historia wydań aplikacji

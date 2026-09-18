@@ -3,6 +3,32 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.15.0 — 2026-09-18
+
+### Dodane
+- `js/bufor.js` — bufor odpowiedzi webhooka w `localStorage` dla ekranu
+  „Podgląd”, wzorzec „pokaż stare, odśwież w tle”: po otwarciu ekranu
+  ostatnie odczyty i temperatury pojawiają się od razu z poprzedniego
+  pobrania (status „Z pamięci (5 min temu) — odświeżam…”), a świeża
+  odpowiedź podmienia widok, gdy dojdzie. Gdy odświeżenie się nie uda,
+  zostają dane z pamięci z czerwonym ostrzeżeniem, zamiast pustego ekranu.
+- Ekran „Kocioł”: nastawy pobierane są z wyprzedzeniem — przy starcie
+  aplikacji, przy każdym powrocie na ekran startowy i przy powrocie
+  aplikacji z tła (najwyżej raz na minutę). Po dotknięciu kafelka formularz
+  wypełnia się od razu, bez blokady pól i czekania; jeśli pobieranie jeszcze
+  trwa, ekran dołącza do niego (jedno żądanie zamiast dwóch).
+
+### Zmienione
+- Nastawy kotła trzymane są wyłącznie w pamięci i tylko do 5 minut, nigdy
+  w `localStorage` — nieaktualna podpowiedź mogłaby skłonić do zapisania
+  złej zmiany (patrz historia wersji 0.11.2).
+- Bufor Podglądu i nastawy kotła są unieważniane po własnych zapisach
+  (odczyt, zmiana nastaw, wpisy wysłane z kolejki offline) oraz po zmianie
+  adresu webhooka lub tokenu. Zmiana nastaw zapisana offline staje się od
+  razu punktem odniesienia, żeby nie dało się jej wysłać drugi raz.
+- Motywacja i pomiary: BACKLOG pkt 12 (webhook ma podłogę ok. 1,2–1,6 s
+  na wywołanie, poza kodem serwera).
+
 ## 0.14.0 — 2026-09-18
 
 ### Dodane
