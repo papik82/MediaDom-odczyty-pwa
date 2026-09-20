@@ -3,6 +3,24 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.16.1 — 2026-09-20
+
+### Zmienione
+- Rozpoznawanie odczytu ze zdjęcia nie blokuje już pola „Stan licznika” ani
+  przycisku zatwierdzania: można od razu wpisać wartość z podglądu zdjęcia
+  (placeholder: „Rozpoznaję… (możesz wpisać ręcznie)”). Jeśli ktoś zdążył coś
+  wpisać, spóźniony wynik modelu niczego nie nadpisuje i nie pokazuje
+  komunikatów. Wcześniej pole było zablokowane do końca rozpoznawania, które
+  przy przeciążonym modelu trwało nawet kilkadziesiąt sekund.
+- Błąd usługi rozpoznawania (przeciążenie, limit) ma własny komunikat:
+  „Rozpoznawanie nie powiodło się (…) — wpisz wartość ręcznie”, zamiast
+  mylącego „Model nie jest pewny odczytu”.
+- Placeholder pola stanu jest czyszczony przy każdym otwarciu ekranu
+  potwierdzenia, więc po przerwanym rozpoznawaniu nie „przechodzi” na kolejne
+  otwarcie.
+- Po stronie webhooka (bez zmiany kontraktu): szybszy tryb „myślenia” modelu,
+  ponawianie i model zapasowy — patrz `apps-script/CLAUDE.md`.
+
 ## 0.16.0 — 2026-09-20
 
 ### Dodane

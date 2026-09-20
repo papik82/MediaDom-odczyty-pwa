@@ -672,6 +672,9 @@ function otworzPotwierdzenie(medium, metoda, urlZdjecia = null, czasZdjecia = nu
     ? (1 / 10 ** opisMedium.miejscaPoPrzecinku).toFixed(opisMedium.miejscaPoPrzecinku)
     : '1';
   poleStan.value = '';
+  // Po przerwanym rozpoznawaniu (zamknięty ekran) poprzedni komunikat w polu
+  // nie może przejść na kolejne, np. ręczne, otwarcie ekranu.
+  poleStan.placeholder = '';
   // Zdjęcie z galerii: moment zrobienia zdjęcia zamiast "teraz" (js/aparat.js).
   poleDataGodzina.value = sformatujDataGodzinaLokalnie(
     czasZdjecia && czasZdjecia.data ? czasZdjecia.data : new Date());
@@ -738,36 +741,39 @@ async function obslozWyborZdjecia(pobierzZdjecie) {
 // zdjęciu (pasuje: false) pole zostaje puste i pokazujemy ostrzeżenie,
 // zamiast po cichu przyjąć niepewny wynik (zgodnie z CLAUDE.md).
 async function rozpoznajIWypelnij(medium, blob, generacja) {
-  poleStan.disabled = true;
-  poleStan.placeholder = 'Rozpoznawanie odczytu…';
-  przyciskZatwierdz.disabled = true;
+  // Rozpoznawanie trwa od kilku do kilkudziesięciu sekund (model bywa
+  // przeciążony), więc pola NIE blokujemy — można od razu wpisać wartość
+  // z podglądu zdjęcia. Jeśli ktoś zdążył coś wpisać, spóźniony wynik modelu
+  // nie nadpisuje tego i nie pokazuje żadnych komunikatów.
+  poleStan.placeholder = 'Rozpoznaję… (możesz wpisać ręcznie)';
 
   try {
     const obrazBase64 = await blobDoBase64(blob);
     const wynik = await rozpoznajZdjecie(medium, obrazBase64);
 
     if (generacja !== generacjaPotwierdzenia) return; // ekran zdążył się zmienić
+    if (poleStan.value !== '') return;                // użytkownik wpisał sam
 
     if (wynik.ok && wynik.pasuje && wynik.pewnosc !== 'niska' && typeof wynik.stan === 'number') {
       poleStan.value = wynik.stan;
       if (wynik.pewnosc === 'srednia') {
         pokazBladPotwierdzenia('Średnia pewność odczytu — sprawdź wartość na zdjęciu przed zatwierdzeniem.');
       }
-    } else {
-      const powod = (wynik.ok ? wynik.problem : wynik.blad) || 'nie udało się jednoznacznie odczytać wskazania';
+    } else if (wynik.ok) {
+      const powod = wynik.problem || 'nie udało się jednoznacznie odczytać wskazania';
       pokazBladPotwierdzenia(`Model nie jest pewny odczytu (${powod}) — sprawdź zdjęcie i wpisz wartość ręcznie.`);
+    } else {
+      // Błąd po stronie usługi rozpoznawania (przeciążenie, limit) — to nie
+      // "niepewność modelu", więc mówimy o tym wprost.
+      pokazBladPotwierdzenia(`Rozpoznawanie nie powiodło się (${wynik.blad || 'błąd webhooka'}) — wpisz wartość ręcznie.`);
     }
   } catch (blad) {
     console.error('Nie udało się rozpoznać zdjęcia:', blad);
-    if (generacja === generacjaPotwierdzenia) {
+    if (generacja === generacjaPotwierdzenia && poleStan.value === '') {
       pokazBladPotwierdzenia('Nie udało się rozpoznać zdjęcia — wpisz odczyt ręcznie.');
     }
   } finally {
-    if (generacja === generacjaPotwierdzenia) {
-      poleStan.disabled = false;
-      poleStan.placeholder = '';
-      przyciskZatwierdz.disabled = false;
-    }
+    if (generacja === generacjaPotwierdzenia) poleStan.placeholder = '';
   }
 }
 
