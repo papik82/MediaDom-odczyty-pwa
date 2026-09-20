@@ -3,6 +3,28 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.16.0 — 2026-09-20
+
+### Dodane
+- Zdjęcie wybrane z galerii wypełnia pole „Data i godzina odczytu” momentem
+  jego zrobienia, a nie czasem telefonu (BACKLOG pkt 3). Źródła po kolei:
+  1) EXIF (`DateTimeOriginal`, zapasowo `DateTimeDigitized`) — nowy
+  `js/exif.js`, minimalny czytnik JPEG bez bibliotek, czytany z oryginalnego
+  pliku PRZED zmniejszeniem (przerysowanie przez canvas gubi metadane);
+  2) data modyfikacji pliku — przybliżona; 3) brak daty — zostaje czas
+  telefonu. Pole zawsze pozostaje edytowalne.
+- Pod polem daty pojawia się informacja, skąd wzięła się godzina: neutralna
+  dla EXIF („sprawdź, czy się zgadza”), pomarańczowe ostrzeżenie dla daty
+  pliku i braku daty. Przy zdjęciu z aparatu aplikacji i wpisie ręcznym
+  uwagi nie ma — godzina to tam po prostu zegar telefonu.
+
+### Zmienione
+- Daty EXIF sprzed 2000, z „przelanym” miesiącem/dniem (np. `0000:00:00`) albo
+  z przyszłości są odrzucane jak brak daty — rozładowany zegar aparatu daje
+  gorszą wartość niż żadna.
+- EXIF nie ma strefy czasowej; datę traktujemy jako czas lokalny, zgodnie
+  z konwencją webhooka (Europe/Warsaw).
+
 ## 0.15.0 — 2026-09-18
 
 ### Dodane

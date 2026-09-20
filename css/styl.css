@@ -373,6 +373,19 @@ main {
   white-space: nowrap;
 }
 
+/* Uwaga pod polem daty na ekranie potwierdzenia: skąd wzięła się godzina. */
+.uwaga-pola {
+  margin: 0.5rem 0 1rem;
+  font-size: 0.85rem;
+  color: #555;
+}
+.uwaga-pola--przyblizona {
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  background: #fff4e0;
+  color: #8a5a00;
+}
+
 /* Wiersz statusu pod nagłówkiem bloku na ekranie Podgląd: trzy stany —
    wczytywanie (kręcący się znaczek), informacja o czasie, błąd. */
 .status-bloku {

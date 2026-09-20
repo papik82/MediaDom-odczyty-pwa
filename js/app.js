@@ -45,6 +45,7 @@ const poleDataGodzina = document.getElementById('pole-data-godzina');
 const przyciskAnulujPotwierdzenie = document.getElementById('przycisk-anuluj-potwierdzenie');
 const przyciskZatwierdz = document.getElementById('przycisk-zatwierdz');
 const komunikatPotwierdzenia = document.getElementById('komunikat-potwierdzenia');
+const uwagaCzasu = document.getElementById('uwaga-czasu');
 
 const ekranKociol = document.getElementById('ekran-kociol');
 const przyciskKociol = document.getElementById('przycisk-kociol');
@@ -644,7 +645,23 @@ formularzKotla.addEventListener('submit', async (zdarzenie) => {
 // użytkownik może je poprawić, gdy odczyt robi z opóźnieniem. `urlZdjecia`
 // pokazuje podgląd zrobionego zdjęcia, żeby dało się z niego przepisać
 // wskazanie — sam model wizyjny dojdzie w punkcie 6.
-function otworzPotwierdzenie(medium, metoda, urlZdjecia = null) {
+// Informacja pod polem daty: skąd wzięła się wpisana godzina. Tylko dla zdjęcia
+// z galerii — przy ręcznym wpisie i zdjęciu z aparatu godzina to po prostu
+// czas telefonu i nie ma o czym mówić. Pole zawsze zostaje edytowalne.
+const UWAGI_CZASU = {
+  exif: { tekst: 'Godzina ze zdjęcia (EXIF) — sprawdź, czy się zgadza.', przyblizona: false },
+  plik: { tekst: 'Zdjęcie nie ma daty zrobienia — wpisana data pliku (przybliżona). Popraw, jeśli odczyt był o innej porze.', przyblizona: true },
+  brak: { tekst: 'Nie znaleziono daty zdjęcia — wpisana bieżąca godzina. Popraw, jeśli odczyt był wcześniej.', przyblizona: true },
+};
+
+function ustawUwageCzasu(czasZdjecia) {
+  const uwaga = czasZdjecia ? UWAGI_CZASU[czasZdjecia.zrodlo] : null;
+  uwagaCzasu.classList.toggle('ukryty', !uwaga);
+  uwagaCzasu.classList.toggle('uwaga-pola--przyblizona', Boolean(uwaga && uwaga.przyblizona));
+  uwagaCzasu.textContent = uwaga ? uwaga.tekst : '';
+}
+
+function otworzPotwierdzenie(medium, metoda, urlZdjecia = null, czasZdjecia = null) {
   wybraneMedium = medium;
   metodaAktualnegoOdczytu = metoda;
   generacjaPotwierdzenia++;
@@ -655,7 +672,10 @@ function otworzPotwierdzenie(medium, metoda, urlZdjecia = null) {
     ? (1 / 10 ** opisMedium.miejscaPoPrzecinku).toFixed(opisMedium.miejscaPoPrzecinku)
     : '1';
   poleStan.value = '';
-  poleDataGodzina.value = sformatujDataGodzinaLokalnie(new Date());
+  // Zdjęcie z galerii: moment zrobienia zdjęcia zamiast "teraz" (js/aparat.js).
+  poleDataGodzina.value = sformatujDataGodzinaLokalnie(
+    czasZdjecia && czasZdjecia.data ? czasZdjecia.data : new Date());
+  ustawUwageCzasu(czasZdjecia);
   komunikatStart.classList.add('ukryty');
   komunikatPotwierdzenia.classList.add('ukryty');
 
@@ -708,8 +728,8 @@ async function obslozWyborZdjecia(pobierzZdjecie) {
     return;
   }
 
-  const { medium, blob, url } = wynikZdjecia;
-  otworzPotwierdzenie(medium, 'foto', url);
+  const { medium, blob, url, czasZdjecia } = wynikZdjecia;
+  otworzPotwierdzenie(medium, 'foto', url, czasZdjecia);
   await rozpoznajIWypelnij(medium, blob, generacjaPotwierdzenia);
 }
 

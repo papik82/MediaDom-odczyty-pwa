@@ -41,7 +41,9 @@ o powtórzenie zdjęcia. Zapis to zawsze osobne, świadome żądanie użytkownik
 
 **Data i godzina odczytu.** Odczyt nie zawsze wypada o 17:30. Ekran
 potwierdzenia pokazuje bieżącą datę i godzinę z zegara telefonu, wypełnioną
-automatycznie, z możliwością ręcznej korekty przed wysłaniem. Wysyłamy ten
+automatycznie, z możliwością ręcznej korekty przed wysłaniem. Dla zdjęcia
+wybranego z galerii wpisywany jest moment jego zrobienia (EXIF → data pliku →
+czas telefonu, `js/exif.js`), z widoczną informacją o źródle godziny. Wysyłamy ten
 znacznik, a nie czas serwera — ΔT liczy się dokładnie między momentami
 odczytów, więc godzina musi być prawdziwa.
 
@@ -134,6 +136,7 @@ odczyty-pwa/
 │   ├── media.js           metadane mediów (nazwa, jednostka, zdjęcie: tak/nie)
 │   ├── webhook.js         komunikacja z Apps Script (odczyt, OCR, kocioł, podgląd)
 │   ├── aparat.js          zdjęcie: aparat/galeria, zmniejszanie, base64
+│   ├── exif.js            data zrobienia zdjęcia z EXIF (JPEG), bez bibliotek
 │   ├── kolejka.js         kolejka offline w localStorage
 │   ├── bufor.js           bufor odpowiedzi Podglądu w localStorage
 │   └── wersja.js          numer wersji aplikacji (stopka ekranu startowego)
