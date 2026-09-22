@@ -527,6 +527,12 @@ async function wczytajBlokPodgladu(generacja, blok) {
   }
 }
 
+// Ile pozycji pokazuje Podgląd: ostatnich wpisów z `odczyty` i ostatnich dni
+// z `temp_doba`. Jedna stała dla obu bloków, żeby zmieniać to w jednym miejscu.
+// 20 wystarcza do sprawdzenia z telefonu, co ostatnio poszło do arkusza,
+// a krótsza lista szybciej się przewija i daje mniejszą odpowiedź webhooka.
+const ILE_POZYCJI_PODGLADU = 20;
+
 function otworzPodglad() {
   komunikatStart.classList.add('ukryty');
   generacjaPodgladu++;
@@ -541,13 +547,13 @@ function otworzPodglad() {
   wczytajBlokPodgladu(generacja, {
     status: statusOdczytow,
     klucz: 'ostatnie_odczyty',
-    pobierz: () => pobierzOstatnieOdczyty(30),
+    pobierz: () => pobierzOstatnieOdczyty(ILE_POZYCJI_PODGLADU),
     renderuj: (wynik) => renderujOstatnieOdczyty(wynik.odczyty),
   });
   wczytajBlokPodgladu(generacja, {
     status: statusTemperatur,
     klucz: 'temperatury_dobowe',
-    pobierz: () => pobierzTemperaturyDobowe(30),
+    pobierz: () => pobierzTemperaturyDobowe(ILE_POZYCJI_PODGLADU),
     renderuj: (wynik) => renderujTemperaturyDobowe(wynik.dni),
   });
 }

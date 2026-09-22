@@ -3,6 +3,13 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.16.2 — 2026-09-22
+
+### Zmienione
+- Podgląd pokazuje 20 ostatnich odczytów i 20 ostatnich dni temperatur
+  (wcześniej po 30). Liczba ustawiana jedną stałą `ILE_POZYCJI_PODGLADU`
+  w `js/app.js`.
+
 ## 0.16.1 — 2026-09-20
 
 ### Zmienione
