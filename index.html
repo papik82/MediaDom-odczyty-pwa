@@ -23,51 +23,69 @@
 
   <main>
 
-    <!-- Ekran startowy — kafelki, po jednym na każde medium. -->
+    <!-- Ekran startowy — jedna kolumna kart: najpierw media (po jednej karcie
+         na medium, rozpoznawane przez atrybut data-medium), pod nimi Kocioł
+         i Podgląd. Od 0.17.0 wszystkie mają ten sam kształt (ikona z lewej,
+         tytuł i krótki opis) — wcześniej media były kwadratowymi kafelkami
+         w siatce 2x2. -->
     <section id="ekran-start" class="ekran">
-      <div class="kafelki">
-        <button class="kafelek" data-medium="gaz">
-          <img class="kafelek__ikona" src="ikony/gaz.svg" alt="">
-          <span class="kafelek__nazwa">Gaz</span>
+      <div class="karty-mediow">
+        <button class="karta" data-medium="gaz">
+          <img class="karta__ikona" src="ikony/gaz.svg" alt="">
+          <span class="karta__tekst">
+            <span class="karta__tytul">Gaz</span>
+            <span class="karta__opis">Stan w m³</span>
+          </span>
         </button>
-        <button class="kafelek" data-medium="woda">
-          <img class="kafelek__ikona" src="ikony/woda.svg" alt="">
-          <span class="kafelek__nazwa">Woda</span>
+        <button class="karta" data-medium="woda">
+          <img class="karta__ikona" src="ikony/woda.svg" alt="">
+          <span class="karta__tekst">
+            <span class="karta__tytul">Woda</span>
+            <span class="karta__opis">Stan w m³</span>
+          </span>
         </button>
-        <button class="kafelek" data-medium="prad_t1">
-          <img class="kafelek__ikona" src="ikony/prad.svg" alt="">
-          <span class="kafelek__nazwa">Prąd T1</span>
+        <button class="karta" data-medium="prad_t1">
+          <img class="karta__ikona" src="ikony/prad.svg" alt="">
+          <span class="karta__tekst">
+            <span class="karta__tytul">Prąd T1</span>
+            <span class="karta__opis">Stan w kWh, taryfa szczytowa</span>
+          </span>
         </button>
-        <button class="kafelek" data-medium="prad_t2">
-          <img class="kafelek__ikona" src="ikony/prad.svg" alt="">
-          <span class="kafelek__nazwa">Prąd T2</span>
+        <button class="karta" data-medium="prad_t2">
+          <img class="karta__ikona" src="ikony/prad.svg" alt="">
+          <span class="karta__tekst">
+            <span class="karta__tytul">Prąd T2</span>
+            <span class="karta__opis">Stan w kWh, druga taryfa</span>
+          </span>
         </button>
-        <button class="kafelek" data-medium="prad_suma">
-          <img class="kafelek__ikona" src="ikony/prad.svg" alt="">
-          <span class="kafelek__nazwa">Prąd suma</span>
+        <button class="karta" data-medium="prad_suma">
+          <img class="karta__ikona" src="ikony/prad.svg" alt="">
+          <span class="karta__tekst">
+            <span class="karta__tytul">Prąd suma</span>
+            <span class="karta__opis">Stan w kWh, obie taryfy razem</span>
+          </span>
         </button>
       </div>
 
       <!-- Kocioł to nie medium do okresowego odczytu, tylko dziennik zmian
-           nastaw — celowo osobna karta poniżej kafelków, nie kolejny kafelek
-           w siatce. -->
-      <button id="przycisk-kociol" class="karta-kociol">
-        <img class="karta-kociol__ikona" src="ikony/kociol.svg" alt="">
-        <span class="karta-kociol__tekst">
-          <span class="karta-kociol__tytul">Kocioł</span>
-          <span class="karta-kociol__opis">Zmiana nastaw</span>
+           nastaw. Wygląda jak karty mediów, ale jest oddzielony od nich
+           większym odstępem (klasa karta--osobna). -->
+      <button id="przycisk-kociol" class="karta karta--osobna">
+        <img class="karta__ikona" src="ikony/kociol.svg" alt="">
+        <span class="karta__tekst">
+          <span class="karta__tytul">Kocioł</span>
+          <span class="karta__opis">Zmiana nastaw</span>
         </span>
       </button>
 
       <!-- Podgląd z arkusza (punkt 6 backlogu) — tylko do odczytu, żeby
            sprawdzić z telefonu ostatnie wpisy i temperatury bez wchodzenia
-           do Arkusza Google. Ta sama, karta-poniżej-kafelków konwencja
-           co Kocioł, bo to też nie jest okresowy odczyt medium. -->
-      <button id="przycisk-podglad" class="karta-kociol">
-        <img class="karta-kociol__ikona" src="ikony/podglad.svg" alt="">
-        <span class="karta-kociol__tekst">
-          <span class="karta-kociol__tytul">Podgląd</span>
-          <span class="karta-kociol__opis">Ostatnie odczyty i temperatury</span>
+           do Arkusza Google. -->
+      <button id="przycisk-podglad" class="karta">
+        <img class="karta__ikona" src="ikony/podglad.svg" alt="">
+        <span class="karta__tekst">
+          <span class="karta__tytul">Podgląd</span>
+          <span class="karta__opis">Ostatnie odczyty i temperatury</span>
         </span>
       </button>
 

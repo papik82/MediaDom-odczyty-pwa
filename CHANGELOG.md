@@ -3,6 +3,16 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.17.0 — 2026-09-22
+
+### Zmienione
+- Ekran startowy: media nie są już kwadratowymi kafelkami w siatce 2x2, tylko
+  kartami na pełną szerokość, tak jak Kocioł i Podgląd (ikona z lewej, tytuł
+  i krótki opis z jednostką). Wszystkie karty mają wspólną klasę `karta`
+  w `css/styl.css`; Kocioł i Podgląd oddziela od mediów większy odstęp.
+- Karty mediów są wybierane w `js/app.js` po atrybucie `data-medium`,
+  a nie po klasie.
+
 ## 0.16.2 — 2026-09-22
 
 ### Zmienione

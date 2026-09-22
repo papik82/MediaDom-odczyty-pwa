@@ -35,7 +35,9 @@ const poleToken = document.getElementById('pole-token');
 const komunikatUstawien = document.getElementById('komunikat-ustawien');
 const komunikatStart = document.getElementById('komunikat-start');
 const komunikatKolejka = document.getElementById('komunikat-kolejka');
-const kafelki = document.querySelectorAll('.kafelek');
+// Karty mediów rozpoznajemy po atrybucie data-medium, a nie po klasie —
+// Kocioł i Podgląd mają tę samą klasę `karta`, ale nie są mediami.
+const kafelki = document.querySelectorAll('.karta[data-medium]');
 
 const potwierdzenieTytul = document.getElementById('potwierdzenie-tytul');
 const potwierdzenieJednostka = document.getElementById('potwierdzenie-jednostka');

@@ -58,48 +58,21 @@ main {
   margin: 0 auto;
 }
 
-/* Kafelki mediów — duże, w siatce 2x2, żeby kciuk sięgał wszędzie. */
-.kafelki {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+/* Karty ekranu startowego — jeden wspólny wygląd dla mediów, kotła
+   i podglądu: pełna szerokość, ikona z lewej, tytuł i opis obok. Pełna
+   szerokość daje duży cel dotyku przy obsłudze jedną ręką. */
+.karty-mediow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   margin-top: 1rem;
 }
 
-.kafelek {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  aspect-ratio: 1 / 1;
-  border: none;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  cursor: pointer;
-}
-
-.kafelek:active {
-  background: #e3f0fd;
-}
-
-.kafelek__ikona {
-  width: 44px;
-  height: 44px;
-}
-
-/* Karta kotła — celowo inny kształt niż kwadratowe kafelki mediów, żeby
-   było widać, że to coś innego (dziennik zmian, nie okresowy odczyt). */
-.karta-kociol {
+.karta {
   display: flex;
   align-items: center;
   gap: 1rem;
   width: 100%;
-  margin-top: 1rem;
   padding: 1rem;
   border: none;
   border-radius: 16px;
@@ -109,28 +82,41 @@ main {
   cursor: pointer;
 }
 
-.karta-kociol:active {
+/* Odstęp między kolejnymi kartami poza listą mediów (Kocioł → Podgląd).
+   Selektor „>” celowo łapie tylko karty leżące wprost w ekranie — wewnątrz
+   .karty-mediow odstęp daje już `gap` i margines by się dublował. */
+.ekran > .karta + .karta {
+  margin-top: 0.75rem;
+}
+
+/* Kocioł i Podgląd to nie odczyty mediów — większy odstęp od listy mediów
+   oddziela te dwie grupy wizualnie. */
+.karta--osobna {
+  margin-top: 1.5rem;
+}
+
+.karta:active {
   background: #e3f0fd;
 }
 
-.karta-kociol__ikona {
+.karta__ikona {
   width: 40px;
   height: 40px;
   flex-shrink: 0;
 }
 
-.karta-kociol__tekst {
+.karta__tekst {
   display: flex;
   flex-direction: column;
 }
 
-.karta-kociol__tytul {
+.karta__tytul {
   font-size: 1.1rem;
   font-weight: 600;
   color: #1a1a1a;
 }
 
-.karta-kociol__opis {
+.karta__opis {
   font-size: 0.85rem;
   color: #666;
 }

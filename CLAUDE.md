@@ -14,9 +14,10 @@ prawdy.** Tutaj tylko to, co dotyczy aplikacji.
 PWA do zapisywania odczytów liczników. Działa na telefonie, hostowana na
 GitHub Pages, zapisuje dane do Arkusza Google przez webhook Apps Script.
 
-**Pięć mediów, każde niezależne.** Ekran startowy ma pięć kafelków:
+**Pięć mediów, każde niezależne.** Ekran startowy ma pięć kart mediów
+(pełna szerokość, ten sam wygląd co karty Kocioł i Podgląd — klasa `karta`):
 
-| kafelek | kod medium | częstotliwość |
+| karta | kod medium | częstotliwość |
 |---|---|---|
 | Gaz | `gaz` | codziennie w sezonie grzewczym |
 | Prąd T1 | `prad_t1` | raz w miesiącu |
@@ -47,7 +48,7 @@ czas telefonu, `js/exif.js`), z widoczną informacją o źródle godziny. Wysył
 znacznik, a nie czas serwera — ΔT liczy się dokładnie między momentami
 odczytów, więc godzina musi być prawdziwa.
 
-**Karta kotła** (nie kafelek wśród mediów) — formularz zmiany nastaw. Ostatnie
+**Karta kotła** (nie medium, osobno pod kartami mediów) — formularz zmiany nastaw. Ostatnie
 nastawy (`ostatni_kociol`) pobiera **z wyprzedzeniem** — przy starcie, powrocie
 na ekran startowy i powrocie z tła — trzyma je tylko w pamięci (do 5 min)
 i wypełnia nimi pola od razu po wejściu; nigdy z `localStorage`, bo
@@ -60,7 +61,7 @@ Cyrkulacja to lista przedziałów czasu w dobie, sklejana w jeden tekst.
 **Format sklejania — patrz `../apps-script/CLAUDE.md`, jest tam otwarta
 rozbieżność z archiwum. Nie zmieniaj go bez ustalenia.**
 
-**Karta podglądu** (nie kafelek) — tylko do odczytu. Pokazuje ostatnie wpisy
+**Karta podglądu** (nie medium) — tylko do odczytu. Pokazuje ostatnie wpisy
 z `odczyty` i temperatury dobowe z `temp_doba`, żeby sprawdzić z telefonu, co
 poszło do arkusza. Dwie niezależne akcje, wysyłane równolegle, z buforem w
 `localStorage` (`js/bufor.js`) — ekran od razu pokazuje poprzednie dane,
