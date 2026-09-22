@@ -3,6 +3,24 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.17.1 — 2026-09-22
+
+### Naprawione
+- Aplikacja nie przechodziła na nową wersję mimo wdrożenia. Dwie przyczyny:
+  1) Zainstalowana PWA zwykle tylko wraca z tła, bez przeładowania strony,
+     więc przeglądarka prawie nigdy nie sprawdzała, czy na serwerze jest nowy
+     `sw.js`. Teraz przy każdym powrocie z tła `js/app.js` wywołuje
+     `registration.update()`, a gdy nowy service worker przejmie stronę
+     (`controllerchange`), strona sama się przeładowuje — ale tylko na ekranie
+     startowym i nie w chwili, gdy widać komunikat o zapisanym odczycie, żeby
+     nie zgubić wpisywanych danych. Na innym ekranie przeładowanie czeka do
+     najbliższego powrotu z tła na ekran startowy.
+  2) Instalacja nowej wersji w `sw.js` pobierała pliki przez pamięć HTTP
+     przeglądarki, a GitHub Pages pozwala ją trzymać 10 minut
+     (`max-age=600`) — nowy cache mógł dostać stare pliki. Teraz pliki są
+     pobierane z pominięciem tej pamięci (`cache: 'reload'`).
+- Poprawka zadziała od następnej aktualizacji: na tę jedną wersję telefon
+  trzeba jeszcze raz przełączyć ręcznie (zamknąć aplikację i otworzyć ponownie).
 ## 0.17.0 — 2026-09-22
 
 ### Zmienione

@@ -1,7 +1,7 @@
 // Service worker — cache powłoki aplikacji, żeby PWA dało się otworzyć offline.
 // Wersję trzeba podbić przy każdej zmianie plików z listy PLIKI_POWLOKI,
 // inaczej przeglądarka będzie serwować starą wersję z cache.
-const WERSJA_CACHE = 'odczyty-v29';
+const WERSJA_CACHE = 'odczyty-v30';
 
 const PLIKI_POWLOKI = [
   './',
@@ -31,9 +31,16 @@ const PLIKI_POWLOKI = [
 ];
 
 // Instalacja — pobieramy i zapisujemy w cache wszystkie pliki powłoki od razu.
+// `cache: 'reload'` wymusza pobranie z serwera z pominięciem pamięci HTTP
+// przeglądarki. GitHub Pages wysyła `Cache-Control: max-age=600`, więc bez
+// tego nowa wersja cache mogła zostać wypełniona plikami sprzed wdrożenia
+// (np. nowy sw.js, ale stary index.html i wersja.js) — i tkwić tak aż do
+// kolejnego podbicia WERSJA_CACHE.
 self.addEventListener('install', (zdarzenie) => {
   zdarzenie.waitUntil(
-    caches.open(WERSJA_CACHE).then((cache) => cache.addAll(PLIKI_POWLOKI))
+    caches.open(WERSJA_CACHE).then((cache) =>
+      cache.addAll(PLIKI_POWLOKI.map((adres) => new Request(adres, { cache: 'reload' })))
+    )
   );
   self.skipWaiting();
 });
