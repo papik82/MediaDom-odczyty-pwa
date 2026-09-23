@@ -586,6 +586,17 @@ function doPorownania(wartosc) {
   return String(wartosc);
 }
 
+// Czy dwa zestawy nastaw kotła są takie same (bez daty obowiązywania).
+// Wspólne dla formularza (czy w ogóle jest co wysłać) i kolejki offline
+// (czy wpis z kolejki nie jest już w arkuszu — patrz czyNastawyJuzWArkuszu).
+function czyTeSameNastawy(a, b) {
+  return a.tryb === b.tryb
+    && doPorownania(a.krzywa_grzewcza) === doPorownania(b.krzywa_grzewcza)
+    && doPorownania(a.przesuniecie) === doPorownania(b.przesuniecie)
+    && doPorownania(a.temp_cwu) === doPorownania(b.temp_cwu)
+    && a.cyrkulacja === b.cyrkulacja;
+}
+
 formularzKotla.addEventListener('submit', async (zdarzenie) => {
   zdarzenie.preventDefault();
 
@@ -598,14 +609,7 @@ formularzKotla.addEventListener('submit', async (zdarzenie) => {
     obowiazuje_od: `${poleObowiazujeOd.value}:00`,
   };
 
-  const bezZmian = ostatnieNastawyKotla
-    && ostatnieNastawyKotla.tryb === daneKotla.tryb
-    && doPorownania(ostatnieNastawyKotla.krzywa_grzewcza) === doPorownania(daneKotla.krzywa_grzewcza)
-    && doPorownania(ostatnieNastawyKotla.przesuniecie) === doPorownania(daneKotla.przesuniecie)
-    && doPorownania(ostatnieNastawyKotla.temp_cwu) === doPorownania(daneKotla.temp_cwu)
-    && ostatnieNastawyKotla.cyrkulacja === daneKotla.cyrkulacja;
-
-  if (bezZmian) {
+  if (ostatnieNastawyKotla && czyTeSameNastawy(ostatnieNastawyKotla, daneKotla)) {
     komunikatKotla.textContent = 'Brak zmian względem poprzednich nastaw — nic nie wysłano.';
     komunikatKotla.classList.remove('ukryty');
     return;
@@ -639,8 +643,11 @@ formularzKotla.addEventListener('submit', async (zdarzenie) => {
     uniewaznNastawyKotla();
     nastawyKotlaZWyprzedzeniem = { czas: Date.now(), wynik: { ok: true, brak: false, ...daneKotla } };
     czasOstatniejProbyNastawKotla = Date.now();
+    // Jak przy odczytach: to nie musi być brak internetu, a zapis mógł dojść.
+    const przyczyna = navigator.onLine ? 'brak odpowiedzi serwera' : 'brak połączenia';
     komunikatStart.textContent =
-      'Brak połączenia — zmiana nastaw kotła zapisana lokalnie, wyśle się sama, gdy wróci internet.';
+      `Nie udało się potwierdzić zapisu (${przyczyna}) — zmiana nastaw kotła ` +
+      'zapisana lokalnie. Aplikacja wyśle ją sama albo sprawdzi, że już doszła.';
     komunikatStart.classList.remove('ukryty');
     pokazEkran(ekranStart);
   } finally {
@@ -831,16 +838,82 @@ function opiszWpisKolejki(wpis) {
 // zamiast próbować bez końca.
 let przetwarzanieKolejkiWToku = false;
 
+// Czy odczyt odrzucony przy wysyłce z kolejki jest już w arkuszu?
+//
+// Typowy scenariusz: pierwsza wysyłka DOSZŁA i webhook zapisał wiersz, ale
+// odpowiedź nie wróciła do telefonu (Apps Script odpowiada przez
+// przekierowanie, które potrafi zwrócić przejściowe 404/500, albo zasięg
+// zniknął w trakcie). Aplikacja uznała to za brak połączenia i odłożyła
+// odczyt do kolejki. Ponowna wysyłka trafia wtedy na własny, już zapisany
+// wiersz, a webhook odrzuca ją jako „data nie jest późniejsza” — więc
+// zamiast prosić o ręczne wpisanie, sprawdzamy, czy wpis o tym samym
+// medium, dacie i stanie już tam jest. Webhook sam duplikatów nie wykrywa,
+// a kontraktu nie zmieniamy — używamy istniejącej akcji ostatnie_odczyty.
+//
+// `pamiec` to obiekt wspólny dla jednego przebiegu kolejki, żeby przy kilku
+// odrzuconych wpisach pobrać listę z arkusza tylko raz.
+const ILE_ODCZYTOW_DO_SPRAWDZENIA = 50;
+
+async function czyOdczytJestJuzWArkuszu(wpis, pamiec) {
+  if (wpis.akcja !== 'odczyt') return false;
+  if (!pamiec.odczyty) {
+    const wynik = await pobierzOstatnieOdczyty(ILE_ODCZYTOW_DO_SPRAWDZENIA);
+    if (!wynik.ok) return false;
+    pamiec.odczyty = wynik.odczyty;
+  }
+  return pamiec.odczyty.some((o) =>
+    o.medium === wpis.medium &&
+    o.data_godzina === wpis.data_godzina &&
+    // Stan porównujemy z tolerancją, bo liczba z arkusza może wrócić
+    // z drobnym błędem zmiennoprzecinkowym (np. 110.90599999).
+    Math.abs(Number(o.stan) - Number(wpis.stan)) < 0.0005
+  );
+}
+
+// To samo dla zmiany nastaw kotła, ale z jedną ważną różnicą: webhook
+// `zmiana_kotla` niczego nie odrzuca — zapisuje wszystko, co dostanie.
+// Ponowna wysyłka zmiany, która już doszła, nie dałaby więc błędu, tylko
+// po cichu dopisała drugi, identyczny wiersz w `kociol`. Dlatego sprawdzamy
+// PRZED wysłaniem, a nie po odrzuceniu: jeśli ostatni wpis w arkuszu ma tę
+// samą datę obowiązywania i te same nastawy, to jest to nasz wpis.
+//
+// Zwraca true (już jest), false (nie ma — trzeba wysłać) albo rzuca wyjątek
+// przy braku sieci. Gdy webhook zwróci błąd, zwracamy false i wysyłamy —
+// ewentualny duplikat jest mniejszym złem niż zgubiona zmiana nastaw.
+async function czyNastawyJuzWArkuszu(wpis) {
+  const ostatnie = await pobierzOstatnieNastawyKotla();
+  if (!ostatnie.ok || ostatnie.brak) return false;
+  return ostatnie.obowiazuje_od === wpis.obowiazuje_od && czyTeSameNastawy(ostatnie, wpis);
+}
+
 async function przetworzKolejkeOffline() {
   if (przetwarzanieKolejkiWToku) return;
   przetwarzanieKolejkiWToku = true;
 
   let wyslanychOk = 0;
+  const juzWArkuszu = [];
   const odrzucone = [];
+  const pamiecSprawdzania = {};
 
   try {
     while (pobierzKolejke().length > 0) {
       const [pierwszy] = pobierzKolejke();
+
+      if (pierwszy.akcja === 'zmiana_kotla') {
+        let jestJuz;
+        try {
+          jestJuz = await czyNastawyJuzWArkuszu(pierwszy);
+        } catch (blad) {
+          console.error('Kolejka offline: wciąż brak połączenia.', blad);
+          break;
+        }
+        if (jestJuz) {
+          usunPierwszyZKolejki();
+          juzWArkuszu.push(pierwszy);
+          continue;
+        }
+      }
+
       let odpowiedz;
       try {
         odpowiedz = await wyslij(pierwszy);
@@ -849,9 +922,28 @@ async function przetworzKolejkeOffline() {
         break;
       }
 
-      usunPierwszyZKolejki();
       if (odpowiedz.ok) {
+        usunPierwszyZKolejki();
         wyslanychOk++;
+        continue;
+      }
+
+      // Odrzucony — zanim uznamy go za problem, sprawdzamy, czy nie jest to
+      // po prostu wpis, który wcześniej doszedł (patrz czyOdczytJestJuzWArkuszu).
+      let jestJuz = false;
+      try {
+        jestJuz = await czyOdczytJestJuzWArkuszu(pierwszy, pamiecSprawdzania);
+      } catch (blad) {
+        // Sprawdzenie się nie udało (znów brak sieci) — wpis zostaje
+        // w kolejce i wrócimy do niego przy następnej okazji, zamiast
+        // pochopnie kazać wpisywać go ręcznie.
+        console.error('Kolejka offline: nie udało się sprawdzić, czy wpis już jest w arkuszu.', blad);
+        break;
+      }
+
+      usunPierwszyZKolejki();
+      if (jestJuz) {
+        juzWArkuszu.push(pierwszy);
       } else {
         odrzucone.push({ ...pierwszy, blad: odpowiedz.blad });
       }
@@ -862,18 +954,30 @@ async function przetworzKolejkeOffline() {
 
   aktualizujKomunikatKolejki();
   // Wysłane z kolejki wpisy zmieniły zawartość arkusza — patrz uwaga przy zapisie.
-  if (wyslanychOk > 0) wyczyscBuforKlucz('ostatnie_odczyty');
+  // Przy wpisach, które już były w arkuszu, też czyścimy bufor: Podgląd
+  // mógł zapamiętać listę sprzed ich pierwszej (udanej) wysyłki.
+  if (wyslanychOk > 0 || juzWArkuszu.length > 0) wyczyscBuforKlucz('ostatnie_odczyty');
 
+  const czesci = [];
+  if (wyslanychOk > 0) {
+    czesci.push(`Wysłano z kolejki offline: ${wyslanychOk} wpis(ów).`);
+  }
+  if (juzWArkuszu.length > 0) {
+    const opis = juzWArkuszu.map(opiszWpisKolejki).join(', ');
+    const jeden = juzWArkuszu.length === 1;
+    czesci.push(
+      `${opis} — ${jeden ? 'był' : 'były'} już w arkuszu (pierwsza wysyłka ` +
+      `doszła, zabrakło tylko potwierdzenia). Nic nie trzeba robić.`
+    );
+  }
   if (odrzucone.length > 0) {
     const opis = odrzucone
       .map((o) => `${opiszWpisKolejki(o)} (${o.blad})`)
       .join('; ');
-    komunikatStart.textContent =
-      `Kolejka offline: wysłano ${wyslanychOk}, odrzucono ${odrzucone.length} — ` +
-      `wpisz ponownie ręcznie: ${opis}`;
-    komunikatStart.classList.remove('ukryty');
-  } else if (wyslanychOk > 0) {
-    komunikatStart.textContent = `Wysłano z kolejki offline: ${wyslanychOk} wpis(ów).`;
+    czesci.push(`Webhook odrzucił ${odrzucone.length} wpis(ów) z kolejki — wpisz ponownie ręcznie: ${opis}`);
+  }
+  if (czesci.length > 0) {
+    komunikatStart.textContent = czesci.join(' ');
     komunikatStart.classList.remove('ukryty');
   }
 }
@@ -914,15 +1018,21 @@ formularzPotwierdzenia.addEventListener('submit', async (zdarzenie) => {
     zwolnijPodgladZdjecia();
     pokazEkran(ekranStart);
   } catch (blad) {
-    // Brak sieci (a nie odrzucenie przez webhook) — zamiast zmuszać do
-    // czekania na zasięg, zapisujemy lokalnie i wysyłamy automatycznie
-    // przy najbliższej okazji (patrz js/kolejka.js).
+    // Nie dostaliśmy odpowiedzi webhooka (a nie odrzucenie przez niego) —
+    // zamiast zmuszać do czekania, zapisujemy lokalnie i wysyłamy
+    // automatycznie przy najbliższej okazji (patrz js/kolejka.js).
+    // To NIE musi znaczyć braku internetu: przejściowy błąd HTTP
+    // przekierowania Apps Script też tu trafia, a wtedy wiersz bywa już
+    // zapisany. Komunikat mówi więc uczciwie „nie potwierdzono”, a kolejka
+    // przy ponownej wysyłce rozpozna taki wpis (czyOdczytJestJuzWArkuszu).
     console.error('Nie udało się wysłać odczytu, dokładam do kolejki offline:', blad);
     dodajDoKolejki({ akcja: 'odczyt', ...odczyt });
     aktualizujKomunikatKolejki();
+    const przyczyna = navigator.onLine ? 'brak odpowiedzi serwera' : 'brak połączenia';
     komunikatStart.textContent =
-      `Brak połączenia — ${opisMedium.nazwa} ${poleStan.value} ${opisMedium.jednostka} ` +
-      'zapisane lokalnie, wyśle się samo, gdy wróci internet.';
+      `Nie udało się potwierdzić zapisu (${przyczyna}) — ${opisMedium.nazwa} ` +
+      `${poleStan.value} ${opisMedium.jednostka} zapisane lokalnie. Aplikacja ` +
+      'wyśle je sama albo sprawdzi, że już doszło.';
     komunikatStart.classList.remove('ukryty');
     zwolnijPodgladZdjecia();
     pokazEkran(ekranStart);

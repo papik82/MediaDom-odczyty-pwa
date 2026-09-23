@@ -3,6 +3,34 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.17.2 — 2026-09-23
+
+### Naprawione
+- Mylący komunikat „Kolejka offline: odrzucono 1 — wpisz ponownie ręcznie”
+  przy odczycie, który w rzeczywistości był już w arkuszu. Scenariusz:
+  pierwsza wysyłka doszła i webhook zapisał wiersz, ale odpowiedź nie wróciła
+  do telefonu (przejściowy błąd HTTP przekierowania Apps Script albo utrata
+  zasięgu w trakcie). Aplikacja uznała to za brak połączenia i odłożyła
+  odczyt do kolejki, a ponowna wysyłka trafiła na własny wiersz i została
+  odrzucona jako „data nie jest późniejsza”. Teraz przy odrzuceniu wpisu
+  z kolejki `js/app.js` sprawdza przez `ostatnie_odczyty`, czy odczyt o tym
+  samym medium, dacie i stanie już jest w arkuszu — jeśli tak, pokazuje
+  „był już w arkuszu… Nic nie trzeba robić”. Kontrakt webhooka bez zmian.
+- Gdy sprawdzenie się nie uda (znów brak sieci), wpis zostaje w kolejce
+  zamiast od razu trafiać do „wpisz ponownie ręcznie”.
+- Komunikat po nieudanej wysyłce mówi „Nie udało się potwierdzić zapisu
+  (brak połączenia / brak odpowiedzi serwera)” zamiast zawsze „Brak
+  połączenia” — błąd serwera to nie to samo co brak internetu, a zapis mógł
+  już dojść.
+- Kocioł: zmiana nastaw z kolejki offline mogła po cichu dopisać drugi,
+  identyczny wiersz w `kociol` — webhook `zmiana_kotla` niczego nie odrzuca,
+  więc ponowna wysyłka zmiany, która już doszła, nie dawała błędu. Teraz
+  kolejka PRZED wysłaniem pyta `ostatni_kociol`; jeśli ostatni wpis ma tę samą
+  datę obowiązywania i te same nastawy, wpis jest pomijany z komunikatem
+  „był już w arkuszu”. Przy błędzie webhooka zmiana jest wysyłana mimo
+  wszystko (duplikat to mniejsze zło niż zgubiona zmiana nastaw). Porównanie
+  nastaw wydzielone do `czyTeSameNastawy`, wspólnej z formularzem kotła.
+
 ## 0.17.1 — 2026-09-22
 
 ### Naprawione
@@ -21,6 +49,7 @@ zgodne z numerem w `js/wersja.js`.
      pobierane z pominięciem tej pamięci (`cache: 'reload'`).
 - Poprawka zadziała od następnej aktualizacji: na tę jedną wersję telefon
   trzeba jeszcze raz przełączyć ręcznie (zamknąć aplikację i otworzyć ponownie).
+
 ## 0.17.0 — 2026-09-22
 
 ### Zmienione
