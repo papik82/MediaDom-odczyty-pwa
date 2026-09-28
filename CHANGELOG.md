@@ -3,6 +3,21 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.19.2 — 2026-09-28
+
+### Zmienione
+- Kolorystyka aplikacji dopasowana do nowej ikony: kolor przewodni
+  `#1565c0` (niebieski) zastąpiony jagodowym `#3d4fb0` — nagłówek,
+  przyciski główne, wskaźnik trybu kotła, znaczek wczytywania, ikony kart
+  (gaz, woda, prąd, kocioł, podgląd), pasek stanu telefonu (`theme-color`
+  w `index.html` i `manifest.json`). Tło wciśniętej karty i tło strony
+  w chłodniejszym, jagodowym odcieniu.
+- Kolory przewodnie zebrane w zmiennych CSS na początku `css/styl.css`
+  (`--kolor-glowny`, `--kolor-glowny-jasny`, `--tlo-strony`) — kolejna
+  zmiana odcienia to edycja w jednym miejscu (plus `theme-color`
+  i ikony SVG, opisane w komentarzu). Kolory obwodów kotła i komunikatów
+  bez zmian, bo niosą znaczenie.
+
 ## 0.19.1 — 2026-09-28
 
 ### Zmienione

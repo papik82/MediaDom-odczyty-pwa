@@ -1,6 +1,19 @@
 /* Style aplikacji — pisane pod ekran telefonu, obsługa jedną ręką.
    Duże, łatwe do trafienia elementy, minimum przewijania. */
 
+/* Kolory przewodnie w jednym miejscu (od 0.19.2, dopasowane do ikony
+   „borówka”). Zmiana odcienia aplikacji = zmiana tutaj, plus trzy miejsca,
+   których CSS nie sięga: <meta name="theme-color"> w index.html,
+   theme_color w manifest.json i kolor linii w ikonach ikony/*.svg (SVG
+   wczytane przez <img> nie widzą zmiennych CSS).
+   Kolory obwodów kotła (CO / CWU) i komunikatów niosą znaczenie, więc
+   zostają niezależne od koloru przewodniego. */
+:root {
+  --kolor-glowny: #3d4fb0;        /* nagłówek, przyciski, wskaźnik trybu; biały tekst ma kontrast ok. 7:1 */
+  --kolor-glowny-jasny: #e8ebfa;  /* tło wciśniętej karty */
+  --tlo-strony: #f4f5f9;          /* tło strony, nagłówek tabeli temperatur */
+}
+
 * {
   box-sizing: border-box;
 }
@@ -13,7 +26,7 @@ html, body {
 
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: #f4f6f8;
+  background: var(--tlo-strony);
   color: #1a1a1a;
 }
 
@@ -27,7 +40,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  background: #1565c0;
+  background: var(--kolor-glowny);
   color: #fff;
 }
 
@@ -96,7 +109,7 @@ main {
 }
 
 .karta:active {
-  background: #e3f0fd;
+  background: var(--kolor-glowny-jasny);
 }
 
 .karta__ikona {
@@ -224,7 +237,7 @@ main {
   bottom: 3px;
   left: 0;
   width: 0;
-  background: #1565c0;
+  background: var(--kolor-glowny);
   border-radius: 9px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   transition: transform 0.25s ease, width 0.25s ease;
@@ -287,7 +300,7 @@ main {
 }
 
 .przycisk-glowny {
-  background: #1565c0;
+  background: var(--kolor-glowny);
   color: #fff;
 }
 
@@ -399,7 +412,7 @@ main {
   margin-right: 0.5em;
   vertical-align: -0.1em;
   border: 2px solid #bbb;
-  border-top-color: #1565c0;
+  border-top-color: var(--kolor-glowny);
   border-radius: 50%;
   animation: obrot 0.8s linear infinite;
 }
@@ -456,7 +469,7 @@ main {
 }
 
 .tabela-temperatur thead th {
-  background: #f4f6f8;
+  background: var(--tlo-strony);
   font-weight: 600;
   color: #444;
 }
