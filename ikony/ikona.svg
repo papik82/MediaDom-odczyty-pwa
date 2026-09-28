@@ -1,32 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Ikona aplikacji, lifting 0.19.1: tło „borówka” (jaśniejszy niebieski
+       przechodzący w granat z nutą fioletu) i grubsze linie znaku, żeby
+       ikona nie wyglądała na drobną obok innych aplikacji na ekranie. -->
   <defs>
     <linearGradient id="tlo" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2f8fe0"/>
-      <stop offset="1" stop-color="#0d47a1"/>
+      <stop offset="0" stop-color="#6b86e0"/>
+      <stop offset="1" stop-color="#2f3d94"/>
     </linearGradient>
   </defs>
 
   <rect width="512" height="512" rx="112" fill="url(#tlo)"/>
 
-  <!-- Dach — grubość linii jak łuk manometru (26). Linia dachu wypuszczona
-       poza ścianę (okap) o 26 wzdłuż tej samej linii, ta sama grubość co
-       dach. Ściana zaczyna się dokładnie tam, gdzie leżałby nieprzedłużony
-       narożnik dachu (136/376, 211), więc dach wizualnie wystaje ponad nią. -->
-  <path d="M117 229 L256 101 L395 229" fill="none" stroke="#ffffff"
-        stroke-width="26" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Znak lekko powiększony (1,04) i zsunięty o 6 w dół, żeby optycznie
+       leżał na środku. Skala dobrana tak, żeby końce łuku manometru razem
+       z zaokrągleniem linii mieściły się w bezpiecznej strefie ikony
+       maskowalnej (koło o promieniu 40% boku, czyli 204,8 od środka) —
+       launcher może obciąć wszystko, co leży dalej. -->
+  <g transform="translate(256 262) scale(1.04) translate(-256 -256)">
+    <!-- Dach z okapem — linia wypuszczona poza ściany. -->
+    <path d="M117 229 L256 101 L395 229" fill="none" stroke="#ffffff"
+          stroke-width="34" stroke-linejoin="round" stroke-linecap="round"/>
 
-  <!-- Symboliczne ściany, krótkie odcinki zwieszone z dachu, wyraźnie nad
-       łukiem manometru. -->
-  <line x1="136" y1="211" x2="136" y2="269" stroke="#ffffff"
-        stroke-width="22" stroke-linecap="round"/>
-  <line x1="376" y1="211" x2="376" y2="269" stroke="#ffffff"
-        stroke-width="22" stroke-linecap="round"/>
+    <!-- Symboliczne ściany, krótkie odcinki zwieszone z dachu. -->
+    <line x1="136" y1="211" x2="136" y2="265" stroke="#ffffff"
+          stroke-width="30" stroke-linecap="round"/>
+    <line x1="376" y1="211" x2="376" y2="265" stroke="#ffffff"
+          stroke-width="30" stroke-linecap="round"/>
 
-  <!-- Manometr — wskazówka, oś i łuk. Symbol "odczytu", uniwersalny dla
-       gazu, prądu i wody. -->
-  <path d="M136 387 A120 120 0 0 1 376 387" fill="none" stroke="#ffffff"
-        stroke-width="26" stroke-linecap="round"/>
-  <line x1="256" y1="387" x2="303" y2="322" stroke="#ffffff"
-        stroke-width="22" stroke-linecap="round"/>
-  <circle cx="256" cy="387" r="24" fill="#ffffff"/>
+    <!-- Manometr — łuk, wskazówka i oś. Symbol „odczytu”, wspólny dla gazu,
+         prądu i wody. -->
+    <path d="M140 387 A116 116 0 0 1 372 387" fill="none" stroke="#ffffff"
+          stroke-width="34" stroke-linecap="round"/>
+    <line x1="256" y1="387" x2="302" y2="324" stroke="#ffffff"
+          stroke-width="28" stroke-linecap="round"/>
+    <circle cx="256" cy="387" r="28" fill="#ffffff"/>
+  </g>
 </svg>

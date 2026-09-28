@@ -3,6 +3,18 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.19.1 — 2026-09-28
+
+### Zmienione
+- Lifting ikony aplikacji (`ikony/ikona.svg`), żeby pasowała stylistycznie
+  do sąsiednich ikon na ekranie telefonu: tło w odcieniu „borówki” (gradient
+  `#6b86e0` → `#2f3d94` zamiast `#2f8fe0` → `#0d47a1`), grubsze linie dachu,
+  ścian i manometru (34/30/28 zamiast 26/22) i lekko powiększony znak.
+  Kształt znaku bez zmian. Znak mieści się w bezpiecznej strefie ikony
+  maskowalnej (promień 40% boku). Android podmienia ikonę zainstalowanej
+  aplikacji z opóźnieniem — zwykle w ciągu doby albo po ponownym dodaniu
+  do ekranu głównego.
+
 ## 0.19.0 — 2026-09-28
 
 ### Dodane
