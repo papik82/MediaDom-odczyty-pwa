@@ -77,6 +77,20 @@ const statusTemperatur = document.getElementById('status-temperatur');
 
 const ETYKIETY_TRYBU = { off: 'Wyłączony', cwu: 'CWU', co: 'CO', cwu_co: 'CWU + CO' };
 
+// Tryb rozłożony na dwa obwody: CO (ogrzewanie) i CWU (ciepła woda). Z tego
+// korzysta formularz (które pola mają sens) i historia zmian (paski, opisy).
+// Stoi tu, na górze, bo ustawTryb woła je już przy starcie modułu.
+const OBWODY_TRYBU = {
+  off: { co: false, cwu: false },
+  cwu: { co: false, cwu: true },
+  co: { co: true, cwu: false },
+  cwu_co: { co: true, cwu: true },
+};
+
+function obwodyTrybu(tryb) {
+  return OBWODY_TRYBU[tryb] || { co: false, cwu: false };
+}
+
 // Nastawy pobrane z webhooka przy otwarciu ekranu — punkt odniesienia do
 // wykrywania, czy formularz w ogóle się różni (wpis ma sens tylko wtedy).
 // null = brak punktu odniesienia (pusty arkusz albo offline) — wtedy nie
@@ -194,6 +208,42 @@ function ustawTryb(wartosc) {
   const wybrany = opcjeTrybu.find((p) => p.dataset.wartosc === wartosc) || opcjeTrybu[0];
   opcjeTrybu.forEach((p) => p.setAttribute('aria-checked', String(p === wybrany)));
   przesunWskaznikTrybu(wybrany);
+  zastosujRegulyPolKotla();
+}
+
+// Wyszarzanie zbędnych pól: bez CO nie ma krzywej ani przesunięcia, bez CWU
+// nie ma temperatury CWU — tak wygląda też całe archiwum w zakładce `kociol`
+// (tryb `cwu` ma pustą krzywą i przesunięcie, `off` — wszystkie trzy puste).
+// Cyrkulacji nie ruszamy: w archiwum jest wpisana także przy trybie `off`.
+//
+// Pole zablokowane jest czyszczone, ale jego wartość chowamy w data-schowane
+// i przywracamy, gdy obwód wróci — przeklikanie trybu tam i z powrotem nie
+// kasuje więc wpisanej krzywej. Schowek zeruje się przy każdym otwarciu ekranu.
+const POLA_OBWODOW = [
+  { pole: poleKrzywa, obwod: 'co' },
+  { pole: polePrzesuniecie, obwod: 'co' },
+  { pole: poleTempCwu, obwod: 'cwu' },
+];
+let wczytywanieKotla = false;   // w trakcie wczytywania wszystkie pola i tak są zablokowane
+
+function zastosujRegulyPolKotla() {
+  const obwody = obwodyTrybu(pobierzTryb());
+  POLA_OBWODOW.forEach(({ pole, obwod }) => {
+    const potrzebne = obwody[obwod];
+    if (!potrzebne && pole.value !== '') {
+      pole.dataset.schowane = pole.value;
+      pole.value = '';
+    } else if (potrzebne && pole.value === '' && pole.dataset.schowane) {
+      pole.value = pole.dataset.schowane;
+    }
+    if (potrzebne) delete pole.dataset.schowane;
+    pole.disabled = wczytywanieKotla || !potrzebne;
+    pole.closest('.pole-formularza').classList.toggle('pole-formularza--nieaktywne', !potrzebne);
+  });
+}
+
+function wyczyscSchowanePolaKotla() {
+  POLA_OBWODOW.forEach(({ pole }) => { delete pole.dataset.schowane; });
 }
 
 function pobierzTryb() {
@@ -267,10 +317,11 @@ function sparsujCyrkulacje(tekst) {
 // na wolniejszym połączeniu, użytkownik mógł zdążyć coś wpisać zanim
 // odpowiedź webhooka przyszła i po cichu nadpisała jego wpis.
 function ustawWczytywanieKotla(wTrakcie) {
+  wczytywanieKotla = wTrakcie;
   opcjeTrybu.forEach((p) => { p.disabled = wTrakcie; });
-  poleKrzywa.disabled = wTrakcie;
-  polePrzesuniecie.disabled = wTrakcie;
-  poleTempCwu.disabled = wTrakcie;
+  // Pola krzywej, przesunięcia i temperatury CWU: blokada na czas wczytywania,
+  // a po nim — według trybu (zastosujRegulyPolKotla).
+  zastosujRegulyPolKotla();
   przyciskDodajPrzedzial.disabled = wTrakcie;
   przyciskZapiszKociol.disabled = wTrakcie;
   if (wTrakcie) {
@@ -341,12 +392,14 @@ async function wczytajOstatnieNastawyKotla(generacja) {
       return;
     }
 
-    ustawTryb(wynik.tryb || 'off');
     poleKrzywa.value = wynik.krzywa_grzewcza ?? '';
     polePrzesuniecie.value = wynik.przesuniecie ?? '';
     poleTempCwu.value = wynik.temp_cwu ?? '';
     listaCyrkulacji.innerHTML = '';
     sparsujCyrkulacje(wynik.cyrkulacja).forEach((p) => dodajPrzedzialCyrkulacji(p.od, p.do));
+    // Tryb PO wartościach — reguły pól działają na tym, co już jest wpisane
+    // (gdyby w arkuszu przy `cwu` była krzywa, trafi do schowka, nie do wysyłki).
+    ustawTryb(wynik.tryb || 'off');
 
     ostatnieNastawyKotla = {
       tryb: wynik.tryb || 'off',
@@ -374,6 +427,7 @@ function otworzKociol() {
   poleTempCwu.value = '';
   poleObowiazujeOd.value = sformatujDataGodzinaLokalnie(new Date());
   listaCyrkulacji.innerHTML = '';
+  wyczyscSchowanePolaKotla();
   ostatnieNastawyKotla = null;
   pokazEkran(ekranKociol);
   // Wskaźnik trybu liczy swoją pozycję z realnych wymiarów przycisku
@@ -420,17 +474,6 @@ przyciskAnulujKociol.addEventListener('click', () => {
 const DNI_HISTORII_KOTLA = 365;   // okno pasków
 const ILE_ZMIAN_KOTLA = 6;        // ile ostatnich wpisów na osi
 const DOBA_MS = 24 * 3600 * 1000;
-
-const OBWODY_TRYBU = {
-  off: { co: false, cwu: false },
-  cwu: { co: false, cwu: true },
-  co: { co: true, cwu: false },
-  cwu_co: { co: true, cwu: true },
-};
-
-function obwodyTrybu(tryb) {
-  return OBWODY_TRYBU[tryb] || { co: false, cwu: false };
-}
 
 // Mały pomocnik do budowania DOM: tekst przez textContent, nie innerHTML —
 // cyrkulacja to dowolny tekst z arkusza, więc nie wstawiamy go jako HTML.
@@ -859,7 +902,23 @@ function doPorownania(wartosc) {
 // Czy dwa zestawy nastaw kotła są takie same (bez daty obowiązywania).
 // Wspólne dla formularza (czy w ogóle jest co wysłać) i kolejki offline
 // (czy wpis z kolejki nie jest już w arkuszu — patrz czyNastawyJuzWArkuszu).
-function czyTeSameNastawy(a, b) {
+//
+// Obie strony najpierw przez normalizujNastawy: formularz nie wyśle krzywej
+// przy samym CWU, więc wpis z arkusza, który ją ma, nie może przez to
+// wyglądać na „inny”.
+function normalizujNastawy(n) {
+  const obwody = obwodyTrybu(n.tryb);
+  return {
+    ...n,
+    krzywa_grzewcza: obwody.co ? n.krzywa_grzewcza : null,
+    przesuniecie: obwody.co ? n.przesuniecie : null,
+    temp_cwu: obwody.cwu ? n.temp_cwu : null,
+  };
+}
+
+function czyTeSameNastawy(pierwsze, drugie) {
+  const a = normalizujNastawy(pierwsze);
+  const b = normalizujNastawy(drugie);
   return a.tryb === b.tryb
     && doPorownania(a.krzywa_grzewcza) === doPorownania(b.krzywa_grzewcza)
     && doPorownania(a.przesuniecie) === doPorownania(b.przesuniecie)

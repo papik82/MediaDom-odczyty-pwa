@@ -193,6 +193,18 @@ main {
   border-radius: 8px;
 }
 
+/* Pole zbędne przy wybranym trybie kotła (np. krzywa przy wyłączonym CO) —
+   wyszarzone razem z etykietą, żeby było widać, że to celowe, a nie awaria. */
+.pole-formularza--nieaktywne {
+  color: #9aa1a9;
+}
+
+.pole-formularza--nieaktywne input {
+  background: #eef1f4;
+  border-color: #e0e3e7;
+  cursor: not-allowed;
+}
+
 /* Segmentowy przełącznik trybu kotła — czytelniejszy i szybszy w obsłudze
    kciukiem niż natywny <select>: cztery równe segmenty w jednym rzędzie,
    z przesuwającym się wskaźnikiem (pozycja/szerokość liczona w JS na

@@ -53,6 +53,10 @@ nastawy (`ostatni_kociol`) pobiera **z wyprzedzeniem** — przy starcie, powroci
 na ekran startowy i powrocie z tła — trzyma je tylko w pamięci (do 5 min)
 i wypełnia nimi pola od razu po wejściu; nigdy z `localStorage`, bo
 nieaktualna podpowiedź mogłaby dać zapis złej zmiany.
+Pola zbędne przy wybranym trybie są czyszczone i blokowane (od 0.19.0):
+krzywa i przesunięcie bez CO, temperatura CWU bez CWU; cyrkulacja zawsze
+dostępna. Wyczyszczona wartość wraca po ponownym włączeniu obwodu (do
+zamknięcia ekranu).
 Wysyła **tylko wtedy, gdy coś faktycznie się zmieniło** — porównanie robi
 aplikacja po stronie klienta, nie webhook. Gdy punktu odniesienia brak
 (pusta zakładka albo brak zasięgu), wysyłka nie jest blokowana.

@@ -3,6 +3,23 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.19.0 — 2026-09-28
+
+### Dodane
+- Kocioł: pola zbędne przy wybranym trybie są czyszczone i wyszarzane —
+  krzywa i przesunięcie bez CO (`cwu`, `off`), temperatura CWU bez CWU
+  (`co`, `off`). Tak wygląda też całe archiwum w zakładce `kociol`.
+  Wyczyszczona wartość jest pamiętana do zamknięcia ekranu i wraca, gdy
+  obwód znów zostanie włączony — przeklikanie trybów niczego nie kasuje.
+  Cyrkulacja zostaje zawsze dostępna (w archiwum jest wpisana także przy `off`).
+
+### Zmienione
+- Porównanie „brak zmian” (`czyTeSameNastawy`, `js/app.js`) pomija nastawy
+  obwodu, który jest wyłączony — wpis z arkusza, który np. przy `cwu` ma
+  krzywą, nie wygląda przez to na inny niż formularz.
+- Etykiety pól bez dopisku „(puste przy samym CWU)” — to teraz widać
+  po wyszarzeniu.
+
 ## 0.18.0 — 2026-09-28
 
 ### Dodane
