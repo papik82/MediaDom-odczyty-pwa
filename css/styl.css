@@ -461,3 +461,187 @@ main {
   font-size: 0.8rem;
   color: #888;
 }
+
+/* Kocioł — historia zmian pod formularzem: dwa paski (CO, CWU) z ostatnich
+   12 miesięcy i pionowa oś ostatnich zmian. Kolory obwodów są wspólne
+   dla pasków, kropek i plakietek: CO ceglasty (ogrzewanie), CWU morski
+   (woda); wyłączony — szary. */
+.historia-kotla {
+  margin-top: 0.5rem;
+  padding: 0.9rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  font-size: 0.9rem;
+}
+
+.historia-kotla__paski {
+  margin-bottom: 1.1rem;
+}
+
+.historia-kotla__podpis {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  color: #666;
+}
+
+.wiersz-paska {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.78rem;
+}
+
+.wiersz-paska__nazwa {
+  width: 2.2rem;
+  font-weight: 600;
+}
+
+.wiersz-paska__dni {
+  width: 3.4rem;
+  text-align: right;
+  color: #666;
+  font-variant-numeric: tabular-nums;
+}
+
+.pasek-obwodu {
+  position: relative;
+  flex: 1;
+  display: flex;
+  height: 12px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #e3e7ec;
+}
+
+.pasek-obwodu__odcinek { height: 100%; }
+.pasek-obwodu__odcinek--co { background: #d85a30; }
+.pasek-obwodu__odcinek--cwu { background: #1d9e75; }
+.pasek-obwodu__odcinek--wyl { background: #e3e7ec; }
+.pasek-obwodu__odcinek--brak {
+  background: repeating-linear-gradient(135deg, #e3e7ec 0 3px, #fff 3px 6px);
+}
+
+/* Zmiana nastawy bez zmiany wł./wył. — biała kreska w poprzek paska. */
+.pasek-obwodu__kreska {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: #fff;
+}
+
+/* Podpisy miesięcy pod paskami — ta sama szerokość co pasek, czyli
+   z odjęciem kolumny nazwy (lewa) i liczby dni (prawa). */
+.pasek-osi {
+  position: relative;
+  height: 1.1rem;
+  margin: 0 calc(3.4rem + 0.5rem) 0 calc(2.2rem + 0.5rem);
+  font-size: 0.72rem;
+  color: #888;
+}
+
+.pasek-osi__podpis {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.pasek-osi__podpis--dzis {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.historia-kotla__legenda {
+  margin: 0.2rem 0 0;
+  font-size: 0.72rem;
+  color: #888;
+  line-height: 1.4;
+}
+
+/* Oś zmian: linia pionowa łączy kropki kolejnych wpisów. */
+.os-zmian {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.zmiana-kotla {
+  position: relative;
+  padding: 0 0 0.9rem 1.5rem;
+}
+
+.zmiana-kotla::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 16px;
+  bottom: 0;
+  border-left: 2px solid #e3e7ec;
+}
+
+.zmiana-kotla:last-child { padding-bottom: 0; }
+.zmiana-kotla:last-child::before { display: none; }
+
+/* Kropka w kolorze obwodu, którego dotyczy zmiana; oba — pół na pół. */
+.zmiana-kotla__kropka {
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #b0b7bf;
+}
+.zmiana-kotla__kropka--co { background: #d85a30; }
+.zmiana-kotla__kropka--cwu { background: #1d9e75; }
+.zmiana-kotla__kropka--oba { background: linear-gradient(90deg, #d85a30 50%, #1d9e75 50%); }
+
+.zmiana-kotla__gora {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zmiana-kotla__data {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.zmiana-kotla__plakietki {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.plakietka-obwodu {
+  padding: 0.1rem 0.45rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.plakietka-obwodu--co { background: #fbe9e3; color: #8a3a1d; }
+.plakietka-obwodu--cwu { background: #e1f5ee; color: #085041; }
+/* Wyłączony obwód — przekreślony i obrysowany, żeby różnił się nie tylko
+   kolorem (czytelne także dla osób słabiej rozróżniających barwy). */
+.plakietka-obwodu--wyl {
+  color: #999;
+  border: 1px dashed #c4cad1;
+  text-decoration: line-through;
+}
+
+.zmiana-kotla__opis {
+  margin: 0.15rem 0 0;
+  color: #444;
+}
+
+.zmiana-kotla__czas {
+  margin: 0.1rem 0 0;
+  font-size: 0.78rem;
+  color: #888;
+}

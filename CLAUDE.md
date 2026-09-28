@@ -57,6 +57,15 @@ Wysyła **tylko wtedy, gdy coś faktycznie się zmieniło** — porównanie robi
 aplikacja po stronie klienta, nie webhook. Gdy punktu odniesienia brak
 (pusta zakładka albo brak zasięgu), wysyłka nie jest blokowana.
 
+**Pod formularzem kotła — „Ostatnie zmiany”** (od 0.18.0), tylko do odczytu,
+z akcji `historia_kotla`, przez bufor w `localStorage` jak Podgląd (bezpieczne,
+bo niczego nie wpisuje do formularza). Dwa paski z ostatnich 12 miesięcy —
+CO i CWU osobno, włączone / wyłączone, kreska = zmiana nastawy obwodu bez
+zmiany wł./wył. — i pionowa oś 6 ostatnich zmian z opisem tego, co się
+zmieniło względem poprzedniego wpisu. Cztery tryby rozkładamy na dwa obwody
+tylko do wyświetlenia (`OBWODY_TRYBU` w `js/app.js`); w arkuszu dalej jest
+jeden tryb.
+
 Cyrkulacja to lista przedziałów czasu w dobie, sklejana w jeden tekst.
 **Format sklejania — patrz `../apps-script/CLAUDE.md`, jest tam otwarta
 rozbieżność z archiwum. Nie zmieniaj go bez ustalenia.**

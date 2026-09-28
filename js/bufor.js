@@ -5,9 +5,10 @@
 // stałą "podłogę" ok. 1,2–1,6 s na każde wywołanie (patrz BACKLOG.md pkt 12),
 // więc bez bufora ekran jest pusty przez tyle czasu przy każdym otwarciu.
 //
-// UWAGA: to celowo tylko dane do PODGLĄDU (odczyty, temperatury). Nastaw kotła
-// tu nie trzymamy — one wypełniają formularz, a nieaktualna podpowiedź mogłaby
-// skłonić do zapisania złej zmiany. Dla kotła jest osobne pobieranie
+// UWAGA: to celowo tylko dane do PODGLĄDU (odczyty, temperatury, historia zmian
+// kotła pod formularzem). Ostatnich nastaw kotła (ostatni_kociol) tu nie
+// trzymamy — one wypełniają formularz, a nieaktualna podpowiedź mogłaby
+// skłonić do zapisania złej zmiany. Historia niczego nie wypełnia, więc może. Dla kotła jest osobne pobieranie
 // z wyprzedzeniem, tylko w pamięci (patrz js/app.js).
 
 const PREFIKS = 'odczyty_bufor_';

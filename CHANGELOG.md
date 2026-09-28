@@ -3,6 +3,24 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.18.0 — 2026-09-28
+
+### Dodane
+- Ekran Kocioł: sekcja „Ostatnie zmiany” pod formularzem. Dwa paski z ostatnich
+  12 miesięcy — CO i CWU osobno (kolor = włączone, szare = wyłączone, biała
+  kreska = zmiana krzywej / przesunięcia albo temperatury CWU / cyrkulacji),
+  z liczbą dni włączenia obok — i pionowa oś 6 ostatnich zmian: data,
+  plakietki CO/CWU (wyłączony obwód przekreślony), opis tego, co się zmieniło
+  względem poprzedniego wpisu, i jak długo nastawa obowiązywała.
+- Dane z nowej akcji webhooka `historia_kotla` (kontrakt:
+  `../apps-script/CLAUDE.md`), z buforem w `localStorage` jak Podgląd —
+  sekcja od razu pokazuje ostatnio pobraną historię, świeża ją podmienia.
+
+### Zmienione
+- `wczytajBlokPodgladu` (`js/app.js`) przyjmuje funkcję sprawdzającą
+  aktualność zamiast numeru generacji — korzystają z niej teraz Podgląd
+  i Kocioł, każdy ze swoim licznikiem.
+
 ## 0.17.2 — 2026-09-23
 
 ### Naprawione

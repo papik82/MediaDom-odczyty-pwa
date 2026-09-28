@@ -55,6 +55,13 @@ export function pobierzOstatnieNastawyKotla() {
   return wyslij({ akcja: 'ostatni_kociol' });
 }
 
+// Historia zmian nastaw — sekcja „Ostatnie zmiany” pod formularzem kotła.
+// `dni` wyznacza okno pasków CO/CWU, `ile` — minimalną liczbę wpisów na osi.
+// Tylko do odczytu, więc (inaczej niż ostatni_kociol) może iść przez bufor.
+export function pobierzHistorieKotla(dni = 365, ile = 6) {
+  return wyslij({ akcja: 'historia_kotla', dni, ile });
+}
+
 // Ekran podglądu (punkt 6 backlogu) — tylko do odczytu, dwa niezależne
 // zapytania zamiast jednego łączonego: każde ma swój, prosty kontrakt,
 // tak jak reszta akcji w tym pliku.

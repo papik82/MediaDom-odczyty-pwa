@@ -184,6 +184,14 @@
         </div>
         <p id="komunikat-kotla" class="komunikat ukryty"></p>
       </form>
+
+      <!-- Historia zmian — tylko do odczytu, pod formularzem. Dwa paski z
+           ostatnich 12 miesięcy (CO i CWU osobno: włączone / wyłączone)
+           i pionowa oś kilku ostatnich zmian. Rysowane w js/app.js
+           (renderujHistorieKotla) z odpowiedzi historia_kotla. -->
+      <h3 class="podglad__naglowek">Ostatnie zmiany</h3>
+      <p id="status-historii-kotla" class="status-bloku ukryty" role="status"></p>
+      <div id="historia-kotla" class="historia-kotla"></div>
     </section>
 
     <!-- Ekran podglądu — tylko do odczytu, dwie listy danych z arkusza:
