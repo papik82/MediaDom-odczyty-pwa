@@ -15,7 +15,7 @@ PWA do zapisywania odczytów liczników. Działa na telefonie, hostowana na
 GitHub Pages, zapisuje dane do Arkusza Google przez webhook Apps Script.
 
 **Pięć mediów, każde niezależne.** Ekran startowy ma trzy karty mediów
-(pełna szerokość, ten sam wygląd co karty Kocioł i Podgląd — klasa `karta`):
+(pełna szerokość, ten sam wygląd co karty Kocioł, Odczyty i Temperatury — klasa `karta`):
 
 | karta | kod medium | częstotliwość |
 |---|---|---|
@@ -72,7 +72,7 @@ aplikacja po stronie klienta, nie webhook. Gdy punktu odniesienia brak
 (pusta zakładka albo brak zasięgu), wysyłka nie jest blokowana.
 
 **Pod formularzem kotła — „Ostatnie zmiany”** (od 0.18.0), tylko do odczytu,
-z akcji `historia_kotla`, przez bufor w `localStorage` jak Podgląd (bezpieczne,
+z akcji `historia_kotla`, przez bufor w `localStorage` jak Odczyty i Temperatury (bezpieczne,
 bo niczego nie wpisuje do formularza). Dwa paski z ostatnich 12 miesięcy —
 CO i CWU osobno, włączone / wyłączone, kreska = zmiana nastawy obwodu bez
 zmiany wł./wył. — i pionowa oś 6 ostatnich zmian z opisem tego, co się
@@ -84,18 +84,18 @@ Cyrkulacja to lista przedziałów czasu w dobie, sklejana w jeden tekst.
 **Format sklejania — patrz `../apps-script/CLAUDE.md`, jest tam otwarta
 rozbieżność z archiwum. Nie zmieniaj go bez ustalenia.**
 
-**Karta podglądu** (nie medium) — tylko do odczytu. Pokazuje ostatnie wpisy
-z `odczyty` i temperatury dobowe z `temp_doba`, żeby sprawdzić z telefonu, co
-poszło do arkusza. Dwie niezależne akcje, wysyłane równolegle, z buforem w
-`localStorage` (`js/bufor.js`) — ekran od razu pokazuje poprzednie dane,
-świeże je podmieniają: każdy blok ma
-własny wiersz statusu (wczytywanie / czas wczytania / błąd), więc gdy jedna
-zawiedzie, druga i tak się wyświetla, a błąd pokazuje się tylko dla swojej
-części ekranu.
+**Karty „Odczyty” i „Temperatury”** (nie media; od 0.22.0 dwa osobne ekrany,
+wcześniej jeden wspólny „Podgląd”) — tylko do odczytu, żeby sprawdzić
+z telefonu, co poszło do arkusza. „Odczyty” pokazuje ostatnie wpisy
+z `odczyty` (akcja `ostatnie_odczyty`), „Temperatury” — średnie dobowe
+z `temp_doba` (akcja `temperatury_dobowe`). Każdy ekran pobiera tylko swoje
+dane, z buforem w `localStorage` (`js/bufor.js`) — ekran od razu pokazuje
+poprzednie dane, świeże je podmieniają — i ma własny wiersz statusu
+(wczytywanie / czas wczytania / błąd).
 
-**Wykres doby** (od 0.21.0): stuknięcie dnia w tabeli temperatur rozwija pod
-nim wykres godzinowy z akcji `temperatury_godzinowe`, pobieranej dopiero na
-żądanie i trzymanej w pamięci do zamknięcia Podglądu (nie w `localStorage`).
+**Wykres doby** (od 0.21.0, ekran Temperatury): stuknięcie dnia w tabeli
+rozwija pod nim wykres godzinowy z akcji `temperatury_godzinowe`, pobieranej
+dopiero na żądanie i trzymanej w pamięci do zamknięcia ekranu (nie w `localStorage`).
 Czysty SVG bez biblioteki (`narysujWykresDoby` w `js/app.js`); luka w danych
 przerywa linię, nic nie jest łączone ani uzupełniane.
 
@@ -170,7 +170,7 @@ odczyty-pwa/
 │   ├── aparat.js          zdjęcie: aparat/galeria, zmniejszanie, base64
 │   ├── exif.js            data zrobienia zdjęcia z EXIF (JPEG), bez bibliotek
 │   ├── kolejka.js         kolejka offline w localStorage
-│   ├── bufor.js           bufor odpowiedzi Podglądu w localStorage
+│   ├── bufor.js           bufor odpowiedzi Odczytów, Temperatur i historii kotła
 │   └── wersja.js          numer wersji aplikacji (stopka ekranu startowego)
 ├── ikony/                 SVG w jednym stylu (ikona aplikacji + ikony UI)
 ├── CHANGELOG.md           historia wydań aplikacji

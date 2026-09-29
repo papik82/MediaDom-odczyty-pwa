@@ -71,12 +71,22 @@
 
       <!-- Podgląd z arkusza (punkt 6 backlogu) — tylko do odczytu, żeby
            sprawdzić z telefonu ostatnie wpisy i temperatury bez wchodzenia
-           do Arkusza Google. -->
-      <button id="przycisk-podglad" class="karta">
+           do Arkusza Google. Od 0.22.0 dwie osobne karty i dwa ekrany
+           (wcześniej jeden wspólny „Podgląd”): każdy pobiera tylko swoje
+           dane, więc otwiera się szybciej. -->
+      <button id="przycisk-odczyty" class="karta">
         <img class="karta__ikona" src="ikony/podglad.svg" alt="">
         <span class="karta__tekst">
-          <span class="karta__tytul">Podgląd</span>
-          <span class="karta__opis">Ostatnie odczyty i temperatury</span>
+          <span class="karta__tytul">Odczyty</span>
+          <span class="karta__opis">Ostatnie wpisy liczników</span>
+        </span>
+      </button>
+
+      <button id="przycisk-temperatury" class="karta">
+        <img class="karta__ikona" src="ikony/termometr.svg" alt="">
+        <span class="karta__tekst">
+          <span class="karta__tytul">Temperatury</span>
+          <span class="karta__opis">Średnie dobowe i wykres doby</span>
         </span>
       </button>
 
@@ -241,23 +251,29 @@
          i temperatury dobowe z ostatniego miesiąca (jedna kolumna
          na czujnik — liczba i nazwy czujników przychodzą z webhooka,
          nie są tu zaszyte na sztywno). -->
-    <section id="ekran-podglad" class="ekran ukryty">
-      <h2>Podgląd</h2>
-
-      <!-- Każdy z dwóch bloków ma własny wiersz statusu (wczytywanie / czas
-           wczytania / błąd), bo wczytują się niezależnie od siebie. -->
-      <h3 class="podglad__naglowek">Ostatnie odczyty</h3>
+    <!-- Każdy ekran ma własny wiersz statusu (wczytywanie / czas wczytania
+         / błąd). -->
+    <section id="ekran-odczyty" class="ekran ukryty">
+      <h2>Odczyty</h2>
+      <p class="opis-ekranu">Ostatnie wpisy z arkusza, wszystkie media razem.</p>
       <p id="status-odczytow" class="status-bloku ukryty" role="status"></p>
       <div id="lista-ostatnich-odczytow" class="lista-odczytow"></div>
 
-      <h3 class="podglad__naglowek">Temperatury dobowe (ostatni miesiąc)</h3>
+      <div class="przyciski-formularza">
+        <button type="button" id="przycisk-zamknij-odczyty" class="przycisk-drugorzedny">Zamknij</button>
+      </div>
+    </section>
+
+    <section id="ekran-temperatury" class="ekran ukryty">
+      <h2>Temperatury</h2>
+      <p class="opis-ekranu">Średnie dobowe. Stuknij dzień, żeby zobaczyć wykres doby.</p>
       <p id="status-temperatur" class="status-bloku ukryty" role="status"></p>
       <div class="tabela-temperatur-kontener">
         <table id="tabela-temperatur" class="tabela-temperatur"></table>
       </div>
 
       <div class="przyciski-formularza">
-        <button type="button" id="przycisk-zamknij-podglad" class="przycisk-drugorzedny">Zamknij</button>
+        <button type="button" id="przycisk-zamknij-temperatury" class="przycisk-drugorzedny">Zamknij</button>
       </div>
     </section>
 

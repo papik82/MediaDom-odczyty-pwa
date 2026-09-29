@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Ikona karty „Temperatury” (od 0.22.0) — w stylu kociol.svg i podglad.svg:
+       koło i znak w środku, ten sam kolor i grubość linii. Termometr:
+       rurka zakończona zbiornikiem, z krótkimi kreskami podziałki. -->
+  <circle cx="12" cy="12" r="9" fill="none" stroke="#3d4fb0" stroke-width="1.7"/>
+  <path d="M10.6 13.3V8.2a1.4 1.4 0 0 1 2.8 0v5.1a2.4 2.4 0 1 1-2.8 0Z"
+        fill="none" stroke="#3d4fb0" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M12 11.2V14.8" fill="none" stroke="#3d4fb0" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M15 8.5H16.2M15 10.5H16.2" fill="none" stroke="#3d4fb0" stroke-width="1.2" stroke-linecap="round"/>
+</svg>

@@ -78,9 +78,12 @@ const komunikatKotla = document.getElementById('komunikat-kotla');
 const statusHistoriiKotla = document.getElementById('status-historii-kotla');
 const historiaKotla = document.getElementById('historia-kotla');
 
-const ekranPodglad = document.getElementById('ekran-podglad');
-const przyciskPodglad = document.getElementById('przycisk-podglad');
-const przyciskZamknijPodglad = document.getElementById('przycisk-zamknij-podglad');
+const ekranOdczyty = document.getElementById('ekran-odczyty');
+const ekranTemperatury = document.getElementById('ekran-temperatury');
+const przyciskOdczyty = document.getElementById('przycisk-odczyty');
+const przyciskTemperatury = document.getElementById('przycisk-temperatury');
+const przyciskZamknijOdczyty = document.getElementById('przycisk-zamknij-odczyty');
+const przyciskZamknijTemperatury = document.getElementById('przycisk-zamknij-temperatury');
 const listaOstatnichOdczytow = document.getElementById('lista-ostatnich-odczytow');
 const tabelaTemperatur = document.getElementById('tabela-temperatur');
 const statusOdczytow = document.getElementById('status-odczytow');
@@ -140,7 +143,7 @@ let generacjaPotwierdzenia = 0;
 let generacjaPodgladu = 0;
 
 function pokazEkran(ekranDoPokazania) {
-  for (const ekran of [ekranStart, ekranUstawien, ekranWyboruMetody, ekranPotwierdzenia, ekranPrad, ekranKociol, ekranPodglad]) {
+  for (const ekran of [ekranStart, ekranUstawien, ekranWyboruMetody, ekranPotwierdzenia, ekranPrad, ekranKociol, ekranOdczyty, ekranTemperatury]) {
     ekran.classList.toggle('ukryty', ekran !== ekranDoPokazania);
   }
   // Każdy powrót na ekran startowy (i start aplikacji) to okazja, żeby
@@ -1059,35 +1062,43 @@ async function wczytajBlokPodgladu(czyAktualny, blok) {
   }
 }
 
-// Ile pozycji pokazuje Podgląd: ostatnich wpisów z `odczyty` i ostatnich dni
-// z `temp_doba`. Jedna stała dla obu bloków, żeby zmieniać to w jednym miejscu.
-// 20 wystarcza do sprawdzenia z telefonu, co ostatnio poszło do arkusza,
-// a krótsza lista szybciej się przewija i daje mniejszą odpowiedź webhooka.
+// Ile pozycji pokazują ekrany podglądu: ostatnich wpisów z `odczyty`
+// i ostatnich dni z `temp_doba`. Jedna stała dla obu, żeby zmieniać to
+// w jednym miejscu. 20 wystarcza do sprawdzenia z telefonu, co ostatnio
+// poszło do arkusza, a krótsza lista daje mniejszą odpowiedź webhooka.
 const ILE_POZYCJI_PODGLADU = 20;
 
-function otworzPodglad() {
+// Od 0.22.0 podgląd to dwa osobne ekrany — każdy pobiera tylko swoje dane
+// (wcześniej jeden ekran czekał na dwa zapytania naraz). Wspólny licznik
+// generacji wystarcza, bo naraz widać najwyżej jeden z tych ekranów:
+// spóźniona odpowiedź z poprzedniego otwarcia nie narysuje się w nowym.
+function otworzOdczyty() {
   komunikatStart.classList.add('ukryty');
   generacjaPodgladu++;
   const generacja = generacjaPodgladu;
-
   listaOstatnichOdczytow.innerHTML = '';
-  tabelaTemperatur.innerHTML = '';
-  // Każde otwarcie Podglądu zaczyna ze zwiniętą tabelą. Pamięć godzin
-  // czyścimy, bo dzień importu mógł w międzyczasie dostać nowe godziny.
-  rozwinietyDzien = null;
-  pamiecGodzin.clear();
-  pokazEkran(ekranPodglad);
+  pokazEkran(ekranOdczyty);
 
-  // Oba bloki startują jednocześnie, nie jeden po drugim — są niezależne,
-  // więc czas oczekiwania to dłuższe z dwóch zapytań, a nie ich suma.
-  const czyAktualny = () => generacja === generacjaPodgladu;
-  wczytajBlokPodgladu(czyAktualny, {
+  wczytajBlokPodgladu(() => generacja === generacjaPodgladu, {
     status: statusOdczytow,
     klucz: 'ostatnie_odczyty',
     pobierz: () => pobierzOstatnieOdczyty(ILE_POZYCJI_PODGLADU),
     renderuj: (wynik) => renderujOstatnieOdczyty(wynik.odczyty),
   });
-  wczytajBlokPodgladu(czyAktualny, {
+}
+
+function otworzTemperatury() {
+  komunikatStart.classList.add('ukryty');
+  generacjaPodgladu++;
+  const generacja = generacjaPodgladu;
+  tabelaTemperatur.innerHTML = '';
+  // Każde otwarcie zaczyna ze zwiniętą tabelą. Pamięć godzin czyścimy,
+  // bo dzień importu mógł w międzyczasie dostać nowe godziny.
+  rozwinietyDzien = null;
+  pamiecGodzin.clear();
+  pokazEkran(ekranTemperatury);
+
+  wczytajBlokPodgladu(() => generacja === generacjaPodgladu, {
     status: statusTemperatur,
     klucz: 'temperatury_dobowe',
     pobierz: () => pobierzTemperaturyDobowe(ILE_POZYCJI_PODGLADU),
@@ -1095,17 +1106,22 @@ function otworzPodglad() {
   });
 }
 
-przyciskPodglad.addEventListener('click', () => {
-  if (!czyUstawieniaZapisane()) {
-    otworzUstawienia();
-    return;
-  }
-  otworzPodglad();
-});
+// Bez zapisanego adresu i tokenu nie ma skąd pobrać danych — wtedy
+// najpierw ekran ustawień, jak przy pozostałych kartach.
+function poUstawieniach(otworz) {
+  return () => {
+    if (!czyUstawieniaZapisane()) {
+      otworzUstawienia();
+      return;
+    }
+    otworz();
+  };
+}
 
-przyciskZamknijPodglad.addEventListener('click', () => {
-  pokazEkran(ekranStart);
-});
+przyciskOdczyty.addEventListener('click', poUstawieniach(otworzOdczyty));
+przyciskTemperatury.addEventListener('click', poUstawieniach(otworzTemperatury));
+przyciskZamknijOdczyty.addEventListener('click', () => pokazEkran(ekranStart));
+przyciskZamknijTemperatury.addEventListener('click', () => pokazEkran(ekranStart));
 
 // Puste pole -> null (nie NaN z parseFloat('')) — "krzywa grzewcza" i
 // "przesunięcie" są null przy samym CWU (bez CO), zgodnie z archiwum.

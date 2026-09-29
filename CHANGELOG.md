@@ -3,6 +3,23 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.22.0 — 2026-09-29
+
+### Zmienione
+- „Podgląd” podzielony na dwa osobne ekrany z własnymi kartami na ekranie
+  startowym: **Odczyty** (ostatnie wpisy liczników) i **Temperatury**
+  (średnie dobowe z wykresem doby po stuknięciu dnia). Każdy ekran pobiera
+  tylko swoje dane, więc otwiera się szybciej — wcześniej wspólny ekran
+  czekał na dwa zapytania naraz. Bufor w `localStorage` i klucze bez zmian
+  (`ostatnie_odczyty`, `temperatury_dobowe`), więc dane z poprzedniej
+  wersji pojawiają się od razu.
+- W `js/app.js` `otworzPodglad` zastąpione przez `otworzOdczyty`
+  i `otworzTemperatury`.
+
+### Dodane
+- `ikony/termometr.svg` — ikona karty „Temperatury”, w stylu ikon Kotła
+  i Odczytów (dopisana do cache w `sw.js`).
+
 ## 0.21.0 — 2026-09-29
 
 ### Dodane
