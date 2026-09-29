@@ -1091,7 +1091,13 @@ async function obslozWyborZdjecia(pobierzZdjecie) {
 
   const { medium, blob, url, czasZdjecia } = wynikZdjecia;
   otworzPotwierdzenie(medium, 'foto', url, czasZdjecia);
-  await rozpoznajIWypelnij(medium, blob, generacjaPotwierdzenia);
+  // Rozpoznawanie tylko dla mediów, dla których backend ma podpowiedź OCR
+  // (MEDIA_Z_OCR w js/media.js). Dla pozostałych (na dziś woda) zdjęcie
+  // służy wyłącznie jako podgląd do przepisania — bez tego warunku każde
+  // zdjęcie kończyło się komunikatem „Brak podpowiedzi OCR” (do 0.20.0).
+  if (MEDIA_Z_OCR.includes(medium)) {
+    await rozpoznajIWypelnij(medium, blob, generacjaPotwierdzenia);
+  }
 }
 
 // Model niczego nie zapisuje — tylko proponuje wartość do pola, które i tak

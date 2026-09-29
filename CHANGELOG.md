@@ -3,6 +3,17 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.20.1 — 2026-09-29
+
+### Naprawione
+- Woda: zdjęcie licznika (z aparatu albo z galerii) nie jest już wysyłane do
+  rozpoznania, bo backend nie ma dla wody podpowiedzi OCR — kończyło się to
+  zawsze komunikatem „Rozpoznawanie nie powiodło się (Brak podpowiedzi OCR
+  dla medium: woda)”. Zdjęcie służy teraz jako podgląd do przepisania
+  wartości, tak jak na ekranie prądu. Warunek w `obslozWyborZdjecia`
+  (`js/app.js`) korzysta z tej samej listy `MEDIA_Z_OCR` (`js/media.js`) —
+  po dopisaniu podpowiedzi dla wody w Apps Script wystarczy dodać ją do listy.
+
 ## 0.20.0 — 2026-09-29
 
 ### Dodane
