@@ -3,6 +3,15 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.22.1 — 2026-09-29
+
+### Zmienione
+- Wykres doby: piętro ma kolor zielony (`#2e9e5b`) zamiast brązowo-
+  pomarańczowego (`#ba7517`). Parter i piętro były dwoma odcieniami tej
+  samej barwy, a ich linie leżą zwykle ok. 1°C od siebie, więc zlewały się
+  w jedną. Teraz trzy wyraźnie różne barwy: parter pomarańczowy, piętro
+  zielone, zewnątrz niebieski (`KOLORY_CZUJNIKOW` w `js/app.js`).
+
 ## 0.22.0 — 2026-09-29
 
 ### Zmienione

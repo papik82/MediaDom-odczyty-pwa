@@ -825,10 +825,13 @@ function renderujTemperaturyDobowe(dni) {
 let rozwinietyDzien = null;             // "RRRR-MM-DD" albo null
 const pamiecGodzin = new Map();         // data -> odpowiedź webhooka
 
-// Kolory czujników: wnętrze ciepłe, zewnątrz niebieski. Nieznany (nowy)
-// czujnik dostaje kolejny kolor z zapasu — nazw nie zaszywamy na sztywno.
-const KOLORY_CZUJNIKOW = { parter: '#d85a30', pietro: '#ba7517', zewn: '#378add' };
-const KOLORY_ZAPASOWE = ['#7f77dd', '#1d9e75', '#d4537e', '#888780'];
+// Kolory czujników — trzy wyraźnie różne barwy (pomarańcz, zieleń, niebieski).
+// Do 0.22.0 parter i piętro miały dwa odcienie pomarańczu (#d85a30, #ba7517),
+// a że ich linie leżą zwykle ok. 1°C od siebie, zlewały się w jedną.
+// Nieznany (nowy) czujnik dostaje kolejny kolor z zapasu — nazw nie
+// zaszywamy na sztywno.
+const KOLORY_CZUJNIKOW = { parter: '#d85a30', pietro: '#2e9e5b', zewn: '#378add' };
+const KOLORY_ZAPASOWE = ['#7f77dd', '#d4537e', '#ba7517', '#888780'];
 
 function kolorCzujnika(nazwa, indeks) {
   return KOLORY_CZUJNIKOW[nazwa] || KOLORY_ZAPASOWE[indeks % KOLORY_ZAPASOWE.length];
