@@ -14,20 +14,30 @@ prawdy.** Tutaj tylko to, co dotyczy aplikacji.
 PWA do zapisywania odczytów liczników. Działa na telefonie, hostowana na
 GitHub Pages, zapisuje dane do Arkusza Google przez webhook Apps Script.
 
-**Pięć mediów, każde niezależne.** Ekran startowy ma pięć kart mediów
+**Pięć mediów, każde niezależne.** Ekran startowy ma trzy karty mediów
 (pełna szerokość, ten sam wygląd co karty Kocioł i Podgląd — klasa `karta`):
 
 | karta | kod medium | częstotliwość |
 |---|---|---|
 | Gaz | `gaz` | codziennie w sezonie grzewczym |
-| Prąd T1 | `prad_t1` | raz w miesiącu |
-| Prąd T2 | `prad_t2` | raz w miesiącu |
-| Prąd suma | `prad_suma` | raz w miesiącu |
 | Woda | `woda` | raz w miesiącu |
+| Prąd | `prad_t1`, `prad_t2`, `prad_suma` | raz w miesiącu |
 
 Taryfy prądu i suma to osobne media, nie warianty jednego — dzięki temu każde
-ma własny poprzedni stan, własną kontrolę chronologii i nie wymaga prowadzenia
-użytkownika przez kilka ujęć pod rząd.
+ma własny poprzedni stan i własną kontrolę chronologii.
+
+**Ekran prądu** (od 0.20.0) zbiera wszystkie trzy na raz, bo licznik pokazuje
+je rotacyjnie: najpierw trzy zdjęcia pod rząd, potem przepisanie. Wiersz na
+medium (szablon `<template id="szablon-wiersza-pradu">`, lista
+`POZYCJE_PRADU` w `js/media.js`) ma własne zdjęcie / galerię, pole stanu
+i status. **Data i godzina są wspólne** — ustawia je pierwsze zdjęcie na
+ekranie, chyba że pole poprawiono ręcznie. Zapis: jeden przycisk, trzy
+zwykłe żądania `odczyt` po kolei, z tym samym `data_godzina` (kontrakt bez
+zmian). Odrzucony wiersz zostaje do poprawy, zapisane są zamrażane, pole
+daty blokuje się po pierwszym zapisie, więc „Zapisz pozostałe” idzie z tą
+samą datą. Brak odpowiedzi → kolejka offline, jak przy pojedynczym odczycie.
+Przycisk „Rozpoznaj” pokazuje się tylko dla mediów z `MEDIA_Z_OCR`
+(`js/media.js`, na dziś sam gaz — backend nie ma podpowiedzi OCR dla prądu).
 
 **Trzy ścieżki wprowadzania dla wszystkich mediów:** zrób zdjęcie, wybierz
 z galerii, wpisz ręcznie. Mechanizm jest generyczny — moduł aparatu i lista
@@ -147,7 +157,8 @@ odczyty-pwa/
 │   ├── app.js             sterowanie wszystkimi ekranami (w tym karta kotła
 │   │                      i karta podglądu — nie mają osobnych plików)
 │   ├── ustawienia.js      adres webhooka i token w localStorage
-│   ├── media.js           metadane mediów (nazwa, jednostka, zdjęcie: tak/nie)
+│   ├── media.js           metadane mediów (nazwa, jednostka, zdjęcie: tak/nie,
+│   │                      OCR: tak/nie, pozycje ekranu prądu)
 │   ├── webhook.js         komunikacja z Apps Script (odczyt, OCR, kocioł, podgląd)
 │   ├── aparat.js          zdjęcie: aparat/galeria, zmniejszanie, base64
 │   ├── exif.js            data zrobienia zdjęcia z EXIF (JPEG), bez bibliotek

@@ -44,25 +44,16 @@
             <span class="karta__opis">Stan w m³</span>
           </span>
         </button>
-        <button class="karta" data-medium="prad_t1">
+        <!-- Prąd: jedna karta na trzy media (T1, T2, suma), od 0.20.0.
+             Licznik pokazuje te wartości rotacyjnie, więc wygodniej zrobić
+             trzy zdjęcia pod rząd i przepisać je na jednym ekranie. Karta
+             celowo nie ma data-medium — to nie jest pojedyncze medium,
+             tylko wejście do ekranu zbiorczego (id przycisk-prad). -->
+        <button class="karta" id="przycisk-prad">
           <img class="karta__ikona" src="ikony/prad.svg" alt="">
           <span class="karta__tekst">
-            <span class="karta__tytul">Prąd T1</span>
-            <span class="karta__opis">Stan w kWh, taryfa szczytowa</span>
-          </span>
-        </button>
-        <button class="karta" data-medium="prad_t2">
-          <img class="karta__ikona" src="ikony/prad.svg" alt="">
-          <span class="karta__tekst">
-            <span class="karta__tytul">Prąd T2</span>
-            <span class="karta__opis">Stan w kWh, druga taryfa</span>
-          </span>
-        </button>
-        <button class="karta" data-medium="prad_suma">
-          <img class="karta__ikona" src="ikony/prad.svg" alt="">
-          <span class="karta__tekst">
-            <span class="karta__tytul">Prąd suma</span>
-            <span class="karta__opis">Stan w kWh, obie taryfy razem</span>
+            <span class="karta__tytul">Prąd</span>
+            <span class="karta__opis">T1, T2 i suma na jednym ekranie</span>
           </span>
         </button>
       </div>
@@ -135,6 +126,57 @@
         <p id="komunikat-potwierdzenia" class="komunikat ukryty"></p>
       </form>
     </section>
+
+    <!-- Ekran prądu — trzy odczyty (T1, T2, suma) naraz, ze wspólną datą
+         i godziną. Wiersze powstają w js/app.js z szablonu niżej, po jednym
+         na medium z listy POZYCJE_PRADU (js/media.js). Zapis to trzy zwykłe
+         żądania "odczyt" z tym samym data_godzina — kontrakt bez zmian. -->
+    <section id="ekran-prad" class="ekran ukryty">
+      <h2>Prąd</h2>
+      <p class="opis-ekranu">Zrób po kolei trzy zdjęcia licznika, potem przepisz
+        wartości. Wszystkie trzy zapiszą się z tą samą datą i godziną.</p>
+      <form id="formularz-pradu">
+        <label class="pole-formularza">
+          Data i godzina odczytu
+          <input type="datetime-local" id="pole-data-pradu" required>
+        </label>
+        <p id="uwaga-czasu-pradu" class="uwaga-pola ukryty" role="status"></p>
+        <div id="wiersze-pradu"></div>
+        <div class="przyciski-formularza">
+          <button type="submit" id="przycisk-zapisz-prad" class="przycisk-glowny">Zapisz wszystkie trzy</button>
+          <button type="button" id="przycisk-anuluj-prad" class="przycisk-drugorzedny">Anuluj</button>
+        </div>
+        <p id="komunikat-pradu" class="komunikat ukryty"></p>
+      </form>
+    </section>
+
+    <!-- Szablon jednego wiersza ekranu prądu. <template> nie jest
+         wyświetlany — js/app.js klonuje go trzy razy i wypełnia nazwą
+         medium, opisem i jednostką. -->
+    <template id="szablon-wiersza-pradu">
+      <div class="wiersz-pradu">
+        <div class="wiersz-pradu__naglowek">
+          <span class="wiersz-pradu__nazwa"></span>
+          <span class="wiersz-pradu__status ukryty"></span>
+        </div>
+        <span class="wiersz-pradu__opis"></span>
+        <img class="wiersz-pradu__zdjecie ukryty" alt="">
+        <div class="wiersz-pradu__przyciski">
+          <button type="button" class="przycisk-glowny przycisk-maly" data-akcja="zdjecie">
+            <img class="ikona-przycisku" src="ikony/aparat.svg" alt="">Zdjęcie
+          </button>
+          <button type="button" class="przycisk-drugorzedny przycisk-maly" data-akcja="galeria">
+            <img class="ikona-przycisku" src="ikony/galeria.svg" alt="">Galeria
+          </button>
+          <button type="button" class="przycisk-drugorzedny przycisk-maly ukryty" data-akcja="rozpoznaj">Rozpoznaj</button>
+        </div>
+        <label class="pole-formularza wiersz-pradu__pole">
+          <span class="wiersz-pradu__etykieta"></span>
+          <input type="number" class="wiersz-pradu__stan" inputmode="numeric" min="0" required>
+        </label>
+        <p class="wiersz-pradu__komunikat komunikat ukryty"></p>
+      </div>
+    </template>
 
     <!-- Ekran kotła — dziennik zmian nastaw, nie okresowy odczyt. Formularz
          podpowiada ostatnio zapisane wartości (pobrane z webhooka); wysyłka

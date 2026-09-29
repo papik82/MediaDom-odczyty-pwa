@@ -3,6 +3,35 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.20.0 — 2026-09-29
+
+### Dodane
+- Ekran „Prąd”: T1, T2 i suma na jednym ekranie zamiast trzech osobnych
+  kafli. Licznik pokazuje te wartości rotacyjnie, więc można najpierw zrobić
+  trzy zdjęcia pod rząd, a dopiero potem przepisać wartości. Każdy wiersz ma
+  własne przyciski „Zdjęcie” i „Galeria”, podgląd zdjęcia, pole stanu
+  i status wysyłki. Wiersze powstają z `<template>` w `index.html`
+  i listy `POZYCJE_PRADU` w `js/media.js`.
+- Wspólna data i godzina odczytu dla wszystkich trzech wartości. Ustawia ją
+  pierwsze zdjęcie zrobione na ekranie (aparat — chwila zdjęcia; galeria —
+  EXIF albo data pliku, z uwagą o źródle), o ile pole nie zostało poprawione
+  ręcznie.
+- Jeden przycisk „Zapisz wszystkie trzy”: trzy zwykłe żądania `odczyt` po
+  kolei, z tym samym `data_godzina` (kontrakt webhooka bez zmian). Odrzucony
+  wiersz (np. stan niższy od poprzedniego) zostaje do poprawy z komunikatem,
+  zapisane są zamrażane, a przycisk zmienia się na „Zapisz pozostałe” —
+  z tą samą datą, bo pole daty blokuje się po pierwszym zapisie. Brak
+  odpowiedzi serwera odkłada wiersz do kolejki offline, jak przy
+  pojedynczym odczycie.
+- `MEDIA_Z_OCR` w `js/media.js` — media, dla których backend ma podpowiedź
+  rozpoznawania. Na dziś tylko gaz, więc przycisk „Rozpoznaj” w wierszach
+  prądu jest ukryty; zadziała po dopisaniu podpowiedzi dla prądu
+  w `apps-script/webhook.js` i dodaniu mediów prądu do tej listy.
+
+### Zmienione
+- Ekran startowy: jedna karta „Prąd” zamiast kart „Prąd T1”, „Prąd T2”
+  i „Prąd suma”.
+
 ## 0.19.2 — 2026-09-28
 
 ### Zmienione

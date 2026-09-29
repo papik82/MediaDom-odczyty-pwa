@@ -190,6 +190,89 @@ main {
   margin-top: 1rem;
 }
 
+/* Ekran prądu (od 0.20.0): trzy wiersze-karty, każdy z własnym zdjęciem,
+   przyciskami i polem stanu; wspólne pole daty nad nimi. */
+.opis-ekranu {
+  margin: 0.25rem 0 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.wiersz-pradu {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem 1rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Zapisany (albo odłożony do kolejki) wiersz jest zamrożony — przygaszony,
+   żeby przy „Zapisz pozostałe” od razu było widać, co jeszcze zostało. */
+.wiersz-pradu--zapisany {
+  opacity: 0.65;
+}
+
+.wiersz-pradu__naglowek {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.wiersz-pradu__nazwa {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.wiersz-pradu__opis {
+  display: block;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.wiersz-pradu__status {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.wiersz-pradu__status--wczytywanie { background: #eef1f4; color: #4a4a4a; }
+.wiersz-pradu__status--ok { background: #e6f4ea; color: #1e7e34; }
+.wiersz-pradu__status--blad { background: #fdecea; color: #b3261e; }
+.wiersz-pradu__status--kolejka { background: #fff4e0; color: #8a5a00; }
+
+.wiersz-pradu__zdjecie {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  border-radius: 10px;
+}
+
+/* Trzy przyciski w jednym rzędzie — mniejsze niż na ekranie wyboru
+   metody, bo na ekranie są trzy takie zestawy. */
+.wiersz-pradu__przyciski {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.wiersz-pradu__przyciski .przycisk-maly {
+  flex: 1;
+  padding: 0.65rem 0.5rem;
+  font-size: 0.95rem;
+}
+
+.wiersz-pradu__przyciski .przycisk-maly:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.wiersz-pradu__pole {
+  margin-top: 0.75rem;
+}
+
 .pole-formularza {
   display: block;
   margin-top: 1.25rem;

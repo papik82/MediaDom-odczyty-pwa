@@ -15,3 +15,20 @@ export const MEDIA = {
 // wszystkie media (2026-09-14) — sam mechanizm (wybór metody, aparat,
 // galeria, podgląd) jest generyczny, nie wymagał zmian poza tą listą.
 export const MEDIA_ZE_ZDJECIEM = ['gaz', 'prad_t1', 'prad_t2', 'prad_suma', 'woda'];
+
+// Media, dla których backend ma podpowiedź rozpoznawania zdjęcia
+// (PODPOWIEDZI_OCR w apps-script/webhook.js). Dla pozostałych akcja
+// odczytaj_foto zwraca błąd „Brak podpowiedzi OCR”, więc ekran prądu nie
+// pokazuje przy nich przycisku „Rozpoznaj” — zdjęcie służy wtedy tylko jako
+// podgląd do przepisania. Gdy backend dostanie podpowiedź dla prądu,
+// wystarczy dopisać tu prad_t1 / prad_t2 / prad_suma.
+export const MEDIA_Z_OCR = ['gaz'];
+
+// Ekran prądu (od 0.20.0): trzy media z jednego licznika na jednym ekranie,
+// w tej kolejności — tak też są wysyłane do zapisu. Opis to podpowiedź
+// pod nazwą w wierszu.
+export const POZYCJE_PRADU = [
+  { medium: 'prad_t1', opis: 'taryfa szczytowa' },
+  { medium: 'prad_t2', opis: 'druga taryfa' },
+  { medium: 'prad_suma', opis: 'obie taryfy razem' },
+];
