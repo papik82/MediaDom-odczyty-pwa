@@ -3,6 +3,25 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.21.0 — 2026-09-29
+
+### Dodane
+- Podgląd: stuknięcie dnia w tabeli temperatur rozwija pod nim wykres
+  temperatur w ciągu doby (ponowne stuknięcie zwija; otwarty jeden dzień
+  naraz). Dane godzinowe z nowej akcji webhooka `temperatury_godzinowe`
+  (`temp_godz`, wersja wdrożenia 31–32), pobierane dopiero na żądanie
+  i trzymane w pamięci do zamknięcia Podglądu — ponowne rozwinięcie tego
+  samego dnia jest natychmiastowe.
+- Wykres to czysty SVG rysowany w `js/app.js` (`narysujWykresDoby`), bez
+  biblioteki: linia na czujnik (wnętrze ciepłe kolory, zewnątrz niebieski),
+  oś godzin 0–24, skala temperatur dobrana do dnia, podpisane minimum
+  i maksimum temperatury zewnętrznej. Brakujące godziny przerywają linię
+  (bez łączenia ponad luką), a przy niepełnej dobie legenda pokazuje np.
+  „20 z 24 godzin”. Zestaw czujników i kolory biorą się z danych — nowy
+  czujnik dostanie kolor z zapasu.
+- Wiersze dni mają strzałkę rozwijania i działają też z klawiatury
+  (Enter / spacja).
+
 ## 0.20.1 — 2026-09-29
 
 ### Naprawione

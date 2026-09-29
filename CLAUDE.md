@@ -93,8 +93,14 @@ własny wiersz statusu (wczytywanie / czas wczytania / błąd), więc gdy jedna
 zawiedzie, druga i tak się wyświetla, a błąd pokazuje się tylko dla swojej
 części ekranu.
 
+**Wykres doby** (od 0.21.0): stuknięcie dnia w tabeli temperatur rozwija pod
+nim wykres godzinowy z akcji `temperatury_godzinowe`, pobieranej dopiero na
+żądanie i trzymanej w pamięci do zamknięcia Podglądu (nie w `localStorage`).
+Czysty SVG bez biblioteki (`narysujWykresDoby` w `js/app.js`); luka w danych
+przerywa linię, nic nie jest łączone ani uzupełniane.
+
 Nazwy i liczba czujników **nie są zaszyte na sztywno** — kolumny tabeli
-powstają z tego, co przyjdzie w odpowiedzi. Zestaw czujników zmieniał się
+(i linie wykresu doby) powstają z tego, co przyjdzie w odpowiedzi. Zestaw czujników zmieniał się
 w czasie i będzie się zmieniał dalej.
 
 ---
@@ -159,7 +165,8 @@ odczyty-pwa/
 │   ├── ustawienia.js      adres webhooka i token w localStorage
 │   ├── media.js           metadane mediów (nazwa, jednostka, zdjęcie: tak/nie,
 │   │                      OCR: tak/nie, pozycje ekranu prądu)
-│   ├── webhook.js         komunikacja z Apps Script (odczyt, OCR, kocioł, podgląd)
+│   ├── webhook.js         komunikacja z Apps Script (odczyt, OCR, kocioł, podgląd,
+│   │                      temperatury godzinowe do wykresu doby)
 │   ├── aparat.js          zdjęcie: aparat/galeria, zmniejszanie, base64
 │   ├── exif.js            data zrobienia zdjęcia z EXIF (JPEG), bez bibliotek
 │   ├── kolejka.js         kolejka offline w localStorage

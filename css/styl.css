@@ -561,6 +561,99 @@ main {
   border-bottom: none;
 }
 
+/* Wiersz dnia rozwija wykres doby (od 0.21.0) — kursor i strzałka mówią,
+   że da się w niego stuknąć; rozwinięty ma jagodowe tło. */
+.wiersz-dnia {
+  cursor: pointer;
+}
+
+.wiersz-dnia__strzalka {
+  width: 1.5rem;
+  padding-left: 0 !important;
+  color: #9aa1a9;
+  transition: transform 0.2s ease;
+}
+
+.wiersz-dnia--rozwiniety td {
+  background: var(--kolor-glowny-jasny) !important;
+  font-weight: 600;
+}
+
+.wiersz-dnia--rozwiniety .wiersz-dnia__strzalka {
+  color: var(--kolor-glowny);
+  transform: rotate(180deg);
+}
+
+/* Komórka z wykresem zajmuje całą szerokość — nie może być „przyklejona”
+   (sticky) jak pierwsza kolumna, bo przy przewijaniu tabeli w poziomie
+   wykres by się rozjechał. */
+.tabela-temperatur .wiersz-wykresu td {
+  position: static;
+  padding: 0.5rem 0.5rem 0.75rem;
+  text-align: left;
+  white-space: normal;
+  background: #fff;
+}
+
+.wykres-doby {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+}
+
+.wykres-doby__siatka {
+  stroke: #e3e7ec;
+  stroke-width: 0.6;
+}
+
+.wykres-doby__opis {
+  font-size: 9px;
+  fill: #888;
+}
+
+.wykres-doby__wartosc {
+  font-size: 9.5px;
+  font-weight: 600;
+  fill: #444;
+}
+
+.wykres-doby__legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+/* Kreska w kolorze serii przed nazwą czujnika — kolor przychodzi z JS
+   przez zmienną --kolor, bo zestaw czujników nie jest zaszyty na sztywno. */
+.wykres-doby__pozycja::before {
+  content: '';
+  display: inline-block;
+  width: 0.9rem;
+  height: 3px;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+  border-radius: 2px;
+  background: var(--kolor);
+}
+
+.wykres-doby__uwaga {
+  color: #8a5a00;
+}
+
+.wykres-doby__status {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.wykres-doby__status--blad {
+  color: #b3261e;
+}
+
 /* Numer wersji — zawsze widoczny na dole, żeby łatwo sprawdzić, czy telefon
    ma najnowszą wersję aplikacji po odświeżeniu. */
 .stopka {

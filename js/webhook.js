@@ -72,3 +72,10 @@ export function pobierzOstatnieOdczyty(ile = 30) {
 export function pobierzTemperaturyDobowe(dni = 30) {
   return wyslij({ akcja: 'temperatury_dobowe', dni });
 }
+
+// Średnie godzinowe jednej doby (data "RRRR-MM-DD") — do wykresu, który
+// rozwija się po stuknięciu dnia w tabeli temperatur (od 0.21.0).
+// Pobierane dopiero na żądanie, nie razem z całym Podglądem.
+export function pobierzTemperaturyGodzinowe(data) {
+  return wyslij({ akcja: 'temperatury_godzinowe', data });
+}
