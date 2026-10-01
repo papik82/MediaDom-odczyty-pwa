@@ -25,10 +25,12 @@ export const MEDIA_ZE_ZDJECIEM = ['gaz', 'prad_t1', 'prad_t2', 'prad_suma', 'wod
 export const MEDIA_Z_OCR = ['gaz'];
 
 // Ekran prądu (od 0.20.0): trzy media z jednego licznika na jednym ekranie,
-// w tej kolejności — tak też są wysyłane do zapisu. Opis to podpowiedź
-// pod nazwą w wierszu.
+// w tej kolejności — tak też są wysyłane do zapisu i wymieniane
+// w podsumowaniu. Od 0.22.2 suma jest pierwsza, potem T1 i T2 (kolejność
+// wygodniejsza przy przepisywaniu z licznika). Opis to podpowiedź pod
+// nazwą w wierszu.
 export const POZYCJE_PRADU = [
+  { medium: 'prad_suma', opis: 'obie taryfy razem' },
   { medium: 'prad_t1', opis: 'taryfa szczytowa' },
   { medium: 'prad_t2', opis: 'druga taryfa' },
-  { medium: 'prad_suma', opis: 'obie taryfy razem' },
 ];

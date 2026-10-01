@@ -3,6 +3,13 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.22.2 — 2026-10-01
+
+### Zmienione
+- Ekran „Prąd”: kolejność wierszy suma → T1 → T2 (wcześniej T1 → T2 →
+  suma). W tej samej kolejności idą wysyłki i podsumowanie na ekranie
+  startowym. Zmiana tylko w `POZYCJE_PRADU` (`js/media.js`).
+
 ## 0.22.1 — 2026-09-29
 
 ### Zmienione
