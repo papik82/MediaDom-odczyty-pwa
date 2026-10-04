@@ -79,3 +79,9 @@ export function pobierzTemperaturyDobowe(dni = 30) {
 export function pobierzTemperaturyGodzinowe(data) {
   return wyslij({ akcja: 'temperatury_godzinowe', data });
 }
+
+// Bieżące alarmy zbierania temperatur (bateria i puls telefonu, cisza
+// czujników, luki do importu) — do paska na ekranie startowym (od 0.23.0).
+export function pobierzAlarmy() {
+  return wyslij({ akcja: 'alarmy' });
+}

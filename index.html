@@ -29,6 +29,11 @@
          tytuł i krótki opis) — wcześniej media były kwadratowymi kafelkami
          w siatce 2x2. -->
     <section id="ekran-start" class="ekran">
+      <!-- Pasek alarmów (od 0.23.0) — bateria i puls telefonu, cisza
+           czujników, luki do importu. Wypełniany z akcji webhooka "alarmy";
+           pusty = ukryty, więc na co dzień go nie widać. -->
+      <div id="pasek-alarmow" class="pasek-alarmow ukryty" role="status" aria-live="polite"></div>
+
       <div class="karty-mediow">
         <button class="karta" data-medium="gaz">
           <img class="karta__ikona" src="ikony/gaz.svg" alt="">

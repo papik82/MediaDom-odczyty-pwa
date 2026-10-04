@@ -71,6 +71,43 @@ main {
   margin: 0 auto;
 }
 
+/* Pasek alarmów nad kartami (od 0.23.0) — „alarm” (coś dzieje się teraz:
+   bateria, puls, cisza czujników) na czerwono, „uwaga” (luki do importu)
+   w tonie kolejki offline. Kolory niosą znaczenie, więc nie zależą od
+   koloru przewodniego. */
+.pasek-alarmow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.pasek-alarmow__pozycja {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.pasek-alarmow__pozycja--alarm {
+  background: #fdecea;
+  color: #b3261e;
+}
+
+.pasek-alarmow__pozycja--uwaga {
+  background: #fff4e0;
+  color: #8a5a00;
+}
+
+.pasek-alarmow__znak {
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
 /* Karty ekranu startowego — jeden wspólny wygląd dla mediów, kotła
    i podglądu: pełna szerokość, ikona z lewej, tytuł i opis obok. Pełna
    szerokość daje duży cel dotyku przy obsłudze jedną ręką. */

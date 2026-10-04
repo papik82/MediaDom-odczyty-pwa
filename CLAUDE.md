@@ -93,6 +93,13 @@ dane, z buforem w `localStorage` (`js/bufor.js`) — ekran od razu pokazuje
 poprzednie dane, świeże je podmieniają — i ma własny wiersz statusu
 (wczytywanie / czas wczytania / błąd).
 
+**Pasek alarmów** (od 0.23.0) nad kartami ekranu startowego — akcja
+`alarmy` (bateria i puls telefonu, cisza czujników, luki do importu;
+reguły w `../apps-script/CLAUDE.md`). Sprawdzany przy starcie, powrocie na
+start i z tła (raz na minutę), tylko w pamięci, bez `localStorage`; pusta
+lista = pasek ukryty. Powiadomień systemowych (Web Push, ntfy) na razie
+nie ma — decyzja 2026-10-04: najpierw sam pasek.
+
 **Wykres doby** (od 0.21.0, ekran Temperatury): stuknięcie dnia w tabeli
 rozwija pod nim wykres godzinowy z akcji `temperatury_godzinowe`, pobieranej
 dopiero na żądanie i trzymanej w pamięci do zamknięcia ekranu (nie w `localStorage`).

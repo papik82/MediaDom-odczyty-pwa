@@ -3,6 +3,19 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 0.23.0 — 2026-10-04
+
+### Dodane
+- Pasek alarmów nad kartami ekranu startowego: niska bateria i brak pulsu
+  telefonu ze zbieraczem temperatur, cisza czujników (brak danych > 3 h)
+  — na czerwono; luki do uzupełnienia importem — na żółto. Dane z nowej
+  akcji webhooka `alarmy` (wersja wdrożenia 34) — te same reguły co maile
+  z `apps-script/luki.js` i `puls.js`. Pusta lista = pasek ukryty.
+- Sprawdzanie przy starcie, przy każdym powrocie na ekran startowy
+  i przy powrocie aplikacji z tła, nie częściej niż raz na minutę.
+  Bez `localStorage` — stary alarm z bufora mógłby pokazywać coś, co już
+  minęło; przy braku sieci pasek zostaje taki, jaki był.
+
 ## 0.22.2 — 2026-10-01
 
 ### Zmienione
