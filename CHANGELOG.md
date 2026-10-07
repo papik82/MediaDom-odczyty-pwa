@@ -3,6 +3,20 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.1.0 — 2026-10-07
+
+### Dodane
+- Karta i ekran „Zbieracz” (BACKLOG pkt 19): stan zbierania temperatur na
+  telefonie w jednym miejscu. Na górze werdykt — „Zbieracz działa” / „Działa,
+  są uwagi” / „Problem ze zbieraniem” — liczony przez webhook tymi samymi
+  regułami co pasek alarmów, więc oba miejsca mówią to samo. Pod nim alarmy
+  zbieracza i szczegóły: ostatni puls (z „ile minut temu”), bateria i stan
+  ładowania, temperatura baterii, kolejka, wersja zbieracza; ostatnia
+  godzina każdego czujnika w arkuszu z temperaturą i źródłem; luki
+  w oknie 28 dni; data wygaśnięcia tokenów eWeLink. Akcja `stan_zbieracza`
+  (wersja wdrożenia 36), bufor w `localStorage` jak w Odczytach
+  i Temperaturach. Nowa ikona `ikony/zbieracz.svg`.
+
 ## 1.0.1 — 2026-10-07
 
 ### Zmienione

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Ikona karty „Zbieracz” (od 1.1.0) — w stylu termometr.svg i podglad.svg:
+       koło i znak w środku, ten sam kolor i grubość linii. Telefon
+       z dwoma łukami „nadawania” — zbieracz to stary telefon, który
+       co godzinę wysyła dane. -->
+  <circle cx="12" cy="12" r="9" fill="none" stroke="#3d4fb0" stroke-width="1.7"/>
+  <rect x="7.6" y="7.4" width="5.4" height="9.2" rx="1.1"
+        fill="none" stroke="#3d4fb0" stroke-width="1.5"/>
+  <path d="M9.6 14.6H11" fill="none" stroke="#3d4fb0" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M15 10.3a2.4 2.4 0 0 1 0 3.4M16.6 8.7a4.6 4.6 0 0 1 0 6.6"
+        fill="none" stroke="#3d4fb0" stroke-width="1.3" stroke-linecap="round"/>
+</svg>

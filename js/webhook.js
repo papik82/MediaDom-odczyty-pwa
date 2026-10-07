@@ -85,3 +85,9 @@ export function pobierzTemperaturyGodzinowe(data) {
 export function pobierzAlarmy() {
   return wyslij({ akcja: 'alarmy' });
 }
+
+// Stan zbieracza temperatur na telefonie (karta „Zbieracz”, od 1.1.0):
+// werdykt, puls i bateria, ostatnie godziny czujników, luki, eWeLink.
+export function pobierzStanZbieracza() {
+  return wyslij({ akcja: 'stan_zbieracza' });
+}

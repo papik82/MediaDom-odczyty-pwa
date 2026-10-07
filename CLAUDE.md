@@ -102,6 +102,15 @@ start i z tła (raz na minutę), tylko w pamięci, bez `localStorage`; pusta
 lista = pasek ukryty. Powiadomień systemowych (Web Push, ntfy) na razie
 nie ma — decyzja 2026-10-04: najpierw sam pasek.
 
+**Karta „Zbieracz”** (od 1.1.0) — stan zbierania temperatur na telefonie,
+akcja `stan_zbieracza`, bufor w `localStorage` jak Odczyty i Temperatury.
+Werdykt (działa / uwagi / problem / nieznany) liczy **webhook**, tymi samymi
+regułami co pasek alarmów — PWA go tylko wyświetla, nie liczy własnych
+progów. Pod nim alarmy, telefon (puls, bateria, kolejka, wersja), ostatnia
+godzina czujników, luki i ważność tokenów eWeLink (`renderujStanZbieracza`
+w `js/app.js`). Wiek pulsu („37 min temu”) liczy telefon od znacznika czasu,
+żeby był prawdziwy także dla stanu z bufora.
+
 **Wykres doby** (od 0.21.0, ekran Temperatury): stuknięcie dnia w tabeli
 rozwija pod nim wykres godzinowy z akcji `temperatury_godzinowe`, pobieranej
 dopiero na żądanie i trzymanej w pamięci do zamknięcia ekranu (nie w `localStorage`).
@@ -175,7 +184,8 @@ odczyty-pwa/
 │   ├── media.js           metadane mediów (nazwa, jednostka, zdjęcie: tak/nie,
 │   │                      OCR: tak/nie, pozycje ekranu prądu)
 │   ├── webhook.js         komunikacja z Apps Script (odczyt, OCR, kocioł, podgląd,
-│   │                      temperatury godzinowe do wykresu doby)
+│   │                      temperatury godzinowe do wykresu doby, alarmy,
+│   │                      stan zbieracza)
 │   ├── aparat.js          zdjęcie: aparat/galeria, zmniejszanie, base64
 │   ├── exif.js            data zrobienia zdjęcia z EXIF (JPEG), bez bibliotek
 │   ├── kolejka.js         kolejka offline w localStorage

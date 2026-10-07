@@ -95,6 +95,17 @@
         </span>
       </button>
 
+      <!-- Zbieracz temperatur na telefonie (od 1.1.0) — jeden werdykt
+           „działa / uwagi / problem” plus szczegóły: puls i bateria
+           telefonu, ostatnie godziny czujników, luki, ważność eWeLink. -->
+      <button id="przycisk-zbieracz" class="karta">
+        <img class="karta__ikona" src="ikony/zbieracz.svg" alt="">
+        <span class="karta__tekst">
+          <span class="karta__tytul">Zbieracz</span>
+          <span class="karta__opis">Telefon, czujniki i luki w danych</span>
+        </span>
+      </button>
+
       <p id="komunikat-start" class="komunikat-sukces ukryty"></p>
       <p id="komunikat-kolejka" class="komunikat-kolejka ukryty"></p>
     </section>
@@ -279,6 +290,20 @@
 
       <div class="przyciski-formularza">
         <button type="button" id="przycisk-zamknij-temperatury" class="przycisk-drugorzedny">Zamknij</button>
+      </div>
+    </section>
+
+    <!-- Ekran zbieracza — tylko do odczytu, z akcji stan_zbieracza. Werdykt
+         liczy webhook tymi samymi regułami co pasek alarmów, więc oba
+         miejsca zawsze mówią to samo. Treść rysuje renderujStanZbieracza. -->
+    <section id="ekran-zbieracz" class="ekran ukryty">
+      <h2>Zbieracz</h2>
+      <p class="opis-ekranu">Zbieranie temperatur na starym telefonie.</p>
+      <p id="status-zbieracza" class="status-bloku ukryty" role="status"></p>
+      <div id="stan-zbieracza"></div>
+
+      <div class="przyciski-formularza">
+        <button type="button" id="przycisk-zamknij-zbieracz" class="przycisk-drugorzedny">Zamknij</button>
       </div>
     </section>
 

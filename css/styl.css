@@ -681,6 +681,75 @@ main {
   color: #8a5a00;
 }
 
+/* Ekran „Zbieracz” (od 1.1.0). Werdykt — plakietka w kolorach paska
+   alarmów (czerwień = problem, żółć = uwagi) plus zieleń dla „działa”. */
+.zbieracz__werdykt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0.75rem 0;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+}
+
+.zbieracz__werdykt-tytul {
+  font-size: 1.1rem;
+}
+
+.zbieracz__werdykt-opis {
+  font-size: 0.85rem;
+}
+
+.zbieracz__werdykt--ok {
+  background: #e6f4ea;
+  color: #1e6b34;
+}
+
+.zbieracz__werdykt--uwaga {
+  background: #fff4e0;
+  color: #8a5a00;
+}
+
+.zbieracz__werdykt--problem {
+  background: #fdecea;
+  color: #b3261e;
+}
+
+.zbieracz__werdykt--nieznany {
+  background: #ececec;
+  color: #444;
+}
+
+/* Alarmy na ekranie zbieracza stoją pod werdyktem, nie nad kartami. */
+#stan-zbieracza .pasek-alarmow {
+  margin-top: 0;
+}
+
+/* Wartość z dopiskiem pod spodem — oba do prawej krawędzi. */
+#stan-zbieracza .wiersz-odczytu__stan {
+  text-align: right;
+}
+
+/* Drobny dopisek pod wartością: „37 min temu”, źródło czujnika. */
+.zbieracz__dopisek {
+  display: block;
+  color: #666;
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+/* Kreska w kolorze czujnika — te same kolory co linie wykresu doby. */
+.zbieracz__czujnik::before {
+  content: '';
+  display: inline-block;
+  width: 0.9rem;
+  height: 3px;
+  margin-right: 0.45rem;
+  vertical-align: middle;
+  border-radius: 2px;
+  background: var(--kolor);
+}
+
 .wykres-doby__status {
   margin: 0.25rem 0;
   font-size: 0.85rem;
