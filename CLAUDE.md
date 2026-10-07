@@ -189,7 +189,7 @@ odczyty-pwa/
 │   ├── aparat.js          zdjęcie: aparat/galeria, zmniejszanie, base64
 │   ├── exif.js            data zrobienia zdjęcia z EXIF (JPEG), bez bibliotek
 │   ├── kolejka.js         kolejka offline w localStorage
-│   ├── bufor.js           bufor odpowiedzi Odczytów, Temperatur i historii kotła
+│   ├── bufor.js           bufor odpowiedzi Odczytów, Temperatur, Zbieracza i historii kotła
 │   └── wersja.js          numer wersji aplikacji (stopka ekranu startowego)
 ├── ikony/                 SVG w jednym stylu (ikona aplikacji + ikony UI)
 ├── CHANGELOG.md           historia wydań aplikacji
@@ -208,6 +208,43 @@ Backlog jest **wspólny dla całego projektu** i leży w
 nie frontu. Nie duplikuj go tutaj.
 
 ---
+
+## Wydanie zmiany (zasada potwierdzona przez właściciela 2026-10-07)
+
+Po każdej zmianie kodu aplikacji, w tej kolejności:
+1. test w przeglądarce na szerokości telefonu (niżej),
+2. podbić wersję w `js/wersja.js` i `WERSJA_CACHE` w `sw.js`; nowy plik
+   (np. ikona) dopisać do `PLIKI_POWLOKI` w `sw.js` — brakujący plik
+   wywraca instalację service workera,
+3. wpis w `CHANGELOG.md`, aktualizacja `../dokumentacja/BACKLOG.md`
+   i tego pliku, jeśli zmienia się opis ekranów,
+4. `git status` — `sekrety.local.json` nie może być w poczekalni,
+5. **commit i push bez pytania o zgodę**, potem krótka relacja. Commity po
+   polsku, krótkie, „dlaczego” zamiast „co”.
+
+GitHub Pages publikuje zwykle w minutę–dwie, ale wdrożenie potrafi wisieć
+kilkanaście minut (2026-10-07). Telefon bierze nową wersję po zamknięciu
+i ponownym otwarciu aplikacji (czasem dwa razy).
+
+## Testy w przeglądarce
+
+Serwer podglądu `pwa` z `../.claude/launch.json` (port 8080). Dwa sposoby
+na webhook:
+- **Podstawiony `fetch`** (najprościej): każdy test na **nowym pochodzeniu**
+  `http://127.0.0.X:8080/` (pamięć HTTP przeglądarki trzyma stare pliki
+  dla starego adresu), wyrejestrować service workera, w `localStorage`
+  `odczyty_adres_webhooka` = `http://localhost:9/atrapa` i `odczyty_token`,
+  potem `window.fetch` zwracający przygotowaną odpowiedź dla danej `akcja`.
+- **Atrapa webhooka** `mock-webhook` (port 8081, `../.claude/mock_webhook.py`):
+  odpowiada jak Apps Script, z regulowanym opóźnieniem i błędami
+  (`GET /ustaw?opoznienie=3000&tryb=cwu&blad=1&ocr_blad=1`); adres
+  `http://127.0.0.1:8081/exec`. Do testów wyścigów i opóźnień.
+
+Szerokość 375 px. Plik z EXIF składa się ręcznie (segment APP1) i „wybiera”
+przez podmianę `HTMLInputElement.prototype.click`. Rejestracja service
+workera w panelu podglądu nie działa — zamiast tego sprawdzić, czy każdy
+plik z `PLIKI_POWLOKI` odpowiada 200. Na końcu: `localStorage.clear()`,
+przywrócić rozmiar okna.
 
 ## Zasady pracy
 
