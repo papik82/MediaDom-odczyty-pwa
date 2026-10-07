@@ -3,6 +3,15 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.0.1 — 2026-10-07
+
+### Zmienione
+- Wykres doby (ekran Temperatury): kropka na każdym odczycie, czyli na
+  każdej średniej godzinowej, w kolorze czujnika. Widać, ile punktów stoi
+  za linią i gdzie dokładnie zaczyna się luka (`narysujWykresDoby`,
+  `js/app.js`). Większe kropki minimum i maksimum temperatury zewnętrznej
+  bez zmian.
+
 ## 1.0.0 — 2026-10-07
 
 Pierwsza wersja stabilna. Warunek ustalony przy 0.20.1 — prawdziwy odczyt

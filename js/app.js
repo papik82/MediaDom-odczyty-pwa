@@ -1005,14 +1005,17 @@ function narysujWykresDoby(komorka, wynik) {
     if (biezacy.length) odcinki.push(biezacy);
 
     for (const odcinek of odcinki) {
-      if (odcinek.length === 1) {
-        const [h, t] = odcinek[0];
-        wykres.appendChild(svg('circle', { cx: x(h + 0.5), cy: y(t), r: 2, fill: kolor }));
-      } else {
+      if (odcinek.length > 1) {
         wykres.appendChild(svg('polyline', {
           points: odcinek.map(([h, t]) => `${x(h + 0.5).toFixed(1)},${y(t).toFixed(1)}`).join(' '),
           fill: 'none', stroke: kolor, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round',
         }));
+      }
+      // Kropka na każdym odczycie (średniej godzinowej) — od 1.0.1. Widać
+      // wtedy, ile punktów stoi za linią i gdzie dokładnie zaczyna się luka.
+      // Kropka bez linii to zarazem pojedyncza godzina otoczona lukami.
+      for (const [h, t] of odcinek) {
+        wykres.appendChild(svg('circle', { cx: x(h + 0.5).toFixed(1), cy: y(t).toFixed(1), r: 1.8, fill: kolor }));
       }
     }
 
