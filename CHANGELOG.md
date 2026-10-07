@@ -3,6 +3,32 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.0.0 — 2026-10-07
+
+Pierwsza wersja stabilna. Warunek ustalony przy 0.20.1 — prawdziwy odczyt
+miesięczny z nowych ekranów — spełniony 2026-10-01: prąd (T1, T2, suma)
+z jednym czasem, T1 + T2 = suma, woda ze zdjęcia. Kod aplikacji bez zmian
+względem 0.23.0; zmienia się numer i obietnica: kontrakt z webhookiem
+i zachowanie ekranów są stabilne, kolejne zmiany idą jako 1.x.
+
+**Co obejmuje 1.0:**
+- odczyty gazu i wody (zdjęcie, galeria, ręcznie; rozpoznawanie zdjęcia
+  dla gazu), ekran Prąd — T1, T2 i suma naraz ze wspólną datą,
+- data i godzina odczytu z EXIF zdjęcia z galerii,
+- kolejka offline z rozpoznawaniem wpisów, które już doszły do arkusza,
+- Kocioł: zmiana nastaw z podpowiedzią ostatnich, wyszarzanie zbędnych
+  pól, historia zmian (paski CO/CWU z 12 miesięcy),
+- Odczyty i Temperatury (z wykresem doby po stuknięciu dnia),
+- pasek alarmów: bateria i puls telefonu ze zbieraczem temperatur, cisza
+  czujników, luki do importu, a od wersji wdrożenia webhooka 35 także
+  przypomnienia o odczytach (gaz po 3 / 10 dniach w sezonie / poza nim,
+  prąd i woda od 1. dnia miesiąca),
+- samoczynne przechodzenie na nową wersję po powrocie z tła.
+
+### Zmienione
+- `CLAUDE.md`: opis paska alarmów uzupełniony o przypomnienia o odczytach
+  (logika po stronie Apps Script, `apps-script/przypomnienia.js`).
+
 ## 0.23.0 — 2026-10-04
 
 ### Dodane

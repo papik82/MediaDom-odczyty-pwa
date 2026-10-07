@@ -94,7 +94,9 @@ poprzednie dane, świeże je podmieniają — i ma własny wiersz statusu
 (wczytywanie / czas wczytania / błąd).
 
 **Pasek alarmów** (od 0.23.0) nad kartami ekranu startowego — akcja
-`alarmy` (bateria i puls telefonu, cisza czujników, luki do importu;
+`alarmy` (bateria i puls telefonu, cisza czujników, luki do importu,
+od wersji wdrożenia 35 także przypomnienia o odczytach: gaz po 3 / 10 dniach
+w sezonie / poza nim, prąd i woda od 1. dnia miesiąca;
 reguły w `../apps-script/CLAUDE.md`). Sprawdzany przy starcie, powrocie na
 start i z tła (raz na minutę), tylko w pamięci, bez `localStorage`; pusta
 lista = pasek ukryty. Powiadomień systemowych (Web Push, ntfy) na razie
