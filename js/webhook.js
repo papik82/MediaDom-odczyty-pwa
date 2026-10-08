@@ -99,6 +99,17 @@ export function zapiszPomysl(pomysl) {
   return wyslij({ akcja: 'zapisz_pomysl', ...pomysl });
 }
 
+// Faktura za gaz z PDF (od 1.3.0). odczytaj — Gemini proponuje wiersze,
+// niczego nie zapisuje; zapisz — zatwierdzone wiersze do zakładki `faktury`
+// (ten sam numer drugi raz → duplikat: true, bez zapisu).
+export function odczytajFakture(pdfBase64) {
+  return wyslij({ akcja: 'odczytaj_fakture', pdf: pdfBase64 });
+}
+
+export function zapiszFakture(faktura) {
+  return wyslij({ akcja: 'zapisz_fakture', ...faktura });
+}
+
 export function pobierzPomysly(ile = 10) {
   return wyslij({ akcja: 'lista_pomyslow', status: 'wszystkie', ile });
 }

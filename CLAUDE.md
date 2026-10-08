@@ -112,6 +112,19 @@ godzina czujników, luki i ważność tokenów eWeLink (`renderujStanZbieracza`
 w `js/app.js`). Wiek pulsu („37 min temu”) liczy telefon od znacznika czasu,
 żeby był prawdziwy także dla stanu z bufora.
 
+**Karta „Faktura”** (od 1.3.0) — import faktury za gaz z PDF: plik
+(base64) → `odczytaj_fakture` (Gemini proponuje, nic nie zapisuje) →
+formularz → `zapisz_fakture`. Zasada jak przy zdjęciu licznika: **model
+podpowiada, zapis tylko po zatwierdzeniu**. Kontrole na ekranie
+(`przeliczKontroleFaktury`): ciągłość z ostatnią fakturą z arkusza
+(`poprzednia` z odpowiedzi odczytu) i brutto z pól liczone jak formuły
+zakładki (`bruttoOkresu`: kWh `ROUND(…,0)`, składniki do groszy) vs kwota
+z faktury — tolerancja 5 gr. Tylko ostrzeżenia, zapis zostaje możliwy
+(wymiana gazomierza celowo łamie ciągłość odczytów). VAT w formularzu
+w procentach, wysyłany jako ułamek. **Bez kolejki offline** — webhook
+rozpoznaje powtórny numer faktury (`duplikat: true`), więc ponowienie po
+braku odpowiedzi jest bezpieczne. PDF nigdzie nie jest zapisywany.
+
 **Karta „Pomysły”** (od 1.2.0) — notatnik pomysłów rozwojowych: hasło
 i opcjonalny obszar idą akcją `zapisz_pomysl` do zakładki `pomysly`
 (kontrakt w `../apps-script/CLAUDE.md`), a Claude przenosi je do backlogu

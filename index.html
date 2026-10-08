@@ -74,6 +74,16 @@
         </span>
       </button>
 
+      <!-- Import faktury za gaz z PDF (od 1.3.0) — Gemini proponuje wiersze
+           zakładki `faktury`, zapis dopiero po sprawdzeniu. -->
+      <button id="przycisk-faktura" class="karta">
+        <img class="karta__ikona" src="ikony/faktura.svg" alt="">
+        <span class="karta__tekst">
+          <span class="karta__tytul">Faktura</span>
+          <span class="karta__opis">Import faktury za gaz z PDF</span>
+        </span>
+      </button>
+
       <!-- Podgląd z arkusza (punkt 6 backlogu) — tylko do odczytu, żeby
            sprawdzić z telefonu ostatnie wpisy i temperatury bez wchodzenia
            do Arkusza Google. Od 0.22.0 dwie osobne karty i dwa ekrany
@@ -318,6 +328,71 @@
         <button type="button" id="przycisk-zamknij-zbieracz" class="przycisk-drugorzedny">Zamknij</button>
       </div>
     </section>
+
+    <!-- Ekran faktury — PDF → Gemini (akcja odczytaj_fakture) → formularz do
+         sprawdzenia → zapis (zapisz_fakture). Okresy (1–4 wiersze zakładki
+         `faktury`) powstają z szablonu niżej. Bez kolejki offline: zapis
+         faktury to rzadka czynność, a bez zasięgu i tak nie da się jej
+         rozpoznać. Logika: sekcja „Faktura” w js/app.js. -->
+    <section id="ekran-faktura" class="ekran ukryty">
+      <h2>Faktura za gaz</h2>
+      <p class="opis-ekranu">Wybierz PDF faktury — pola wypełnią się same.
+        Sprawdź je z fakturą przed zapisem.</p>
+      <div class="przyciski-formularza">
+        <button type="button" id="przycisk-pdf-faktury" class="przycisk-glowny">Wybierz PDF faktury</button>
+        <button type="button" id="przycisk-faktura-recznie" class="przycisk-drugorzedny">Wpisz ręcznie</button>
+      </div>
+      <input type="file" id="plik-faktury" accept="application/pdf" class="ukryty">
+      <p id="status-faktury" class="status-bloku ukryty" role="status"></p>
+
+      <form id="formularz-faktury" class="ukryty">
+        <div id="ciaglosc-faktury" class="faktura__ciaglosc"></div>
+        <label class="pole-formularza">
+          Numer faktury
+          <input type="text" id="pole-nr-faktury" required autocomplete="off">
+        </label>
+        <label class="pole-formularza">
+          Wartość brutto faktury (zł)
+          <input type="number" id="pole-brutto-faktury" inputmode="decimal" step="any" min="0" required>
+        </label>
+        <div id="okresy-faktury"></div>
+        <button type="button" id="przycisk-dodaj-okres" class="przycisk-drugorzedny">+ Dodaj okres</button>
+        <p id="kontrola-faktury" class="faktura__kontrola"></p>
+        <div class="przyciski-formularza">
+          <button type="submit" id="przycisk-zapisz-fakture" class="przycisk-glowny">Zapisz fakturę</button>
+        </div>
+      </form>
+      <p id="komunikat-faktury" class="komunikat ukryty" role="status"></p>
+      <div class="przyciski-formularza">
+        <button type="button" id="przycisk-zamknij-fakture" class="przycisk-drugorzedny">Zamknij</button>
+      </div>
+    </section>
+
+    <!-- Szablon okresu faktury — jeden wiersz zakładki `faktury` (kolumny B–M
+         i O). VAT wpisywany w procentach, zapisywany jako ułamek (23 → 0,23). -->
+    <template id="szablon-okresu-faktury">
+      <fieldset class="faktura__okres">
+        <legend class="faktura__okres-tytul">Okres <span class="faktura__nr"></span>
+          <button type="button" class="przycisk-usun-przedzial faktura__usun" aria-label="Usuń okres">✕</button>
+        </legend>
+        <div class="faktura__siatka">
+          <label class="pole-formularza">Od<input type="date" data-pole="okres_od" required></label>
+          <label class="pole-formularza">Do<input type="date" data-pole="okres_do" required></label>
+          <label class="pole-formularza">Odczyt od (m³)<input type="number" data-pole="odczyt_od" inputmode="decimal" step="any" required></label>
+          <label class="pole-formularza">Odczyt do (m³)<input type="number" data-pole="odczyt_do" inputmode="decimal" step="any" required></label>
+          <label class="pole-formularza">Wsp. konwersji<input type="number" data-pole="wsp_konwersji" inputmode="decimal" step="any" required></label>
+          <span></span>
+          <label class="pole-formularza">Paliwo zł/kWh netto<input type="number" data-pole="cena_paliwo" inputmode="decimal" step="any" required></label>
+          <label class="pole-formularza">VAT paliwo %<input type="number" data-pole="vat_paliwo" data-procent inputmode="decimal" step="any" required></label>
+          <label class="pole-formularza">Dystr. zł/kWh netto<input type="number" data-pole="cena_dystr" inputmode="decimal" step="any" required></label>
+          <label class="pole-formularza">VAT dystr. %<input type="number" data-pole="vat_dystr" data-procent inputmode="decimal" step="any" required></label>
+          <label class="pole-formularza">Abonament zł netto<input type="number" data-pole="abonament" inputmode="decimal" step="any" required></label>
+          <label class="pole-formularza">Dystr. stała zł netto<input type="number" data-pole="dystr_stala" inputmode="decimal" step="any" required></label>
+          <label class="pole-formularza">VAT stałe %<input type="number" data-pole="vat_stale" data-procent inputmode="decimal" step="any" required></label>
+        </div>
+        <label class="pole-formularza">Uwagi (opcjonalnie)<input type="text" data-pole="uwagi" autocomplete="off"></label>
+      </fieldset>
+    </template>
 
     <!-- Ekran pomysłów — pole na hasło, opcjonalny obszar, zapis (przez
          kolejkę offline, gdy nie ma zasięgu) i lista ostatnich pomysłów

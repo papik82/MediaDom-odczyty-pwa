@@ -3,6 +3,24 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.3.0 — 2026-10-08
+
+### Dodane
+- Karta i ekran „Faktura”: import faktury za gaz z PDF. Wybrany PDF idzie
+  do akcji `odczytaj_fakture` (Gemini, wdrożenie webhooka 39), która
+  proponuje numer, brutto i okresy (osobny przy zmianie ceny albo wymianie
+  gazomierza). Formularz do sprawdzenia: okresy w ramkach, VAT w procentach,
+  „+ Dodaj okres”, usuwanie okresu. Zapis akcją `zapisz_fakture` do zakładki
+  `faktury` — ten sam numer drugi raz nie zapisze się podwójnie. Można też
+  wpisać fakturę ręcznie, bez PDF.
+- Dwie kontrole przed zapisem: **ciągłość** z ostatnią fakturą w arkuszu
+  (data początku = dzień po końcu poprzedniej, odczyt początkowy = końcowy
+  poprzedniej) i **brutto wyliczone z pól** tak jak formuły arkusza
+  (kWh zaokrąglone, składniki do groszy) porównane z kwotą z faktury —
+  pomyłka modelu w jednej cyfrze ceny daje widoczną różnicę.
+- Ostrzeżenie, gdy w zakładce `faktury` brakuje wierszy z formułami
+  (webhook wtedy odmawia zapisu). Nowa ikona `ikony/faktura.svg`.
+
 ## 1.2.0 — 2026-10-08
 
 ### Dodane

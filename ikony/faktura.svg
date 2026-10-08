@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Ikona karty „Faktura” (od 1.3.0) — w stylu pozostałych kart: koło
+       i znak w środku, ten sam kolor i grubość linii. Kartka z zagiętym
+       rogiem i trzema liniami tekstu. -->
+  <circle cx="12" cy="12" r="9" fill="none" stroke="#3d4fb0" stroke-width="1.7"/>
+  <path d="M9 7.3h4.4l2.1 2.1v7.3H9Z" fill="none" stroke="#3d4fb0" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M13.3 7.3v2.2h2.2" fill="none" stroke="#3d4fb0" stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M10.5 11.5h3.5M10.5 13.3h3.5M10.5 15.1h2" fill="none" stroke="#3d4fb0" stroke-width="1.2" stroke-linecap="round"/>
+</svg>

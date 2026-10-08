@@ -788,6 +788,59 @@ main {
 .pomysl__status--odrzucony { background: #ececec; color: #555; }
 .pomysl__status--kolejka { background: #fff4e0; color: #8a5a00; }
 
+/* Ekran faktury (od 1.3.0). Okres = ramka z polami w dwóch kolumnach —
+   na telefonie 13 pól jedno pod drugim byłoby za długie. */
+.faktura__okres {
+  margin: 1rem 0 0;
+  padding: 0.5rem 0.9rem 0.9rem;
+  border: 1px solid #d6d9e8;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.faktura__okres-tytul {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.3rem;
+  font-weight: 600;
+}
+
+.faktura__siatka {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 0.75rem;
+}
+
+/* W siatce etykiety są drobniejsze, żeby dwa pola zmieściły się obok siebie. */
+.faktura__siatka .pole-formularza {
+  font-size: 0.85rem;
+  min-width: 0;
+}
+
+.faktura__ciaglosc {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.faktura__kontrola {
+  margin: 1rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: #ececec;
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.faktura__kontrola--ok { background: #e6f4ea; color: #1e6b34; }
+.faktura__kontrola--roznica { background: #fdecea; color: #b3261e; }
+
+#przycisk-dodaj-okres {
+  margin-top: 0.75rem;
+}
+
 /* Kreska w kolorze czujnika — te same kolory co linie wykresu doby. */
 .zbieracz__czujnik::before {
   content: '';
