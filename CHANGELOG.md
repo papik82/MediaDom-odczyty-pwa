@@ -3,6 +3,22 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.1.1 — 2026-10-08
+
+### Zmienione
+- Kocioł: kilka przedziałów cyrkulacji sklejamy **średnikiem**
+  (`4:30 - 9:00; 18:00 - 22:00`), tak jak w archiwum zakładki `kociol`
+  (do 1.1.0 — przecinkiem; w arkuszu nie było żadnego takiego wpisu).
+  Decyzja: `dokumentacja/decyzje.md` D5 (BACKLOG pkt 23).
+
+### Naprawione
+- Wczytanie ostatnich nastaw z cyrkulacją zapisaną średnikami (archiwum)
+  dawało jeden zepsuty przedział — `sparsujCyrkulacje` dzieliła tylko po
+  przecinku. Teraz dzieli po średniku i po przecinku.
+- Inny zapis tej samej cyrkulacji (separator, zero wiodące) nie jest już
+  traktowany jako zmiana nastaw — punkt odniesienia przechodzi przez tę samą
+  normalizację co formularz.
+
 ## 1.1.0 — 2026-10-07
 
 ### Dodane

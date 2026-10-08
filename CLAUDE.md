@@ -81,8 +81,8 @@ tylko do wyświetlenia (`OBWODY_TRYBU` w `js/app.js`); w arkuszu dalej jest
 jeden tryb.
 
 Cyrkulacja to lista przedziałów czasu w dobie, sklejana w jeden tekst.
-**Format sklejania — patrz `../apps-script/CLAUDE.md`, jest tam otwarta
-rozbieżność z archiwum. Nie zmieniaj go bez ustalenia.**
+Kilka przedziałów sklejamy **średnikiem** (`4:30 - 9:00; 18:00 - 22:00`), jak
+w archiwum; odczyt przyjmuje też przecinek (od 1.1.1, `../dokumentacja/decyzje.md` D5).
 
 **Karty „Odczyty” i „Temperatury”** (nie media; od 0.22.0 dwa osobne ekrany,
 wcześniej jeden wspólny „Podgląd”) — tylko do odczytu, żeby sprawdzić

@@ -216,8 +216,9 @@ formularzUstawien.addEventListener('submit', (zdarzenie) => {
 // spłaszczamy do jednego tekstu w komórce arkusza: "4:30 - 22:00" — bez
 // zera wiodącego przy godzinie i ze spacjami wokół myślnika, dokładnie tak,
 // jak wpisy zaimportowane wcześniej ręcznie do zakładki "kociol". Kilka
-// przedziałów w jednej dobie sklejamy przecinkiem — to już nasze rozszerzenie,
-// w archiwum każdy wiersz miał tylko jeden przedział.
+// przedziałów w jednej dobie sklejamy średnikiem ze spacją
+// ("4:30 - 9:00; 18:00 - 22:00") — tak jak w archiwum (decyzja 2026-10-08,
+// dokumentacja/decyzje.md D5; do 1.1.0 PWA sklejała przecinkiem).
 
 // Segmentowy przełącznik trybu (zastępuje dawny <select>) — jeden przycisk
 // jest zaznaczony (aria-checked), a przesuwany wskaźnik pod spodem dojeżdża
@@ -325,14 +326,17 @@ function odczytajPrzedzialyCyrkulacji() {
 }
 
 function serializujCyrkulacje(przedzialy) {
-  return przedzialy.map((p) => `${skrocGodzine(p.od)} - ${skrocGodzine(p.do)}`).join(', ');
+  return przedzialy.map((p) => `${skrocGodzine(p.od)} - ${skrocGodzine(p.do)}`).join('; ');
 }
 
 // Odporne na format z zera wiodącym i bez niego, ze spacjami wokół myślnika
 // albo bez — split('-') i trim() ogarniają obie wersje (nasza i archiwalna).
+// Przedziały dzielimy po średniku ORAZ po przecinku: średnik to obowiązujący
+// format, przecinek zostaje na wszelki wypadek (tak sklejała PWA do 1.1.0;
+// w arkuszu takich wpisów nie ma — sprawdzone na migawce 2026-10-07).
 function sparsujCyrkulacje(tekst) {
   if (!tekst) return [];
-  return tekst.split(',').map((kawalek) => kawalek.trim()).filter(Boolean).map((kawalek) => {
+  return String(tekst).split(/[;,]/).map((kawalek) => kawalek.trim()).filter(Boolean).map((kawalek) => {
     const [od, do_] = kawalek.split('-').map((s) => s.trim());
     return { od: od || '', do: do_ || '' };
   });
@@ -475,7 +479,12 @@ async function wczytajOstatnieNastawyKotla(generacja) {
       krzywa_grzewcza: wynik.krzywa_grzewcza ?? null,
       przesuniecie: wynik.przesuniecie ?? null,
       temp_cwu: wynik.temp_cwu ?? null,
-      cyrkulacja: wynik.cyrkulacja || '',
+      // Przepuszczone przez sparsuj + serializuj — tak samo jak to, co wyśle
+      // formularz. Inaczej sam inny zapis tego samego (separator, zero
+      // wiodące) wyglądałby jak zmiana nastaw i dałby zbędny wpis w `kociol`.
+      cyrkulacja: serializujCyrkulacje(sparsujCyrkulacje(wynik.cyrkulacja).map((p) => ({
+        od: dopelnijGodzine(p.od), do: dopelnijGodzine(p.do),
+      })).filter((p) => p.od && p.do)),
     };
   } catch (blad) {
     // Offline albo webhook nie odpowiada — zostajemy przy pustym formularzu
