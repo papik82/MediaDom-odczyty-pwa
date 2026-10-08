@@ -112,6 +112,17 @@ godzina czujników, luki i ważność tokenów eWeLink (`renderujStanZbieracza`
 w `js/app.js`). Wiek pulsu („37 min temu”) liczy telefon od znacznika czasu,
 żeby był prawdziwy także dla stanu z bufora.
 
+**Karta „Pomysły”** (od 1.2.0) — notatnik pomysłów rozwojowych: hasło
+i opcjonalny obszar idą akcją `zapisz_pomysl` do zakładki `pomysly`
+(kontrakt w `../apps-script/CLAUDE.md`), a Claude przenosi je do backlogu
+(`../narzedzia/pomysly.py`). Zapis jak odczyty: od razu, bez odpowiedzi —
+do wspólnej kolejki offline. **`id` nadaje telefon** (`nowyIdPomyslu`)
+przed pierwszą próbą i zostaje ten sam w kolejce, a webhook rozpoznaje
+powtórkę po `id` — dlatego pomysły nie potrzebują sprawdzania „czy już
+jest w arkuszu” jak odczyty i kocioł. Lista 10 ostatnich (`lista_pomyslow`)
+przez bufor; pomysły z kolejki dorysowane na górze jako „czeka na
+wysłanie” (`renderujPomysly`, pamięć `ostatniePomysly`).
+
 **Wykres doby** (od 0.21.0, ekran Temperatury): stuknięcie dnia w tabeli
 rozwija pod nim wykres godzinowy z akcji `temperatury_godzinowe`, pobieranej
 dopiero na żądanie i trzymanej w pamięci do zamknięcia ekranu (nie w `localStorage`).
@@ -186,11 +197,11 @@ odczyty-pwa/
 │   │                      OCR: tak/nie, pozycje ekranu prądu)
 │   ├── webhook.js         komunikacja z Apps Script (odczyt, OCR, kocioł, podgląd,
 │   │                      temperatury godzinowe do wykresu doby, alarmy,
-│   │                      stan zbieracza)
+│   │                      stan zbieracza, pomysły)
 │   ├── aparat.js          zdjęcie: aparat/galeria, zmniejszanie, base64
 │   ├── exif.js            data zrobienia zdjęcia z EXIF (JPEG), bez bibliotek
 │   ├── kolejka.js         kolejka offline w localStorage
-│   ├── bufor.js           bufor odpowiedzi Odczytów, Temperatur, Zbieracza i historii kotła
+│   ├── bufor.js           bufor odpowiedzi Odczytów, Temperatur, Zbieracza, Pomysłów i historii kotła
 │   └── wersja.js          numer wersji aplikacji (stopka ekranu startowego)
 ├── ikony/                 SVG w jednym stylu (ikona aplikacji + ikony UI)
 ├── CHANGELOG.md           historia wydań aplikacji

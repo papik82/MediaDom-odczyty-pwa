@@ -91,3 +91,14 @@ export function pobierzAlarmy() {
 export function pobierzStanZbieracza() {
   return wyslij({ akcja: 'stan_zbieracza' });
 }
+
+// Notatnik pomysłów (karta „Pomysły”, od 1.2.0). Zapis idzie przez kolejkę
+// offline jak odczyty — `id` nadaje telefon, więc ponowna wysyłka tego
+// samego pomysłu nie tworzy duplikatu (webhook odpowiada duplikat: true).
+export function zapiszPomysl(pomysl) {
+  return wyslij({ akcja: 'zapisz_pomysl', ...pomysl });
+}
+
+export function pobierzPomysly(ile = 10) {
+  return wyslij({ akcja: 'lista_pomyslow', status: 'wszystkie', ile });
+}

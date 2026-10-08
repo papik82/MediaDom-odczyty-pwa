@@ -3,6 +3,19 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.2.0 — 2026-10-08
+
+### Dodane
+- Karta i ekran „Pomysły” (BACKLOG pkt 5): notatnik pomysłów rozwojowych.
+  Pole na kilka słów, opcjonalny obszar (PWA, arkusz, analiza, telefon,
+  inne), zapis do zakładki `pomysly` przez akcję `zapisz_pomysl`
+  (wdrożenie webhooka 38). Pod formularzem 10 ostatnich pomysłów ze
+  statusem: nowy / w backlogu (z numerem punktu) / odrzucony (z uwagą).
+- Bez zasięgu pomysł idzie do wspólnej kolejki offline i od razu widać go
+  na liście jako „czeka na wysłanie”. Identyfikator nadaje telefon, więc
+  ponowna wysyłka pomysłu, który doszedł bez potwierdzenia, nie tworzy
+  duplikatu. Nowa ikona `ikony/pomysly.svg`.
+
 ## 1.1.1 — 2026-10-08
 
 ### Zmienione

@@ -106,6 +106,18 @@
         </span>
       </button>
 
+      <!-- Notatnik pomysłów rozwojowych (od 1.2.0, BACKLOG pkt 5) — hasło
+           zapisane z telefonu trafia do zakładki `pomysly`, skąd Claude
+           przenosi je do backlogu. Osobno (karta--osobna), bo to nie dane
+           o domu, tylko notatki o projekcie. -->
+      <button id="przycisk-pomysly" class="karta karta--osobna">
+        <img class="karta__ikona" src="ikony/pomysly.svg" alt="">
+        <span class="karta__tekst">
+          <span class="karta__tytul">Pomysły</span>
+          <span class="karta__opis">Notatnik pomysłów rozwojowych</span>
+        </span>
+      </button>
+
       <p id="komunikat-start" class="komunikat-sukces ukryty"></p>
       <p id="komunikat-kolejka" class="komunikat-kolejka ukryty"></p>
     </section>
@@ -305,6 +317,42 @@
       <div class="przyciski-formularza">
         <button type="button" id="przycisk-zamknij-zbieracz" class="przycisk-drugorzedny">Zamknij</button>
       </div>
+    </section>
+
+    <!-- Ekran pomysłów — pole na hasło, opcjonalny obszar, zapis (przez
+         kolejkę offline, gdy nie ma zasięgu) i lista ostatnich pomysłów
+         ze statusem. Logika: otworzPomysly / renderujPomysly w js/app.js. -->
+    <section id="ekran-pomysly" class="ekran ukryty">
+      <h2>Pomysły</h2>
+      <p class="opis-ekranu">Kilka słów wystarczy — Claude rozwinie pomysł w punkt
+        backlogu, a niejasny dopyta.</p>
+      <form id="formularz-pomyslu">
+        <label class="pole-formularza">
+          Pomysł
+          <textarea id="pole-pomysl" rows="3" maxlength="500" required
+                    placeholder="np. wykres zużycia gazu na karcie Odczyty"></textarea>
+        </label>
+        <label class="pole-formularza">
+          Obszar (opcjonalnie)
+          <select id="pole-obszar-pomyslu">
+            <option value="">—</option>
+            <option value="pwa">aplikacja (PWA)</option>
+            <option value="arkusz">arkusz</option>
+            <option value="analiza">analiza</option>
+            <option value="telefon">telefon / zbieracz</option>
+            <option value="inne">inne</option>
+          </select>
+        </label>
+        <div class="przyciski-formularza">
+          <button type="submit" id="przycisk-zapisz-pomysl" class="przycisk-glowny">Zapisz pomysł</button>
+          <button type="button" id="przycisk-zamknij-pomysly" class="przycisk-drugorzedny">Zamknij</button>
+        </div>
+        <p id="komunikat-pomyslu" class="komunikat ukryty" role="status"></p>
+      </form>
+
+      <h3 class="podglad__naglowek">Ostatnie pomysły</h3>
+      <p id="status-pomyslow" class="status-bloku ukryty" role="status"></p>
+      <div id="lista-pomyslow" class="lista-odczytow"></div>
     </section>
 
     <!-- Ekran ustawień — adres webhooka i token, zapisywane w localStorage. -->

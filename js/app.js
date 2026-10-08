@@ -7,7 +7,7 @@ import { MEDIA, MEDIA_ZE_ZDJECIEM, MEDIA_Z_OCR, POZYCJE_PRADU } from './media.js
 import {
   wyslij, wyslijOdczyt, rozpoznajZdjecie, zapiszKociol, pobierzOstatnieNastawyKotla,
   pobierzOstatnieOdczyty, pobierzTemperaturyDobowe, pobierzTemperaturyGodzinowe, pobierzAlarmy, pobierzHistorieKotla,
-  pobierzStanZbieracza,
+  pobierzStanZbieracza, zapiszPomysl, pobierzPomysly,
 } from './webhook.js';
 import { zrobZdjecie, wybierzZGalerii, blobDoBase64 } from './aparat.js';
 import { dodajDoKolejki, liczbaWKolejce, pobierzKolejke, usunPierwszyZKolejki } from './kolejka.js';
@@ -94,6 +94,16 @@ const przyciskZbieracz = document.getElementById('przycisk-zbieracz');
 const przyciskZamknijZbieracz = document.getElementById('przycisk-zamknij-zbieracz');
 const statusZbieracza = document.getElementById('status-zbieracza');
 const stanZbieraczaKontener = document.getElementById('stan-zbieracza');
+const ekranPomysly = document.getElementById('ekran-pomysly');
+const przyciskPomysly = document.getElementById('przycisk-pomysly');
+const przyciskZamknijPomysly = document.getElementById('przycisk-zamknij-pomysly');
+const formularzPomyslu = document.getElementById('formularz-pomyslu');
+const polePomysl = document.getElementById('pole-pomysl');
+const poleObszarPomyslu = document.getElementById('pole-obszar-pomyslu');
+const przyciskZapiszPomysl = document.getElementById('przycisk-zapisz-pomysl');
+const komunikatPomyslu = document.getElementById('komunikat-pomyslu');
+const statusPomyslow = document.getElementById('status-pomyslow');
+const listaPomyslow = document.getElementById('lista-pomyslow');
 
 const ETYKIETY_TRYBU = { off: 'Wyłączony', cwu: 'CWU', co: 'CO', cwu_co: 'CWU + CO' };
 
@@ -149,7 +159,7 @@ let generacjaPotwierdzenia = 0;
 let generacjaPodgladu = 0;
 
 function pokazEkran(ekranDoPokazania) {
-  for (const ekran of [ekranStart, ekranUstawien, ekranWyboruMetody, ekranPotwierdzenia, ekranPrad, ekranKociol, ekranOdczyty, ekranTemperatury, ekranZbieracz]) {
+  for (const ekran of [ekranStart, ekranUstawien, ekranWyboruMetody, ekranPotwierdzenia, ekranPrad, ekranKociol, ekranOdczyty, ekranTemperatury, ekranZbieracz, ekranPomysly]) {
     ekran.classList.toggle('ukryty', ekran !== ekranDoPokazania);
   }
   // Każdy powrót na ekran startowy (i start aplikacji) to okazja, żeby
@@ -1366,6 +1376,137 @@ function otworzZbieracz() {
 przyciskZbieracz.addEventListener('click', poUstawieniach(otworzZbieracz));
 przyciskZamknijZbieracz.addEventListener('click', () => pokazEkran(ekranStart));
 
+// --- Notatnik pomysłów (BACKLOG pkt 5, od 1.2.0) ---
+//
+// Hasło zapisane tutaj trafia do zakładki `pomysly` (akcja zapisz_pomysl),
+// skąd Claude na żądanie przenosi je do backlogu i oznacza status. Zapis
+// idzie jak odczyty: od razu, a bez odpowiedzi — do kolejki offline.
+// `id` nadajemy tutaj, przed pierwszą próbą, i zostaje ten sam w kolejce —
+// webhook rozpoznaje powtórkę po id, więc pomysł, który doszedł bez
+// potwierdzenia, nie zapisze się drugi raz.
+
+const ILE_POMYSLOW_NA_LISCIE = 10;
+const OBSZARY_POMYSLOW = { pwa: 'PWA', arkusz: 'arkusz', analiza: 'analiza', telefon: 'telefon', inne: 'inne' };
+const STATUSY_POMYSLOW = { nowy: 'nowy', przeniesiony: 'w backlogu', odrzucony: 'odrzucony' };
+let generacjaPomyslow = 0;
+// Ostatnio pobrana lista z arkusza (null = jeszcze nic). Pozwala dorysować
+// pomysły z kolejki od razu, bez czekania na webhook — także bez zasięgu.
+let ostatniePomysly = null;
+
+function nowyIdPomyslu() {
+  // crypto.randomUUID działa tylko w bezpiecznym kontekście (HTTPS, localhost) —
+  // na GitHub Pages jest; zapas na wszelki wypadek: czas + losowy ogon.
+  if (window.crypto && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  return `p-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function wierszPomyslu(tresc, data, obszar, status, statusTekst) {
+  const wiersz = element('div', 'pomysl');
+  wiersz.appendChild(element('p', 'pomysl__tresc', tresc));
+  const opis = element('div', 'pomysl__opis');
+  opis.appendChild(element('span', `pomysl__status pomysl__status--${status}`, statusTekst));
+  if (data) opis.appendChild(element('span', '', formatujDataGodzinePodgladu(data)));
+  if (obszar) opis.appendChild(element('span', '', OBSZARY_POMYSLOW[obszar] || obszar));
+  wiersz.appendChild(opis);
+  return wiersz;
+}
+
+// Lista: najpierw pomysły czekające w kolejce offline (arkusz ich jeszcze nie
+// zna, a bez tego zapisany bez zasięgu pomysł „znikałby”), potem te z arkusza.
+function renderujPomysly(pomysly) {
+  if (pomysly) ostatniePomysly = pomysly;
+  listaPomyslow.innerHTML = '';
+  const wKolejce = pobierzKolejke().filter((w) => w.akcja === 'zapisz_pomysl');
+  wKolejce.slice().reverse().forEach((p) => {
+    listaPomyslow.appendChild(wierszPomyslu(p.tresc, p.data, p.obszar, 'kolejka', 'czeka na wysłanie'));
+  });
+  const idWKolejce = new Set(wKolejce.map((p) => p.id));
+  (ostatniePomysly || []).filter((p) => !idWKolejce.has(p.id)).forEach((p) => {
+    let statusTekst = STATUSY_POMYSLOW[p.status] || p.status;
+    if (p.status === 'przeniesiony' && p.punkt_backlogu) statusTekst = `backlog pkt ${p.punkt_backlogu}`;
+    const wiersz = wierszPomyslu(p.tresc, p.data, p.obszar, STATUSY_POMYSLOW[p.status] ? p.status : 'nowy', statusTekst);
+    if (p.uwagi) wiersz.appendChild(element('p', 'pomysl__opis', p.uwagi));
+    listaPomyslow.appendChild(wiersz);
+  });
+  // „Pusto” tylko gdy wiemy to z arkusza — w trakcie pierwszego wczytywania
+  // (ostatniePomysly === null) lista zostaje pusta, a status mówi „Wczytywanie…”.
+  if (!listaPomyslow.firstChild && ostatniePomysly) {
+    listaPomyslow.appendChild(element('p', 'komunikat-pusto', 'Jeszcze nie ma pomysłów.'));
+  }
+}
+
+function wczytajPomysly() {
+  generacjaPomyslow++;
+  const generacja = generacjaPomyslow;
+  wczytajBlokPodgladu(() => generacja === generacjaPomyslow, {
+    status: statusPomyslow,
+    klucz: 'pomysly',
+    pobierz: () => pobierzPomysly(ILE_POMYSLOW_NA_LISCIE),
+    renderuj: (wynik) => renderujPomysly(wynik.pomysly),
+  });
+}
+
+function otworzPomysly() {
+  komunikatStart.classList.add('ukryty');
+  komunikatPomyslu.classList.add('ukryty');
+  polePomysl.value = '';
+  poleObszarPomyslu.value = '';
+  renderujPomysly(null);   // od razu to, co czeka w kolejce (bufor dorysuje resztę)
+  pokazEkran(ekranPomysly);
+  wczytajPomysly();
+  polePomysl.focus();
+}
+
+// rodzaj: 'blad' (czerwony), 'sukces' (zielony), 'kolejka' (żółty) — te same
+// klasy co komunikaty odczytów na ekranie startowym.
+function pokazKomunikatPomyslu(tekst, rodzaj = 'blad') {
+  komunikatPomyslu.className = rodzaj === 'sukces' ? 'komunikat-sukces' : rodzaj === 'kolejka' ? 'komunikat-kolejka' : 'komunikat';
+  komunikatPomyslu.textContent = tekst;
+}
+
+formularzPomyslu.addEventListener('submit', async (zdarzenie) => {
+  zdarzenie.preventDefault();
+  const tresc = polePomysl.value.trim();
+  if (!tresc) {
+    pokazKomunikatPomyslu('Wpisz kilka słów.');
+    return;
+  }
+  const pomysl = {
+    id: nowyIdPomyslu(),
+    data: `${sformatujDataGodzinaLokalnie(new Date())}:00`,
+    obszar: poleObszarPomyslu.value,
+    tresc,
+  };
+
+  przyciskZapiszPomysl.disabled = true;
+  przyciskZapiszPomysl.textContent = 'Wysyłanie…';
+  try {
+    const odpowiedz = await zapiszPomysl(pomysl);
+    if (!odpowiedz.ok) {
+      pokazKomunikatPomyslu(odpowiedz.blad || 'Webhook odrzucił pomysł.');
+      return;
+    }
+    pokazKomunikatPomyslu('Zapisano pomysł.', 'sukces');
+  } catch (blad) {
+    // Brak odpowiedzi — do kolejki offline z tym samym id (patrz wyżej).
+    console.error('Nie udało się wysłać pomysłu, dokładam do kolejki offline:', blad);
+    dodajDoKolejki({ akcja: 'zapisz_pomysl', ...pomysl });
+    aktualizujKomunikatKolejki();
+    pokazKomunikatPomyslu('Pomysł zapisany w telefonie — brak odpowiedzi serwera, pójdzie sam, gdy wróci internet.', 'kolejka');
+  } finally {
+    przyciskZapiszPomysl.disabled = false;
+    przyciskZapiszPomysl.textContent = 'Zapisz pomysł';
+  }
+  polePomysl.value = '';
+  poleObszarPomyslu.value = '';
+  renderujPomysly(null);   // pomysł z kolejki widać od razu, nawet gdy odświeżenie się nie uda
+  wyczyscBuforKlucz('pomysly');
+  wczytajPomysly();
+});
+
+przyciskPomysly.addEventListener('click', poUstawieniach(otworzPomysly));
+przyciskZamknijPomysly.addEventListener('click', () => pokazEkran(ekranStart));
+
 // Puste pole -> null (nie NaN z parseFloat('')) — "krzywa grzewcza" i
 // "przesunięcie" są null przy samym CWU (bez CO), zgodnie z archiwum.
 function liczbaAlboNull(tekst) {
@@ -1645,6 +1786,10 @@ function opiszWpisKolejki(wpis) {
   if (wpis.akcja === 'zmiana_kotla') {
     return `Kocioł: ${ETYKIETY_TRYBU[wpis.tryb] || wpis.tryb}`;
   }
+  if (wpis.akcja === 'zapisz_pomysl') {
+    const tresc = String(wpis.tresc || '');
+    return `Pomysł „${tresc.length > 30 ? `${tresc.slice(0, 30)}…` : tresc}”`;
+  }
   return `${(MEDIA[wpis.medium] || {}).nazwa || wpis.medium} ${wpis.stan}`;
 }
 
@@ -1774,7 +1919,10 @@ async function przetworzKolejkeOffline() {
   // Wysłane z kolejki wpisy zmieniły zawartość arkusza — patrz uwaga przy zapisie.
   // Przy wpisach, które już były w arkuszu, też czyścimy bufor: Podgląd
   // mógł zapamiętać listę sprzed ich pierwszej (udanej) wysyłki.
-  if (wyslanychOk > 0 || juzWArkuszu.length > 0) wyczyscBuforKlucz('ostatnie_odczyty');
+  if (wyslanychOk > 0 || juzWArkuszu.length > 0) {
+    wyczyscBuforKlucz('ostatnie_odczyty');
+    wyczyscBuforKlucz('pomysly');   // pomysł z kolejki doszedł — lista w buforze jest stara
+  }
 
   const czesci = [];
   if (wyslanychOk > 0) {

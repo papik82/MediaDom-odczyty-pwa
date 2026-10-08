@@ -316,8 +316,14 @@ main {
   font-weight: 600;
 }
 
-.pole-formularza input {
+/* textarea i select od 1.2.0 (ekran Pomysły) — ten sam wygląd co pola tekstowe. */
+.pole-formularza input,
+.pole-formularza textarea,
+.pole-formularza select {
   display: block;
+  font-family: inherit;
+  background: #fff;
+  color: inherit;
   width: 100%;
   margin-top: 0.4rem;
   padding: 0.75rem;
@@ -737,6 +743,50 @@ main {
   font-size: 0.75rem;
   text-align: right;
 }
+
+.pole-formularza textarea {
+  resize: vertical;
+  min-height: 4.5rem;
+}
+
+/* Lista pomysłów (od 1.2.0): treść w pełnej szerokości, pod nią data,
+   obszar i status. Wiersz nie jest flexem jak w Odczytach, bo treść bywa
+   długa i musi się zawijać. */
+.pomysl {
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid #eee;
+}
+
+.pomysl:last-child {
+  border-bottom: none;
+}
+
+.pomysl__tresc {
+  margin: 0 0 0.3rem;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.pomysl__opis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  color: #666;
+  font-size: 0.78rem;
+}
+
+/* Plakietka statusu — kolory jak w pasku alarmów i werdykcie Zbieracza. */
+.pomysl__status {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.pomysl__status--nowy { background: var(--kolor-glowny-jasny); color: var(--kolor-glowny); }
+.pomysl__status--przeniesiony { background: #e6f4ea; color: #1e6b34; }
+.pomysl__status--odrzucony { background: #ececec; color: #555; }
+.pomysl__status--kolejka { background: #fff4e0; color: #8a5a00; }
 
 /* Kreska w kolorze czujnika — te same kolory co linie wykresu doby. */
 .zbieracz__czujnik::before {
