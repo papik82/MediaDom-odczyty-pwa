@@ -13,7 +13,7 @@ import { zwolnijPodgladZdjecia } from './ekrany/odczyt.js';
 import { zamknijEkranPradu } from './ekrany/prad.js';
 // Moduły bez eksportów używanych tutaj — wystarczy, że się załadują
 // (rejestrują własne zdarzenia i haki powrotu na ekran startowy).
-import './ekrany/alarmy.js';
+import './ekrany/pulpit.js';
 import './ekrany/kociol.js';
 import './ekrany/podglad.js';
 import './ekrany/zbieracz.js';

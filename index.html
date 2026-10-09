@@ -16,117 +16,90 @@
       <img class="ikona-naglowka" src="ikony/home.svg" alt="">
     </button>
     <h1 class="naglowek__tytul">Odczyty mediów</h1>
-    <button id="przycisk-ustawienia" class="przycisk-ikona" aria-label="Ustawienia" title="Ustawienia">
+    <button id="przycisk-ustawienia" data-otworz-ustawienia class="przycisk-ikona" aria-label="Ustawienia" title="Ustawienia">
       <img class="ikona-naglowka" src="ikony/ustawienia.svg" alt="">
     </button>
   </header>
 
   <main>
 
-    <!-- Ekran startowy — jedna kolumna kart: najpierw media (po jednej karcie
-         na medium, rozpoznawane przez atrybut data-medium), pod nimi Kocioł
-         i Podgląd. Od 0.17.0 wszystkie mają ten sam kształt (ikona z lewej,
-         tytuł i krótki opis) — wcześniej media były kwadratowymi kafelkami
-         w siatce 2x2. -->
+    <!-- Ekran startowy = pulpit (od 1.6.0): od góry pasek alarmów, odczyty
+         liczników (Gaz, Prąd, Woda), stan kotła i zbieracza, temperatury
+         i rząd rzadkich funkcji. Dane stanu (teksty w elementach z id
+         „pulpit-…”) wypełnia js/ekrany/pulpit.js z jednej akcji webhooka
+         `pulpit`; sama powłoka jest statyczna, więc kafelki działają
+         (odczyt, wejście do ekranów) także bez zasięgu. Gaz i Woda
+         rozpoznawane są po atrybucie data-medium, Prąd ma własny ekran
+         zbiorczy (id przycisk-prad — to trzy media naraz). -->
     <section id="ekran-start" class="ekran">
       <!-- Pasek alarmów (od 0.23.0) — bateria i puls telefonu, cisza
-           czujników, luki do importu. Wypełniany z akcji webhooka "alarmy";
-           pusty = ukryty, więc na co dzień go nie widać. -->
+           czujników, luki do importu, przypomnienia o odczytach. Wypełniany
+           z odpowiedzi `pulpit` (ta sama lista co w akcji `alarmy`);
+           pusty = ukryty. -->
       <div id="pasek-alarmow" class="pasek-alarmow ukryty" role="status" aria-live="polite"></div>
 
-      <div class="karty-mediow">
-        <button class="karta" data-medium="gaz">
-          <img class="karta__ikona" src="ikony/gaz.svg" alt="">
-          <span class="karta__tekst">
-            <span class="karta__tytul">Gaz</span>
-            <span class="karta__opis">Stan w m³</span>
+      <div class="pulpit">
+        <div class="pulpit__odczyty">
+          <button class="kafel kafel--gaz" id="pulpit-gaz" data-medium="gaz">
+            <span class="kafel__etykieta"><img class="kafel__ikona" src="ikony/gaz.svg" alt="">Gaz</span>
+            <span class="kafel__tekst">
+              <span class="kafel__tytul">Zrób odczyt</span>
+              <span class="kafel__podpis" id="pulpit-gaz-podpis"></span>
+            </span>
+          </button>
+          <div class="pulpit__prad-woda">
+            <button class="kafel kafel--maly" id="przycisk-prad">
+              <span class="kafel__etykieta"><img class="kafel__ikona" src="ikony/prad.svg" alt="">Prąd</span>
+              <span class="kafel__stan" id="pulpit-prad-stan"></span>
+            </button>
+            <button class="kafel kafel--maly" id="pulpit-woda" data-medium="woda">
+              <span class="kafel__etykieta"><img class="kafel__ikona" src="ikony/woda.svg" alt="">Woda</span>
+              <span class="kafel__stan" id="pulpit-woda-stan"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Temperatury: jeden poziomy wiersz w pięciu kolumnach — czas
+             ostatniego pomiaru (godzina i wiek), zewnątrz, parter, piętro
+             i ΔT (średnia wewnętrzna ważona powierzchnią minus zewnętrzna). -->
+        <button class="kafel kafel--temperatury" id="przycisk-temperatury" aria-label="Temperatury">
+          <span class="temperatury">
+            <span class="temperatury__kolumna temperatury__kolumna--czas">
+              <b id="pulpit-temp-czas">—</b><span id="pulpit-temp-wiek"></span>
+            </span>
+            <span class="temperatury__kolumna"><b id="pulpit-temp-zewn">—</b><span>zewn.</span></span>
+            <span class="temperatury__kolumna"><b id="pulpit-temp-parter">—</b><span>parter</span></span>
+            <span class="temperatury__kolumna"><b id="pulpit-temp-pietro">—</b><span>piętro</span></span>
+            <span class="temperatury__kolumna temperatury__kolumna--dt"><b id="pulpit-temp-dt">—</b><span>ΔT</span></span>
           </span>
         </button>
-        <button class="karta" data-medium="woda">
-          <img class="karta__ikona" src="ikony/woda.svg" alt="">
-          <span class="karta__tekst">
-            <span class="karta__tytul">Woda</span>
-            <span class="karta__opis">Stan w m³</span>
-          </span>
-        </button>
-        <!-- Prąd: jedna karta na trzy media (T1, T2, suma), od 0.20.0.
-             Licznik pokazuje te wartości rotacyjnie, więc wygodniej zrobić
-             trzy zdjęcia pod rząd i przepisać je na jednym ekranie. Karta
-             celowo nie ma data-medium — to nie jest pojedyncze medium,
-             tylko wejście do ekranu zbiorczego (id przycisk-prad). -->
-        <button class="karta" id="przycisk-prad">
-          <img class="karta__ikona" src="ikony/prad.svg" alt="">
-          <span class="karta__tekst">
-            <span class="karta__tytul">Prąd</span>
-            <span class="karta__opis">T1, T2 i suma na jednym ekranie</span>
-          </span>
-        </button>
+
+        <div class="pulpit__stan">
+          <button class="kafel" id="przycisk-kociol">
+            <span class="kafel__etykieta"><img class="kafel__ikona" src="ikony/kociol.svg" alt="">Kocioł</span>
+            <span class="kafel__tytul" id="pulpit-kociol-tryb">—</span>
+            <span class="kafel__podpis" id="pulpit-kociol-od"></span>
+            <span class="kafel__wiersze" id="pulpit-kociol-wiersze"></span>
+          </button>
+          <button class="kafel" id="przycisk-zbieracz">
+            <span class="kafel__etykieta"><img class="kafel__ikona" src="ikony/zbieracz.svg" alt="">Zbieracz</span>
+            <span class="kafel__tytul"><span class="kropka kropka--nieznany" id="pulpit-zb-kropka"></span><span id="pulpit-zb-werdykt">—</span></span>
+            <span class="kafel__podpis" id="pulpit-zb-zapis"></span>
+            <span class="kafel__wiersze" id="pulpit-zb-wiersze"></span>
+          </button>
+        </div>
+
+        <!-- Rzadsze funkcje: dane do sprawdzenia (Odczyty), import faktury,
+             notatnik pomysłów i ustawienia. -->
+        <div class="pulpit__rzadkie">
+          <button id="przycisk-odczyty"><img src="ikony/podglad.svg" alt="">Odczyty</button>
+          <button id="przycisk-faktura"><img src="ikony/faktura.svg" alt="">Faktura</button>
+          <button id="przycisk-pomysly"><img src="ikony/pomysly.svg" alt="">Pomysły</button>
+          <button data-otworz-ustawienia><img src="ikony/ustawienia-kafel.svg" alt="">Ustawienia</button>
+        </div>
+
+        <p id="pulpit-status" class="status-bloku ukryty"></p>
       </div>
-
-      <!-- Kocioł to nie medium do okresowego odczytu, tylko dziennik zmian
-           nastaw. Wygląda jak karty mediów, ale jest oddzielony od nich
-           większym odstępem (klasa karta--osobna). -->
-      <button id="przycisk-kociol" class="karta karta--osobna">
-        <img class="karta__ikona" src="ikony/kociol.svg" alt="">
-        <span class="karta__tekst">
-          <span class="karta__tytul">Kocioł</span>
-          <span class="karta__opis">Zmiana nastaw</span>
-        </span>
-      </button>
-
-      <!-- Import faktury za gaz z PDF (od 1.3.0) — Gemini proponuje wiersze
-           zakładki `faktury`, zapis dopiero po sprawdzeniu. -->
-      <button id="przycisk-faktura" class="karta">
-        <img class="karta__ikona" src="ikony/faktura.svg" alt="">
-        <span class="karta__tekst">
-          <span class="karta__tytul">Faktura</span>
-          <span class="karta__opis">Import faktury za gaz z PDF</span>
-        </span>
-      </button>
-
-      <!-- Podgląd z arkusza (punkt 6 backlogu) — tylko do odczytu, żeby
-           sprawdzić z telefonu ostatnie wpisy i temperatury bez wchodzenia
-           do Arkusza Google. Od 0.22.0 dwie osobne karty i dwa ekrany
-           (wcześniej jeden wspólny „Podgląd”): każdy pobiera tylko swoje
-           dane, więc otwiera się szybciej. -->
-      <button id="przycisk-odczyty" class="karta">
-        <img class="karta__ikona" src="ikony/podglad.svg" alt="">
-        <span class="karta__tekst">
-          <span class="karta__tytul">Odczyty</span>
-          <span class="karta__opis">Ostatnie wpisy liczników</span>
-        </span>
-      </button>
-
-      <button id="przycisk-temperatury" class="karta">
-        <img class="karta__ikona" src="ikony/termometr.svg" alt="">
-        <span class="karta__tekst">
-          <span class="karta__tytul">Temperatury</span>
-          <span class="karta__opis">Średnie dobowe i wykres doby</span>
-        </span>
-      </button>
-
-      <!-- Zbieracz temperatur na telefonie (od 1.1.0) — jeden werdykt
-           „działa / uwagi / problem” plus szczegóły: puls i bateria
-           telefonu, ostatnie godziny czujników, luki, ważność eWeLink. -->
-      <button id="przycisk-zbieracz" class="karta">
-        <img class="karta__ikona" src="ikony/zbieracz.svg" alt="">
-        <span class="karta__tekst">
-          <span class="karta__tytul">Zbieracz</span>
-          <span class="karta__opis">Telefon, czujniki i luki w danych</span>
-        </span>
-      </button>
-
-      <!-- Notatnik pomysłów rozwojowych (od 1.2.0, BACKLOG pkt 5) — hasło
-           zapisane z telefonu trafia do zakładki `pomysly`, skąd Claude
-           przenosi je do backlogu. Osobno (karta--osobna), bo to nie dane
-           o domu, tylko notatki o projekcie. -->
-      <button id="przycisk-pomysly" class="karta karta--osobna">
-        <img class="karta__ikona" src="ikony/pomysly.svg" alt="">
-        <span class="karta__tekst">
-          <span class="karta__tytul">Pomysły</span>
-          <span class="karta__opis">Notatnik pomysłów rozwojowych</span>
-        </span>
-      </button>
 
       <p id="komunikat-start" class="komunikat-sukces ukryty"></p>
       <p id="komunikat-kolejka" class="komunikat-kolejka ukryty"></p>

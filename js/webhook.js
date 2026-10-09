@@ -86,6 +86,13 @@ export function pobierzAlarmy() {
   return wyslij({ akcja: 'alarmy' });
 }
 
+// Cały stan pulpitu ekranu startowego w jednym żądaniu (od 1.6.0): kocioł,
+// zbieracz, temperatury z ΔT, terminy odczytów i alarmy. Zastępuje na starcie
+// osobne `alarmy`; `stan_zbieracza` zostaje dla karty „Zbieracz”.
+export function pobierzPulpit() {
+  return wyslij({ akcja: 'pulpit' });
+}
+
 // Stan zbieracza temperatur na telefonie (karta „Zbieracz”, od 1.1.0):
 // werdykt, puls i bateria, ostatnie godziny czujników, luki, eWeLink.
 export function pobierzStanZbieracza() {

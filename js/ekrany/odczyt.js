@@ -21,9 +21,9 @@ const przyciskGaleria = document.getElementById('przycisk-galeria');
 const przyciskRecznie = document.getElementById('przycisk-recznie');
 const przyciskAnulujWybor = document.getElementById('przycisk-anuluj-wybor');
 const podgladZdjecia = document.getElementById('podglad-zdjecia');
-// Karty mediów rozpoznajemy po atrybucie data-medium, a nie po klasie —
-// Kocioł i Podgląd mają tę samą klasę `karta`, ale nie są mediami.
-const kafelki = document.querySelectorAll('.karta[data-medium]');
+// Kafelki mediów (Gaz, Woda na pulpicie) rozpoznajemy po atrybucie data-medium.
+// Prąd ma własny ekran zbiorczy (prad.js), Kocioł i reszta nie są mediami.
+const kafelki = document.querySelectorAll('[data-medium]');
 const potwierdzenieTytul = document.getElementById('potwierdzenie-tytul');
 const potwierdzenieJednostka = document.getElementById('potwierdzenie-jednostka');
 const formularzPotwierdzenia = document.getElementById('formularz-potwierdzenia');

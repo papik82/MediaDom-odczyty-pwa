@@ -5,7 +5,8 @@ import { wyczyscBufor } from '../bufor.js';
 import { pokazEkran, ekranStart, powiadomOZmianieUstawien } from '../nawigacja.js';
 
 const ekranUstawien = document.getElementById('ekran-ustawienia');
-const przyciskUstawienia = document.getElementById('przycisk-ustawienia');
+// Przycisk w nagłówku i kafelek „Ustawienia” na pulpicie.
+const przyciskiUstawien = document.querySelectorAll('[data-otworz-ustawienia]');
 const przyciskAnuluj = document.getElementById('przycisk-anuluj');
 const formularzUstawien = document.getElementById('formularz-ustawien');
 const poleAdres = document.getElementById('pole-adres');
@@ -23,7 +24,7 @@ export function otworzUstawienia() {
   pokazEkran(ekranUstawien);
 }
 
-przyciskUstawienia.addEventListener('click', otworzUstawienia);
+przyciskiUstawien.forEach((przycisk) => przycisk.addEventListener('click', otworzUstawienia));
 
 przyciskAnuluj.addEventListener('click', () => {
   pokazEkran(ekranStart);

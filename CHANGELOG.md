@@ -3,6 +3,47 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.6.0 — 2026-10-09
+
+### Dodane
+- **Pulpit na ekranie startowym** (BACKLOG pkt 29) zamiast listy kart. Od
+  góry: pasek alarmów; kafel **Gaz** (duży, z wyróżnionym obrysem) z niskimi
+  kaflami **Prąd** i **Woda** obok — „✓ dziś” w dniu odczytu, „za N dni”
+  do terminu albo „czas na odczyt”; jeden poziomy wiersz **temperatur** w pięciu
+  kolumnach (godzina i wiek pomiaru, zewn., parter, piętro, ΔT); karty **Kocioł**
+  (tryb, od kiedy, krzywa, przesunięcie, CWU) i **Zbieracz** (werdykt, ostatni
+  zapis, bateria telefonu ze strzałką trendu „doba do doby”, baterie
+  Sonoffów); rząd Odczyty / Faktura / Pomysły / Ustawienia; „Zaktualizowano
+  HH:MM”. Stuknięcie kafla otwiera właściwy ekran.
+- Moduł `js/ekrany/pulpit.js` i akcja `pulpit` (`js/webhook.js`,
+  `pobierzPulpit`) — jedno żądanie zamiast czterech (wdrożenie webhooka 44,
+  kontrakt w `apps-script/CLAUDE.md`). Wzorzec „stare, potem świeże”: ostatnia
+  odpowiedź w buforze (`odczyty_bufor_pulpit`) pokazuje się od razu, świeża ją
+  podmienia. Progi, werdykt, ΔT i terminy liczy webhook — pulpit tylko
+  wyświetla.
+- Odświeżanie: przy starcie, powrocie na ekran startowy i z tła (nie częściej
+  niż raz na minutę) oraz **od razu po zapisie** danych (odczyt, kocioł,
+  faktura, wysyłka z kolejki — haki `naZmianieDanych` w `js/nawigacja.js`).
+  Zmiana ustawień czyści pulpit i wyrzuca odpowiedzi w drodze.
+- Błąd odświeżenia z danymi na ekranie to tylko szara informacja („Pokazuję dane
+  z 22:19”); czerwona ramka tylko przy pustym pulpicie. Odliczanie dni ze
+  wczorajszego bufora nie jest pokazywane (kłamałoby o dzień) — „—” do
+  świeżej odpowiedzi.
+- Atrapa webhooka (`.claude/mock_webhook.py`) obsługuje `pulpit`, ze
+  scenariuszami przez `/ustaw` (`gaz_czas`, `dzis`, `trend`, `werdykt`,
+  `alarm`, `bateria_sonoff`, `bledy`).
+
+### Zmienione
+- Pasek alarmów dostaje listę z odpowiedzi `pulpit` — osobne żądanie `alarmy`
+  na starcie odpada (`js/ekrany/alarmy.js` tylko rysuje). Alarmy z bufora
+  pokazują się tylko, gdy bufor ma mniej niż 30 minut.
+- Przycisk „Ustawienia” w rzędzie na pulpicie obok ikony w nagłówku (atrybut
+  `data-otworz-ustawienia`); kafelki mediów rozpoznawane po `data-medium`
+  zamiast `.karta[data-medium]`.
+- Usunięte style starych kart (`.karta`, `.karty-mediow`); nowe: `.pulpit`,
+  `.kafel`, `.temperatury`, `.kropka`. Nowa ikona `ikony/ustawienia-kafel.svg`.
+- `sw.js`: `js/ekrany/pulpit.js`, ikona; `WERSJA_CACHE` v52.
+
 ## 1.5.1 — 2026-10-09
 
 ### Zmienione

@@ -108,67 +108,266 @@ main {
   font-weight: 700;
 }
 
-/* Karty ekranu startowego — jeden wspólny wygląd dla mediów, kotła
-   i podglądu: pełna szerokość, ikona z lewej, tytuł i opis obok. Pełna
-   szerokość daje duży cel dotyku przy obsłudze jedną ręką. */
-.karty-mediow {
+/* Pulpit na ekranie startowym (od 1.6.0) — kafelki ze stanem domu. Od góry:
+   odczyty liczników (Gaz z kaflami Prąd i Woda obok), pasek temperatur,
+   para Kocioł + Zbieracz i rząd rzadszych funkcji. Szerokość projektowana
+   pod telefon (375 px): dwie kolumny po ok. 160 px, temperatury w pięciu
+   kolumnach po ok. 65 px. Kolory stanu niosą znaczenie (zielony = ok,
+   żółty = uwaga / czas na odczyt, czerwony = problem). */
+.pulpit {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.7rem;
   margin-top: 1rem;
 }
 
-.karta {
+.pulpit__odczyty,
+.pulpit__stan {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.pulpit__prad-woda {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.kafel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
   width: 100%;
-  padding: 1rem;
+  padding: 0.7rem 0.8rem;
   border: none;
   border-radius: 16px;
   background: #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  font: inherit;
+  color: #1a1a1a;
   text-align: left;
   cursor: pointer;
 }
 
-/* Odstęp między kolejnymi kartami poza listą mediów (Kocioł → Podgląd).
-   Selektor „>” celowo łapie tylko karty leżące wprost w ekranie — wewnątrz
-   .karty-mediow odstęp daje już `gap` i margines by się dublował. */
-.ekran > .karta + .karta {
-  margin-top: 0.75rem;
-}
-
-/* Kocioł i Podgląd to nie odczyty mediów — większy odstęp od listy mediów
-   oddziela te dwie grupy wizualnie. */
-.karta--osobna {
-  margin-top: 1.5rem;
-}
-
-.karta:active {
+.kafel:active {
   background: var(--kolor-glowny-jasny);
 }
 
-.karta__ikona {
-  width: 40px;
-  height: 40px;
+.kafel__etykieta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.kafel__ikona {
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
 }
 
-.karta__tekst {
+.kafel__tekst {
   display: flex;
   flex-direction: column;
 }
 
-.karta__tytul {
+.kafel__tytul {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1a1a1a;
 }
 
-.karta__opis {
-  font-size: 0.85rem;
+.kafel__podpis {
+  font-size: 0.8rem;
   color: #666;
+}
+
+/* Gaz — główna akcja ekranu: wyróżniony obrysem w kolorze przewodnim,
+   wysokość ok. 100 px (równa dwóm niskim kaflom obok). */
+.kafel--gaz {
+  min-height: 6.5rem;
+  justify-content: space-between;
+  box-shadow: 0 0 0 2px var(--kolor-glowny), 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Prąd i Woda — niskie kafle w jednej linii: nazwa z lewej, termin z prawej. */
+.kafel--maly {
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+}
+
+.kafel__stan {
+  font-size: 0.8rem;
+  line-height: 1.2;
+  color: #666;
+  text-align: right;
+}
+
+/* „czas na odczyt” — żółty, jak uwagi w pasku alarmów. */
+.kafel__stan--czas,
+.kafel__podpis--czas {
+  color: #8a5a00;
+  font-weight: 600;
+}
+
+/* „✓ dziś” — odczyt zrobiony dzisiaj. */
+.kafel__stan--dzis,
+.kafel__podpis--dzis {
+  color: #1b6e2d;
+  font-weight: 600;
+}
+
+.kafel__stan--dzis {
+  padding: 0.1rem 0.5rem;
+  border-radius: 8px;
+  background: #e3f4e6;
+  font-size: 0.75rem;
+}
+
+/* Temperatury: pięć kolumn — czas ostatniego pomiaru (godzina i wiek),
+   zewn., parter, piętro i ΔT; pionowe kreski oddzielają czas i ΔT od pomiarów. */
+.temperatury {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.15rem;
+  align-items: end;
+  text-align: center;
+}
+
+.temperatury__kolumna {
+  display: flex;
+  flex-direction: column;
+}
+
+.temperatury__kolumna b {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.temperatury__kolumna span {
+  font-size: 0.68rem;
+  color: #666;
+}
+
+.temperatury__kolumna--czas {
+  padding-right: 0.25rem;
+  border-right: 1px solid #e3e5ee;
+}
+
+.temperatury__kolumna--dt {
+  padding-left: 0.25rem;
+  border-left: 1px solid #e3e5ee;
+}
+
+/* Pomiar starszy niż próg ciszy — wyróżniony, żeby nie wziąć go za bieżący. */
+.temperatury__wiek--stary {
+  color: #b3261e !important;
+  font-weight: 600;
+}
+
+/* Wiersze „etykieta — wartość” pod tytułem kafla (nastawy kotła, baterie). */
+.kafel__wiersze {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid #e3e5ee;
+}
+
+.kafel__wiersze:empty {
+  display: none;
+}
+
+.kafel__wiersz {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  line-height: 1.65;
+}
+
+.kafel__wiersz > :first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #666;
+}
+
+.kafel__wiersz > :last-child {
+  white-space: nowrap;
+}
+
+.kafel__wartosc--uwaga {
+  color: #b3261e;
+  font-weight: 600;
+}
+
+.kafel__trend {
+  color: #666;
+}
+
+.kafel__trend--uwaga {
+  color: #8a5a00;
+  font-weight: 600;
+}
+
+/* Kropka werdyktu zbieracza. */
+.kropka {
+  flex-shrink: 0;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: #999;
+}
+.kropka--ok { background: #2e9e5b; }
+.kropka--uwaga { background: #e0a100; }
+.kropka--problem { background: #b3261e; }
+
+/* Rząd rzadszych funkcji: Odczyty, Faktura, Pomysły, Ustawienia. */
+.pulpit__rzadkie {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pulpit__rzadkie button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.55rem 0.2rem;
+  border: none;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  font: inherit;
+  font-size: 0.75rem;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.pulpit__rzadkie button:active {
+  background: var(--kolor-glowny-jasny);
+}
+
+.pulpit__rzadkie img {
+  width: 22px;
+  height: 22px;
+}
+
+/* „Zaktualizowano 22:04” pod pulpitem. */
+.pulpit .status-bloku {
+  text-align: center;
 }
 
 /* Przedziały czasowe cyrkulacji — lista dynamicznie dodawanych/usuwanych

@@ -41,7 +41,7 @@ let generacjaZbieracza = 0;
 
 // Bateria czujnika poniżej tylu procent — dopisek wyróżniony. Ta sama wartość
 // co PROG_BATERII_CZUJNIKA w apps-script/luki.js (tam uwaga w pasku alarmów).
-const PROG_BATERII_CZUJNIKA = 20;
+export const PROG_BATERII_CZUJNIKA = 20;
 
 // „bateria 59% · sygnał −72 dBm (dobry)”. Ocena sygnału Zigbee jest
 // orientacyjna (bliżej zera = lepiej): od −75 dBm dobry, do −85 średni,

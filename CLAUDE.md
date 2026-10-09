@@ -14,8 +14,23 @@ prawdy.** Tutaj tylko to, co dotyczy aplikacji.
 PWA do zapisywania odczytów liczników. Działa na telefonie, hostowana na
 GitHub Pages, zapisuje dane do Arkusza Google przez webhook Apps Script.
 
-**Pięć mediów, każde niezależne.** Ekran startowy ma trzy karty mediów
-(pełna szerokość, ten sam wygląd co karty Kocioł, Odczyty i Temperatury — klasa `karta`):
+**Ekran startowy to pulpit** (od 1.6.0, `js/ekrany/pulpit.js`) — kafelki ze
+stanem domu zamiast listy kart. Od góry: pasek alarmów; kafel Gaz z kaflami
+Prąd i Woda obok (termin kolejnego odczytu: „✓ dziś” / „za N dni” / „czas na
+odczyt”); wiersz temperatur w pięciu kolumnach (godzina i wiek pomiaru, zewn.,
+parter, piętro, ΔT); Kocioł (tryb i nastawy) i Zbieracz (werdykt, ostatni zapis,
+bateria telefonu z trendem „doba do doby”, baterie Sonoffów); rząd Odczyty /
+Faktura / Pomysły / Ustawienia. **Wszystko z jednej akcji `pulpit`**
+(kontrakt: `../apps-script/CLAUDE.md`) — progi, werdykt, ΔT i `za_dni` liczy
+webhook, pulpit tylko wyświetla. Wzorzec „stare, potem świeże”: odpowiedź
+w buforze `odczyty_bufor_pulpit` pokazuje się od razu, świeża ją podmienia;
+odświeżanie przy starcie, powrocie na start i z tła (raz na minutę) oraz od
+razu po zapisie (`naZmianieDanych`). Alarmy z bufora tylko do 30 min wieku,
+odliczanie dni tylko z dzisiejszej odpowiedzi. Powłoka HTML jest statyczna —
+kafelki działają offline, teksty stanu dopisuje JS (elementy `pulpit-…`).
+
+**Pięć mediów, każde niezależne.** Na pulpicie są trzy kafle odczytów (Gaz
+i Woda rozpoznawane po `data-medium`, Prąd po id `przycisk-prad`):
 
 | karta | kod medium | częstotliwość |
 |---|---|---|
@@ -93,8 +108,9 @@ dane, z buforem w `localStorage` (`js/bufor.js`) — ekran od razu pokazuje
 poprzednie dane, świeże je podmieniają — i ma własny wiersz statusu
 (wczytywanie / czas wczytania / błąd).
 
-**Pasek alarmów** (od 0.23.0) nad kartami ekranu startowego — akcja
-`alarmy` (bateria i puls telefonu, cisza czujników, luki do importu,
+**Pasek alarmów** (od 0.23.0) nad pulpitem — lista z odpowiedzi `pulpit`
+(od 1.6.0; wcześniej osobne żądanie `alarmy`, które zostaje w kontrakcie;
+bateria i puls telefonu, cisza czujników, luki do importu,
 od wersji wdrożenia 35 także przypomnienia o odczytach: gaz po 3 / 10 dniach
 w sezonie / poza nim, prąd i woda od 1. dnia miesiąca; od 37 — kończący się
 zapas wierszy z formułami w arkuszu;
@@ -223,10 +239,11 @@ odczyty-pwa/
 │   │   ├── podglad.js     karty Odczyty i Temperatury
 │   │   ├── wykres-doby.js wykres godzinowy doby (SVG)
 │   │   ├── zbieracz.js    karta Zbieracz
+│   │   ├── pulpit.js      pulpit ekranu startowego (akcja `pulpit`, bufor)
 │   │   ├── pomysly.js     notatnik pomysłów
 │   │   ├── faktura.js     import faktury z PDF
 │   │   ├── ustawienia.js  adres i token, poUstawieniach
-│   │   └── alarmy.js      pasek alarmów na ekranie startowym
+│   │   └── alarmy.js      rysowanie paska alarmów (dane z pulpitu)
 │   ├── ustawienia.js      adres webhooka i token w localStorage
 │   ├── media.js           metadane mediów (nazwa, jednostka, zdjęcie: tak/nie,
 │   │                      OCR: tak/nie, pozycje ekranu prądu)

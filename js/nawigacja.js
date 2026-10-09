@@ -9,9 +9,12 @@ export const ekranStart = document.getElementById('ekran-start');
 const komunikatStart = document.getElementById('komunikat-start');
 
 // Komunikat nad kartami ekranu startowego (wynik zapisu, wysyłki z kolejki).
+// Pokazuje się po zapisie danych (odczyt, kocioł, faktura, wysyłka z kolejki),
+// więc przy okazji powiadamia pulpit, że jego dane są nieaktualne.
 export function pokazKomunikatStart(tekst) {
   komunikatStart.textContent = tekst;
   komunikatStart.classList.remove('ukryty');
+  powiadomOZmianieDanych();
 }
 
 export function ukryjKomunikatStart() {
@@ -37,6 +40,17 @@ export function naPowrotNaStart(funkcja) {
 
 export function odswiezStanStartu() {
   hakiPowrotuNaStart.forEach((funkcja) => funkcja());
+}
+
+// Zapis zmienił dane w arkuszu — pulpit odświeża się wtedy od razu, bez
+// czekania na minutę odstępu między pytaniami do webhooka.
+const hakiZmianyDanych = [];
+export function naZmianieDanych(funkcja) {
+  hakiZmianyDanych.push(funkcja);
+}
+
+function powiadomOZmianieDanych() {
+  hakiZmianyDanych.forEach((funkcja) => funkcja());
 }
 
 // Nowy adres/token to potencjalnie inny arkusz — moduły trzymające dane
