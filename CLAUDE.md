@@ -77,7 +77,7 @@ bo niczego nie wpisuje do formularza). Dwa paski z ostatnich 12 miesięcy —
 CO i CWU osobno, włączone / wyłączone, kreska = zmiana nastawy obwodu bez
 zmiany wł./wył. — i pionowa oś 6 ostatnich zmian z opisem tego, co się
 zmieniło względem poprzedniego wpisu. Cztery tryby rozkładamy na dwa obwody
-tylko do wyświetlenia (`OBWODY_TRYBU` w `js/app.js`); w arkuszu dalej jest
+tylko do wyświetlenia (`OBWODY_TRYBU` w `js/nastawy.js`); w arkuszu dalej jest
 jeden tryb.
 
 Cyrkulacja to lista przedziałów czasu w dobie, sklejana w jeden tekst.
@@ -109,7 +109,7 @@ Werdykt (działa / uwagi / problem / nieznany) liczy **webhook**, tymi samymi
 regułami co pasek alarmów — PWA go tylko wyświetla, nie liczy własnych
 progów. Pod nim alarmy, telefon (puls, bateria, kolejka, wersja), ostatnia
 godzina czujników, luki i ważność tokenów eWeLink (`renderujStanZbieracza`
-w `js/app.js`). Wiek pulsu („37 min temu”) liczy telefon od znacznika czasu,
+w `js/ekrany/zbieracz.js`). Wiek pulsu („37 min temu”) liczy telefon od znacznika czasu,
 żeby był prawdziwy także dla stanu z bufora. Od 1.4.0 pod Sonoffami bateria
 i sygnał Zigbee (`opiszStanCzujnika`; `PROG_BATERII_CZUJNIKA` = 20 — ta sama
 wartość co w `apps-script/luki.js`).
@@ -141,7 +141,7 @@ wysłanie” (`renderujPomysly`, pamięć `ostatniePomysly`).
 **Wykres doby** (od 0.21.0, ekran Temperatury): stuknięcie dnia w tabeli
 rozwija pod nim wykres godzinowy z akcji `temperatury_godzinowe`, pobieranej
 dopiero na żądanie i trzymanej w pamięci do zamknięcia ekranu (nie w `localStorage`).
-Czysty SVG bez biblioteki (`narysujWykresDoby` w `js/app.js`); luka w danych
+Czysty SVG bez biblioteki (`narysujWykresDoby` w `js/ekrany/wykres-doby.js`); luka w danych
 przerywa linię, nic nie jest łączone ani uzupełniane.
 
 Nazwy i liczba czujników **nie są zaszyte na sztywno** — kolumny tabeli
@@ -205,8 +205,28 @@ odczyty-pwa/
 ├── css/
 │   └── styl.css
 ├── js/
-│   ├── app.js             sterowanie wszystkimi ekranami (w tym karta kotła
-│   │                      i karta podglądu — nie mają osobnych plików)
+│   ├── app.js             start i zdarzenia globalne: wersja, „home”, kolejka
+│   │                      offline na starcie, powrót z tła, service worker
+│   ├── nawigacja.js       pokazEkran (wszystkie `.ekran`), komunikat startu,
+│   │                      haki: powrót na start, zmiana ustawień
+│   ├── wspolne.js         pomocniki: element, daty, ustawStatusBloku,
+│   │                      wczytajBlokPodgladu (bufor „stare, potem świeże”)
+│   ├── nastawy.js         czyste funkcje: tryby/obwody kotła, porównanie
+│   │                      nastaw, cyrkulacja (tekst <-> przedziały)
+│   ├── kolejka-wysylka.js wysyłka kolejki offline + licznik na ekranie startu
+│   ├── ekrany/            po jednym module na ekran (każdy ma własne DOM
+│   │   │                  i licznik generacji):
+│   │   ├── odczyt.js      wybór metody + potwierdzenie (gaz, woda), OCR
+│   │   ├── prad.js        ekran Prąd (T1, T2, suma)
+│   │   ├── kociol.js      formularz kotła, nastawy z wyprzedzeniem
+│   │   ├── kociol-historia.js  paski CO/CWU i oś zmian
+│   │   ├── podglad.js     karty Odczyty i Temperatury
+│   │   ├── wykres-doby.js wykres godzinowy doby (SVG)
+│   │   ├── zbieracz.js    karta Zbieracz
+│   │   ├── pomysly.js     notatnik pomysłów
+│   │   ├── faktura.js     import faktury z PDF
+│   │   ├── ustawienia.js  adres i token, poUstawieniach
+│   │   └── alarmy.js      pasek alarmów na ekranie startowym
 │   ├── ustawienia.js      adres webhooka i token w localStorage
 │   ├── media.js           metadane mediów (nazwa, jednostka, zdjęcie: tak/nie,
 │   │                      OCR: tak/nie, pozycje ekranu prądu)
@@ -241,7 +261,7 @@ nie frontu. Nie duplikuj go tutaj.
 Po każdej zmianie kodu aplikacji, w tej kolejności:
 1. test w przeglądarce na szerokości telefonu (niżej),
 2. podbić wersję w `js/wersja.js` i `WERSJA_CACHE` w `sw.js`; nowy plik
-   (np. ikona) dopisać do `PLIKI_POWLOKI` w `sw.js` — brakujący plik
+   (np. ikona, moduł ekranu) dopisać do `PLIKI_POWLOKI` w `sw.js` — brakujący plik
    wywraca instalację service workera,
 3. wpis w `CHANGELOG.md`, aktualizacja `../dokumentacja/BACKLOG.md`
    i tego pliku, jeśli zmienia się opis ekranów,

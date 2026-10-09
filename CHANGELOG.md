@@ -3,6 +3,25 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.5.1 — 2026-10-09
+
+### Zmienione
+- **Podział `js/app.js` na moduły ES** (BACKLOG pkt 32), bez zmiany
+  zachowania. `app.js` (2754 linie) zawiera już tylko start i zdarzenia
+  globalne; resztę przejęły: `js/nawigacja.js` (przełączanie ekranów, komunikat
+  startu, haki powrotu na start i zmiany ustawień), `js/wspolne.js` (pomocniki
+  DOM, formatowanie, `wczytajBlokPodgladu`), `js/nastawy.js` (czyste funkcje
+  nastaw kotła i cyrkulacji), `js/kolejka-wysylka.js` (wysyłka kolejki offline)
+  oraz po jednym module na ekran w `js/ekrany/` (`odczyt`, `prad`, `kociol`,
+  `kociol-historia`, `podglad`, `wykres-doby`, `zbieracz`, `pomysly`, `faktura`,
+  `ustawienia`, `alarmy`).
+- `pokazEkran` przełącza wszystkie elementy `.ekran` z HTML zamiast zakodowanej
+  listy — nowy ekran wystarczy dodać w `index.html`.
+- Moduły nie importują się nawzajem w pętli: Kocioł i pasek alarmów
+  rejestrują się przez `naPowrotNaStart`, a unieważnienie nastaw kotła po
+  zmianie ustawień przez `naZmianieUstawien`.
+- `sw.js`: 15 nowych plików na liście powłoki, `WERSJA_CACHE` v51.
+
 ## 1.5.0 — 2026-10-09
 
 ### Dodane
