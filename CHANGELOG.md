@@ -3,6 +3,16 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.4.0 — 2026-10-09
+
+### Dodane
+- Karta Zbieracz: pod wierszem każdego Sonoffa **bateria i siła sygnału
+  Zigbee** („bateria 59% · sygnał −72 dBm (dobry)”) — z pulsu zbieracza 1.4
+  przez akcję `stan_zbieracza` (wdrożenie webhooka 40). Bateria poniżej 20%
+  wyróżniona, a webhook dokłada wtedy uwagę „Słaba bateria czujnika” do
+  paska alarmów i karty. Ocena sygnału orientacyjna: od −75 dBm dobry, do
+  −85 średni, niżej słaby.
+
 ## 1.3.0 — 2026-10-08
 
 ### Dodane

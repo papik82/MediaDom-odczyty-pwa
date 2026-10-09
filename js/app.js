@@ -1246,6 +1246,23 @@ const STANY_LADOWANIA = {
 
 let generacjaZbieracza = 0;
 
+// Bateria czujnika poniżej tylu procent — dopisek wyróżniony. Ta sama wartość
+// co PROG_BATERII_CZUJNIKA w apps-script/luki.js (tam uwaga w pasku alarmów).
+const PROG_BATERII_CZUJNIKA = 20;
+
+// „bateria 59% · sygnał −72 dBm (dobry)”. Ocena sygnału Zigbee jest
+// orientacyjna (bliżej zera = lepiej): od −75 dBm dobry, do −85 średni,
+// poniżej słaby — przy słabym czujnik częściej gubi połączenie z bramką.
+function opiszStanCzujnika(c) {
+  const czesci = [];
+  if (typeof c.bateria === 'number') czesci.push(`bateria ${c.bateria}%`);
+  if (typeof c.rssi === 'number') {
+    const ocena = c.rssi >= -75 ? 'dobry' : c.rssi >= -85 ? 'średni' : 'słaby';
+    czesci.push(`sygnał ${String(c.rssi).replace('-', '−')} dBm (${ocena})`);
+  }
+  return czesci.join(' · ');
+}
+
 // „5 min temu”, „3 h 20 min temu” — wiek liczymy na telefonie od znacznika
 // czasu, a nie z pola wiek_min odpowiedzi, bo stan z bufora może mieć
 // kilka godzin, a wtedy wiek z odpowiedzi byłby nieaktualny.
@@ -1345,6 +1362,15 @@ function renderujStanZbieracza(wynik) {
       c.temp !== null && c.temp !== undefined ? `${liczbaPL(c.temp)} °C` : '—');
     if (c.zrodlo) prawa.appendChild(element('span', 'zbieracz__dopisek', c.zrodlo));
     wiersz.appendChild(prawa);
+    // Bateria i sygnał Sonoffa (od 1.4.0, z pulsu zbieracza 1.4); BleBox ich
+    // nie ma. Osobna linia na całą szerokość wiersza — w prawej kolumnie
+    // długi opis rozpychał wiersz poza kartę.
+    const stanCzujnika = opiszStanCzujnika(c);
+    if (stanCzujnika) {
+      const niska = c.bateria !== null && c.bateria !== undefined && c.bateria < PROG_BATERII_CZUJNIKA;
+      wiersz.classList.add('zbieracz__wiersz-czujnika');
+      wiersz.appendChild(element('span', `zbieracz__stan-czujnika${niska ? ' zbieracz__stan-czujnika--uwaga' : ''}`, stanCzujnika));
+    }
     listaCzujnikow.appendChild(wiersz);
   });
 

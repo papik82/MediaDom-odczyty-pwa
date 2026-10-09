@@ -110,7 +110,9 @@ regułami co pasek alarmów — PWA go tylko wyświetla, nie liczy własnych
 progów. Pod nim alarmy, telefon (puls, bateria, kolejka, wersja), ostatnia
 godzina czujników, luki i ważność tokenów eWeLink (`renderujStanZbieracza`
 w `js/app.js`). Wiek pulsu („37 min temu”) liczy telefon od znacznika czasu,
-żeby był prawdziwy także dla stanu z bufora.
+żeby był prawdziwy także dla stanu z bufora. Od 1.4.0 pod Sonoffami bateria
+i sygnał Zigbee (`opiszStanCzujnika`; `PROG_BATERII_CZUJNIKA` = 20 — ta sama
+wartość co w `apps-script/luki.js`).
 
 **Karta „Faktura”** (od 1.3.0) — import faktury za gaz z PDF: plik
 (base64) → `odczytaj_fakture` (Gemini proponuje, nic nie zapisuje) →

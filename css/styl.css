@@ -841,6 +841,23 @@ main {
   margin-top: 0.75rem;
 }
 
+/* Bateria i sygnał czujnika na karcie Zbieracz (od 1.4.0): wiersz czujnika
+   zawija się, a linia stanu zajmuje całą szerokość pod spodem. */
+.zbieracz__wiersz-czujnika {
+  flex-wrap: wrap;
+}
+
+.zbieracz__stan-czujnika {
+  flex-basis: 100%;
+  color: #666;
+  font-size: 0.75rem;
+}
+
+.zbieracz__stan-czujnika--uwaga {
+  color: #8a5a00;
+  font-weight: 600;
+}
+
 /* Kreska w kolorze czujnika — te same kolory co linie wykresu doby. */
 .zbieracz__czujnik::before {
   content: '';
