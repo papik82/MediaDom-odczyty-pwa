@@ -166,6 +166,20 @@ let czasOstatniejProbyNastawKotla = 0;       // kiedy ostatnio (nie)udanie pytal
 
 let wybraneMedium = null;
 let metodaAktualnegoOdczytu = 'reczny';
+// Wartość, którą wpisało rozpoznawanie (OCR) na ekranie potwierdzenia, albo
+// null. Przy zapisie porównujemy ją z polem — tak powstaje `zrodlo` odczytu.
+let wartoscZOcr = null;
+
+// Źródło wartości odczytu (kolumna `zrodlo` w `odczyty`, od 1.5.0):
+//   'ocr'        — zapisana dokładnie wartość z rozpoznania zdjęcia,
+//   'ze_zdjecia' — było zdjęcie, ale wartość wpisana / poprawiona ręcznie,
+//   'reczny'     — bez zdjęcia.
+// Odczyty z OCR mają inny profil błędu niż przepisane — przyda się przy
+// przyszłej analizie wartości odstających (BACKLOG pkt 21, 27).
+function zrodloOdczytu(maZdjecie, zOcr, wartosc) {
+  if (!maZdjecie) return 'reczny';
+  return zOcr !== null && Math.abs(wartosc - zOcr) < 1e-9 ? 'ocr' : 'ze_zdjecia';
+}
 let adresUrlPodgladuZdjecia = null;
 // Rośnie przy każdym otwarciu ekranu potwierdzenia — pozwala rozpoznajIWypelnij
 // poznać, że użytkownik zdążył zamknąć ten ekran (albo otworzyć kolejny),
@@ -1945,6 +1959,7 @@ function ustawUwageCzasu(czasZdjecia, element = uwagaCzasu) {
 function otworzPotwierdzenie(medium, metoda, urlZdjecia = null, czasZdjecia = null) {
   wybraneMedium = medium;
   metodaAktualnegoOdczytu = metoda;
+  wartoscZOcr = null;
   generacjaPotwierdzenia++;
   const opisMedium = MEDIA[medium];
   potwierdzenieTytul.textContent = opisMedium.nazwa;
@@ -2043,6 +2058,7 @@ async function rozpoznajIWypelnij(medium, blob, generacja) {
 
     if (wynik.ok && wynik.pasuje && wynik.pewnosc !== 'niska' && typeof wynik.stan === 'number') {
       poleStan.value = wynik.stan;
+      wartoscZOcr = wynik.stan;
       if (wynik.pewnosc === 'srednia') {
         pokazBladPotwierdzenia('Średnia pewność odczytu — sprawdź wartość na zdjęciu przed zatwierdzeniem.');
       }
@@ -2269,6 +2285,7 @@ formularzPotwierdzenia.addEventListener('submit', async (zdarzenie) => {
     stan: parseFloat(poleStan.value),
     data_godzina: `${poleDataGodzina.value}:00`,
     metoda: metodaAktualnegoOdczytu,
+    zrodlo: zrodloOdczytu(metodaAktualnegoOdczytu === 'foto', wartoscZOcr, parseFloat(poleStan.value)),
     foto_url: '',
     uwagi: '',
   };
@@ -2393,6 +2410,7 @@ function zwolnijZdjecieWiersza(wiersz) {
   if (wiersz.url) URL.revokeObjectURL(wiersz.url);
   wiersz.url = null;
   wiersz.blob = null;
+  wiersz.wartoscZOcr = null;   // nowe zdjęcie (albo jego brak) — stary wynik OCR nie dotyczy
   wiersz.zdjecie.removeAttribute('src');
   wiersz.zdjecie.classList.add('ukryty');
   wiersz.przyciskRozpoznaj.classList.add('ukryty');
@@ -2501,6 +2519,7 @@ async function rozpoznajWierszPradu(wiersz) {
     if (wiersz.pole.value !== '') return;
     if (wynik.ok && wynik.pasuje && wynik.pewnosc !== 'niska' && typeof wynik.stan === 'number') {
       wiersz.pole.value = wynik.stan;
+      wiersz.wartoscZOcr = wynik.stan;
       if (wynik.pewnosc === 'srednia') {
         pokazKomunikatWiersza(wiersz, 'Średnia pewność odczytu — sprawdź wartość na zdjęciu.');
       }
@@ -2552,6 +2571,7 @@ formularzPradu.addEventListener('submit', async (zdarzenie) => {
         stan: parseFloat(wiersz.pole.value),
         data_godzina: dataGodzina,
         metoda: wiersz.blob ? 'foto' : 'reczny',
+        zrodlo: zrodloOdczytu(Boolean(wiersz.blob), wiersz.wartoscZOcr ?? null, parseFloat(wiersz.pole.value)),
         foto_url: '',
         uwagi: '',
       };

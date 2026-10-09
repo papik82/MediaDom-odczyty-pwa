@@ -3,6 +3,16 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.5.0 — 2026-10-09
+
+### Dodane
+- Każdy odczyt wysyła pole `zrodlo` — skąd jest wartość: `ocr` (zapisana
+  dokładnie wartość z rozpoznania zdjęcia), `ze_zdjecia` (było zdjęcie, ale
+  wartość wpisana albo poprawiona ręcznie), `reczny` (bez zdjęcia). Webhook
+  (wdrożenie 42) zapisuje je w nowej kolumnie H `zrodlo` zakładki `odczyty`.
+  Dotyczy ekranu potwierdzenia i ekranu Prąd (`zrodloOdczytu`); odczyty
+  z kolejki offline niosą pole ze sobą. BACKLOG pkt 21.
+
 ## 1.4.0 — 2026-10-09
 
 ### Dodane
