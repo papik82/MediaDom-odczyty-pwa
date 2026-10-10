@@ -127,7 +127,7 @@ function ustawKafelOdczytu(kafelEl, tekstEl, kafel, swiezy, zLimitem) {
 // Prąd i woda — odczyt raz w miesiącu, pierwszego dnia (założenie Pawła
 // 2026-10-10), więc zamiast dni od odczytu pokazujemy ODLICZANIE do następnego:
 //   „✓ dziś”          — odczyt zrobiony dzisiaj,
-//   „czas na odczyt”  — brak odczytu za bieżący miesiąc (alarm, żółty kafel;
+//   „zrób odczyt”    — brak odczytu za bieżący miesiąc (alarm, żółty kafel;
 //                       flaga `czas` z webhooka, tylko z odpowiedzi z dzisiaj),
 //   „za N dni”        — dni do 1. dnia następnego miesiąca.
 // Odliczanie liczymy z daty telefonu, a bez dzisiejszej odpowiedzi (bufor
@@ -146,7 +146,7 @@ function ustawKafelMiesieczny(kafelEl, stanEl, kafel, swiezy) {
     tekst = '✓ dziś';
     rodzaj = 'dzis';
   } else if (kafel && swiezy && kafel.czas === true) {
-    tekst = '⚠ czas na odczyt';
+    tekst = '⚠ zrób odczyt';   // krótko, żeby kafel S nie rósł na wąskim ekranie
     rodzaj = 'alarm';
   } else if (kafel && swiezy) {
     const za = dniDoNastepnegoMiesiaca();

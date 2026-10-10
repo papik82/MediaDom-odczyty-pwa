@@ -3,6 +3,17 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.11.1 — 2026-10-10
+
+### Zmienione
+- **Prąd i Woda niskie jak Gaz** (wysokość S, ≈ 61 px): w jednej linii nazwa
+  po lewej, termin odczytu po prawej. Wysokości na pulpicie: **S** — Gaz, Prąd,
+  Woda i rząd rzadszych funkcji; **M** — Temperatury (≈ 99 px); **L** — Kocioł
+  i Zbieracz (≈ 182 px).
+- Alarm na Prądzie i Wodzie brzmi „⚠ zrób odczyt” (zamiast „czas na odczyt”) —
+  krótszy tekst mieści się w niskim kaflu także na ekranie 320 px.
+- `sw.js`: `WERSJA_CACHE` v62.
+
 ## 1.11.0 — 2026-10-10
 
 ### Zmienione
@@ -13,7 +24,8 @@ zgodne z numerem w `js/wersja.js`.
   rzadszych funkcji.
 - **Trzy wysokości kafli** (zmienne `--wys-s`, `--wys-m`, `--wys-l` w `.pulpit`):
   **S** 3,8 rem (≈ 61 px) — Gaz i rząd rzadszych funkcji; **M** 6,2 rem (≈ 99 px)
-  — Prąd, Woda i Temperatury; **L** 11,4 rem (≈ 182 px) — Kocioł i Zbieracz.
+  — Prąd, Woda i Temperatury (Prąd i Woda niższe od 1.11.1); **L** 11,4 rem
+  (≈ 182 px) — Kocioł i Zbieracz.
   Treść może wysokość tylko zwiększyć; sprawdzone na 375 i 320 px, także
   w stanach alarmu — wysokości się nie rozjeżdżają.
 - `sw.js`: `WERSJA_CACHE` v61.

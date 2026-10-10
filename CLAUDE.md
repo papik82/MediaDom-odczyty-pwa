@@ -16,9 +16,9 @@ GitHub Pages, zapisuje dane do Arkusza Google przez webhook Apps Script.
 
 **Ekran startowy to pulpit** (od 1.6.0, `js/ekrany/pulpit.js`) — kafelki ze
 stanem domu zamiast listy kart. Od góry: pasek alarmów; kafel Gaz (niski, na
-całą szerokość) i pod nim Prąd i Woda w dwóch kolumnach (Gaz: dni od ostatniego odczytu — „dziś” / „wczoraj” /
+całą szerokość) i pod nim Prąd i Woda w dwóch kolumnach, tej samej wysokości (Gaz: dni od ostatniego odczytu — „dziś” / „wczoraj” /
 „N dni temu”, po przekroczeniu limitu żółty kafel z ⚠; Prąd i Woda — odliczanie
-do odczytu 1. dnia następnego miesiąca: „za N dni”, „✓ dziś”, „⚠ czas na
+do odczytu 1. dnia następnego miesiąca: „za N dni”, „✓ dziś”, „⚠ zrób
 odczyt”); wiersz temperatur w pięciu kolumnach (godzina i wiek pomiaru, zewn.,
 parter, piętro, ΔT); Kocioł (ikony tylko aktywnych obwodów: kran = CWU, kaloryfer = CO — same
 kontury w stylu ikon mediów; tryb i nastawy) i Zbieracz (werdykt, ostatni zapis,

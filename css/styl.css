@@ -186,8 +186,9 @@ main {
 
 /* Trzy wysokości kafli pulpitu (każdy kafel ma jedną z nich; treść może je
    tylko zwiększyć, np. gdy tekst zawinie się na wąskim ekranie):
-     S — niski:   Gaz (cała szerokość) i rząd rzadszych funkcji,
-     M — średni:  Prąd, Woda (dwie kolumny) i Temperatury (cała szerokość),
+     S — niski:   Gaz (cała szerokość), Prąd i Woda (dwie kolumny) oraz rząd
+                  rzadszych funkcji,
+     M — średni:  Temperatury (cała szerokość),
      L — wysoki:  Kocioł i Zbieracz (zawierają listy wierszy).
    Zmiana liczby przesuwa wszystkie kafle danej grupy naraz. */
 .pulpit {
@@ -228,10 +229,15 @@ main {
   font-size: 1rem;
 }
 
-/* Prąd i Woda — nazwa u góry, termin odczytu (dni / odliczanie) na dole. */
+/* Prąd i Woda — wysokość jak Gaz; w jednej linii: nazwa po lewej, termin odczytu
+   (dni / odliczanie) po prawej. */
 .kafel--maly {
-  min-height: var(--wys-m);
+  flex-direction: row;
+  align-items: center;
   justify-content: space-between;
+  gap: 0.4rem;
+  min-height: var(--wys-s);
+  padding: 0.5rem 0.8rem;
 }
 
 .kafel--temperatury {
@@ -243,8 +249,8 @@ main {
 }
 
 .kafel__stan {
-  align-self: flex-start;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
+  text-align: right;
   line-height: 1.2;
   color: #666;
 }
