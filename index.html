@@ -78,15 +78,21 @@
         <div class="pulpit__stan">
           <button class="kafel" id="przycisk-kociol">
             <span class="kafel__etykieta"><img class="kafel__ikona" src="ikony/kociol.svg" alt="">Kocioł</span>
-            <!-- Stan obwodów ikonami w kole (jak ikony kart): kran = CWU
-                 (ciepła woda), kaloryfer = CO (ogrzewanie).
-                 Pokazywane są TYLKO aktywne obwody — klasę `ukryty` zdejmuje
-                 js/ekrany/pulpit.js; przy wyłączonym kotle nie ma żadnej. -->
-            <span class="kociol-ikony ukryty" id="pulpit-kociol-ikony" role="img" aria-label="Stan kotła nieznany">
-              <svg class="ikona-obwodu ukryty" id="pulpit-kociol-cwu" viewBox="0 0 24 24" aria-hidden="true"><title>CWU</title><circle cx="12" cy="12" r="9" stroke-width="1.7"/><path d="M7.6 10.4h4.6a2.2 2.2 0 0 1 2.2 2.2v.5" stroke-width="1.5"/><path d="M9.6 10.4V8.8M8.4 8.8h2.4" stroke-width="1.4"/><path d="M14.4 14.6c-.5.7-.8 1.1-.8 1.5a.8.8 0 0 0 1.6 0c0-.4-.3-.8-.8-1.5z" stroke-width="1.2"/></svg>
-              <svg class="ikona-obwodu ukryty" id="pulpit-kociol-co" viewBox="0 0 24 24" aria-hidden="true"><title>CO</title><circle cx="12" cy="12" r="9" stroke-width="1.7"/><rect x="7.2" y="8.4" width="9.6" height="6.2" rx="1.2" stroke-width="1.5"/><path d="M10.4 8.4v6.2M13.6 8.4v6.2" stroke-width="1.2"/><path d="M8.8 14.6v1.4M15.2 14.6v1.4" stroke-width="1.3"/></svg>
+            <!-- Opis trybu po lewej (tryb i od kiedy), po prawej stan obwodów
+                 ikonami w kole, jedna pod drugą: kran = CWU (ciepła woda),
+                 kaloryfer = CO (ogrzewanie). Pokazywane są TYLKO aktywne
+                 obwody — klasę `ukryty` zdejmuje js/ekrany/pulpit.js; przy
+                 wyłączonym kotle nie ma żadnej. -->
+            <span class="kociol-tryb">
+              <span class="kociol-tryb__tekst">
+                <span class="kafel__podpis kafel__podpis--kociol" id="pulpit-kociol-tryb"></span>
+                <span class="kafel__podpis" id="pulpit-kociol-od"></span>
+              </span>
+              <span class="kociol-ikony ukryty" id="pulpit-kociol-ikony" role="img" aria-label="Stan kotła nieznany">
+                <svg class="ikona-obwodu ukryty" id="pulpit-kociol-cwu" viewBox="0 0 24 24" aria-hidden="true"><title>CWU</title><circle cx="12" cy="12" r="9" stroke-width="1.7"/><path d="M7.6 10.4h4.6a2.2 2.2 0 0 1 2.2 2.2v.5" stroke-width="1.5"/><path d="M9.6 10.4V8.8M8.4 8.8h2.4" stroke-width="1.4"/><path d="M14.4 14.6c-.5.7-.8 1.1-.8 1.5a.8.8 0 0 0 1.6 0c0-.4-.3-.8-.8-1.5z" stroke-width="1.2"/></svg>
+                <svg class="ikona-obwodu ukryty" id="pulpit-kociol-co" viewBox="0 0 24 24" aria-hidden="true"><title>CO</title><circle cx="12" cy="12" r="9" stroke-width="1.7"/><rect x="7.2" y="8.4" width="9.6" height="6.2" rx="1.2" stroke-width="1.5"/><path d="M10.4 8.4v6.2M13.6 8.4v6.2" stroke-width="1.2"/><path d="M8.8 14.6v1.4M15.2 14.6v1.4" stroke-width="1.3"/></svg>
+              </span>
             </span>
-            <span class="kafel__podpis kafel__podpis--kociol" id="pulpit-kociol-tryb"></span>
             <span class="kafel__wiersze" id="pulpit-kociol-wiersze"></span>
           </button>
           <button class="kafel" id="przycisk-zbieracz">

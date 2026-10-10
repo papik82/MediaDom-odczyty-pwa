@@ -190,29 +190,37 @@ main {
   color: #666;
 }
 
-/* Gaz — główna akcja ekranu: wyróżniony obrysem w kolorze przewodnim,
-   wysokość ok. 100 px (równa dwóm niskim kaflom obok). */
+/* Wspólna wysokość kafla Temperatury oraz Prądu i Wody (każdy osobno). Gaz nie
+   ma własnej wysokości: rozciąga się na dwa kafle obok (siatka ją wyrównuje),
+   czyli wynosi ok. dwóch takich kafli plus odstęp. Zmiana tej liczby przesuwa
+   wszystkie trzy kafle naraz. */
+.pulpit {
+  --wysokosc-kafla: 6.2rem;
+}
+
+/* Gaz — główna akcja ekranu: wyróżniony obrysem w kolorze przewodnim. */
 .kafel--gaz {
-  min-height: 6.5rem;
   justify-content: space-between;
   box-shadow: 0 0 0 2px var(--kolor-glowny), 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-/* Prąd i Woda — niskie kafle w jednej linii: nazwa z lewej, termin z prawej. */
+/* Prąd i Woda — nazwa u góry, termin odczytu (dni / odliczanie) na dole,
+   wysokość jak kafla Temperatury. */
 .kafel--maly {
   flex: 1;
-  flex-direction: row;
-  align-items: center;
+  min-height: var(--wysokosc-kafla);
   justify-content: space-between;
-  gap: 0.4rem;
-  padding: 0.4rem 0.8rem;
+}
+
+.kafel--temperatury {
+  min-height: var(--wysokosc-kafla);
 }
 
 .kafel__stan {
-  font-size: 0.8rem;
+  align-self: flex-start;
+  font-size: 0.95rem;
   line-height: 1.2;
   color: #666;
-  text-align: right;
 }
 
 /* Alarm odczytu — przekroczony limit dni od ostatniego odczytu: żółte tło
@@ -338,18 +346,32 @@ main {
   font-weight: 600;
 }
 
-/* Kocioł: stan obwodów ikonami — kran (CWU) i kaloryfer (CO) w kole, w kolorze
-   przewodnim, jak ikony kart (kociol.svg, termometr.svg). Widoczne tylko
-   aktywne obwody. */
+/* Kocioł: opis trybu po lewej, po prawej stan obwodów ikonami jedna pod drugą —
+   kran (CWU) i kaloryfer (CO) w kole, w kolorze przewodnim, jak ikony kart
+   (kociol.svg, termometr.svg). Widoczne tylko aktywne obwody. Ikony obok
+   opisu, a nie pod nim, żeby kafel był niższy. */
+.kociol-tryb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.kociol-tryb__tekst {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .kociol-ikony {
   display: flex;
-  gap: 0.5rem;
-  margin: 0.15rem 0;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .ikona-obwodu {
-  width: 1.7rem;
-  height: 1.7rem;
+  width: 1.6rem;
+  height: 1.6rem;
   fill: none;
   stroke: var(--kolor-glowny);
   stroke-linecap: round;

@@ -43,6 +43,7 @@ const tempCzas = document.getElementById('pulpit-temp-czas');
 const tempWiek = document.getElementById('pulpit-temp-wiek');
 const tempDt = document.getElementById('pulpit-temp-dt');
 const kociolTryb = document.getElementById('pulpit-kociol-tryb');
+const kociolOd = document.getElementById('pulpit-kociol-od');
 const kociolIkony = document.getElementById('pulpit-kociol-ikony');
 const kociolCwu = document.getElementById('pulpit-kociol-cwu');
 const kociolCo = document.getElementById('pulpit-kociol-co');
@@ -213,16 +214,17 @@ function renderujKociol(k) {
     ustawIkonyObwodow(false, false);
     kociolIkony.setAttribute('aria-label', 'Stan kotła nieznany');
     kociolTryb.textContent = k && k.brak ? 'brak zapisów' : '—';
+    kociolOd.textContent = '';
     return;
   }
   const obwody = obwodyTrybu(k.tryb);
   ustawIkonyObwodow(obwody.cwu, obwody.co);
   kociolIkony.setAttribute('aria-label',
     `CWU ${obwody.cwu ? 'włączone' : 'wyłączone'}, CO ${obwody.co ? 'włączone' : 'wyłączone'}`);
-  // Podpis pod ikonami: tryb słownie i od kiedy obowiązuje („CWU + CO · od 2.10”).
+  // Opis trybu: słownie („CWU + CO”), pod nim od kiedy obowiązuje („od 2.10”).
   const [, mm, dd] = (k.obowiazuje_od || '').slice(0, 10).split('-');
-  const od = dd ? ` · od ${Number(dd)}.${mm}` : '';
-  kociolTryb.textContent = `${ETYKIETY_TRYBU[k.tryb] || k.tryb}${od}`;
+  kociolTryb.textContent = ETYKIETY_TRYBU[k.tryb] || k.tryb;
+  kociolOd.textContent = dd ? `od ${Number(dd)}.${mm}` : '';
   // Tylko nastawy, które mają sens dla trybu (bez CO nie ma krzywej, bez CWU temperatury CWU).
   const dodaj = (etykieta, wartosc, jednostka = '') => {
     if (wartosc === null || wartosc === undefined || wartosc === '') return;
@@ -267,7 +269,10 @@ function renderujZbieracz(z) {
   // Wiek liczymy od znacznika czasu, żeby był prawdziwy także z bufora.
   const t = z.telefon;
   if (t && t.czas) {
-    zbZapis.textContent = `puls ${godzina(t.czas)} · ${opiszWiek(new Date(t.czas).getTime())}`;
+    // Wiek bez „temu” („puls 20:21 · 10 min”) — dzięki temu podpis mieści się w jednej
+    // linii, a kafel jest niższy.
+    const wiek = opiszWiek(new Date(t.czas).getTime()).replace(/ temu$/, '');
+    zbZapis.textContent = `puls ${godzina(t.czas)} · ${wiek}`;
   } else {
     zbZapis.textContent = 'brak pulsu';
   }

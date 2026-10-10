@@ -3,6 +3,20 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.10.0 — 2026-10-10
+
+### Zmienione
+- **Kafel Kocioł niższy:** ikony kranu (CWU) i kaloryfera (CO) stoją po prawej
+  od opisu trybu, jedna pod drugą (1,6 rem), a opis ma dwie linie: tryb i „od 2.10”.
+  Nadal tylko dla aktywnych obwodów.
+- **Kafle Prąd i Woda wysokie jak Temperatury** (zmienna CSS `--wysokosc-kafla`,
+  6,2 rem ≈ 99 px każdy): nazwa u góry, termin odczytu na dole. **Gaz rozciąga się
+  na oba** (≈ 210 px, bez własnej wysokości — siatka wyrównuje go do dwóch
+  kafli obok).
+- Podpis pulpitu Zbieracz bez słowa „temu” („puls 20:21 · 10 min”) — mieści się
+  w jednej linii, więc para Kocioł + Zbieracz ma 181 px zamiast 198 px.
+- `sw.js`: `WERSJA_CACHE` v60.
+
 ## 1.9.1 — 2026-10-10
 
 ### Zmienione
