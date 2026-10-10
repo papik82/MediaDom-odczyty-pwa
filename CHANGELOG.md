@@ -3,6 +3,17 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.7.1 — 2026-10-10
+
+### Zmienione
+- Kafel Zbieracz na pulpicie pod werdyktem pokazuje **godzinę ostatniego pulsu
+  telefonu** („puls 22:04 · 4 min temu”) zamiast godziny ostatniego zapisu
+  temperatur (decyzja Pawła 2026-10-10). Webhook (wersja 46) dokłada
+  `zbieracz.telefon.czas`; pole `ostatni_zapis` zostaje w kontrakcie, PWA go
+  nie używa. Godzina ostatniego pomiaru temperatur jest nadal w pierwszej
+  kolumnie kafla Temperatury.
+- `sw.js`: `WERSJA_CACHE` v54.
+
 ## 1.7.0 — 2026-10-10
 
 ### Zmienione

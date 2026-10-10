@@ -218,14 +218,16 @@ function renderujZbieracz(z) {
   zbKropka.className = `kropka kropka--${werdykt}`;
   zbWerdykt.textContent = WERDYKTY[werdykt];
 
-  const zapis = z.ostatni_zapis;
-  if (zapis && zapis.czas) {
-    zbZapis.textContent = `zapis ${godzina(zapis.czas)} · ${opiszWiek(new Date(zapis.czas).getTime() + 3600000)}`;
+  // Podpis pod werdyktem: godzina ostatniego PULSU telefonu (zbieracz wysyła go
+  // co godzinę), a nie ostatniego zapisu temperatur — puls mówi, że telefon żyje.
+  // Wiek liczymy od znacznika czasu, żeby był prawdziwy także z bufora.
+  const t = z.telefon;
+  if (t && t.czas) {
+    zbZapis.textContent = `puls ${godzina(t.czas)} · ${opiszWiek(new Date(t.czas).getTime())}`;
   } else {
-    zbZapis.textContent = 'brak zapisów';
+    zbZapis.textContent = 'brak pulsu';
   }
 
-  const t = z.telefon;
   if (t && typeof t.bateria === 'number') {
     const w = wiersz('telefon', `${t.bateria} %`, t.bateria < PROG_BATERII_TELEFONU ? 'kafel__wartosc--uwaga' : '');
     const trend = opiszTrend(t.trend);
