@@ -30,6 +30,9 @@ const PROG_BATERII_TELEFONU = 30;
 // (ten sam próg ciszy co w webhooku: CISZA_PROG_H w luki.js).
 const PROG_STAROSCI_TEMP_H = 3;
 
+const kafelGaz = document.getElementById('pulpit-gaz');
+const kafelPrad = document.getElementById('przycisk-prad');
+const kafelWoda = document.getElementById('pulpit-woda');
 const podpisGazu = document.getElementById('pulpit-gaz-podpis');
 const stanPradu = document.getElementById('pulpit-prad-stan');
 const stanWody = document.getElementById('pulpit-woda-stan');
@@ -66,17 +69,6 @@ function godzina(iso) {
   return iso ? iso.slice(11, 16) : '—';
 }
 
-// „1 dzień”, „5 dni” — po polsku wystarczy rozróżnić jeden od reszty
-// (2–4 i 5+ w tym zakresie liczb to też „dni”).
-function dni(n) {
-  return `${n} ${n === 1 ? 'dzień' : 'dni'}`;
-}
-
-function dzisLokalnie() {
-  const d = new Date();
-  return `${d.getFullYear()}-${dwie(d.getMonth() + 1)}-${dwie(d.getDate())}`;
-}
-
 // Wiersz „etykieta — wartość” w kafelku; `klasa` wyróżnia wartość (np. słaba bateria).
 function wiersz(etykieta, tekst, klasa) {
   const w = element('span', 'kafel__wiersz');
@@ -87,38 +79,59 @@ function wiersz(etykieta, tekst, klasa) {
 
 // --- Odczyty liczników -------------------------------------------------------
 
-// Termin kolejnego odczytu: „✓ dziś” (odczyt z dzisiaj), „czas na odczyt”,
-// „za N dni” albo „—”. `za_dni` liczy webhook z tych samych progów co
-// przypomnienia. `swiezy` — czy odpowiedź jest z dzisiaj: odliczanie ze
-// wczorajszego bufora kłamałoby o dzień, więc wtedy pokazujemy „—”.
-function opiszTermin(kafel, swiezy) {
-  if (!kafel || !swiezy) return { tekst: '—', rodzaj: 'neutralny' };
-  if (kafel.dzis) return { tekst: '✓ dziś', rodzaj: 'dzis' };
-  if (kafel.czas) return { tekst: 'czas na odczyt', rodzaj: 'czas' };
-  if (typeof kafel.za_dni === 'number' && kafel.za_dni > 0) {
-    return { tekst: `za ${dni(kafel.za_dni)}`, rodzaj: 'neutralny' };
-  }
-  return { tekst: '—', rodzaj: 'neutralny' };
+// Na kaflach odczytów tylko jedno: ile dni minęło od ostatniego odczytu
+// („dziś”, „wczoraj”, „N dni temu”). Dni liczymy NA TELEFONIE z daty ostatniego
+// odczytu (dzień kalendarzowy, czas lokalny), a nie bierzemy z odpowiedzi —
+// dzięki temu liczba jest prawdziwa także dla odpowiedzi z bufora sprzed doby.
+function dniOdOdczytu(kafel) {
+  if (!kafel || !kafel.ostatni) return null;
+  const [rok, miesiac, dzien] = kafel.ostatni.slice(0, 10).split('-').map(Number);
+  const teraz = new Date();
+  const dzis = Date.UTC(teraz.getFullYear(), teraz.getMonth(), teraz.getDate());
+  return Math.max(Math.round((dzis - Date.UTC(rok, miesiac - 1, dzien)) / 86400000), 0);
 }
 
-function ustawStanMalegoKafla(el, kafel, swiezy) {
-  const { tekst, rodzaj } = opiszTermin(kafel, swiezy);
-  el.textContent = tekst;
-  el.className = `kafel__stan kafel__stan--${rodzaj}`;
+function opiszDni(n) {
+  if (n === null) return '—';
+  if (n === 0) return 'dziś';
+  return n === 1 ? 'wczoraj' : `${n} dni temu`;
+}
+
+// Alarm = przekroczony limit dni bez odczytu. Limit zna webhook (progi
+// przypomnień): gaz — `limit_dni` (3 w sezonie, 10 poza), więc porównujemy
+// z nim dni liczone lokalnie. Prąd i woda mają limit kalendarzowy („odczyt
+// za bieżący miesiąc”), który liczy tylko webhook — tu bierzemy jego flagę
+// `czas`, ale wyłącznie z odpowiedzi z dzisiaj (zmiana miesiąca w buforze
+// nie jest nam znana, więc bez świeżych danych alarmu nie zgadujemy).
+function czyPrzekroczono(kafel, dniLokalnie, swiezy) {
+  if (!kafel || dniLokalnie === null) return false;
+  if (typeof kafel.limit_dni === 'number') return dniLokalnie >= kafel.limit_dni;
+  return swiezy && kafel.czas === true;
+}
+
+// Kafel w alarmie dostaje klasę `kafel--alarm` (żółte tło i obrys) i znak ⚠
+// przed liczbą dni; gaz dopisuje też limit („5 dni temu · limit 3”).
+function ustawKafelOdczytu(kafelEl, tekstEl, kafel, swiezy, zLimitem) {
+  const dniLokalnie = dniOdOdczytu(kafel);
+  const alarm = czyPrzekroczono(kafel, dniLokalnie, swiezy);
+  let tekst = opiszDni(dniLokalnie);
+  if (alarm && zLimitem && typeof kafel.limit_dni === 'number') tekst += ` · limit ${kafel.limit_dni}`;
+  tekstEl.textContent = alarm ? `⚠ ${tekst}` : tekst;
+  tekstEl.classList.toggle('kafel__tekst-alarm', alarm);
+  kafelEl.classList.toggle('kafel--alarm', alarm);
 }
 
 function renderujOdczyty(odczyty, swiezy) {
-  const gaz = odczyty && odczyty.gaz;
-  const { tekst, rodzaj } = opiszTermin(gaz, swiezy);
-  let podpis = tekst;
-  // Po terminie dopisujemy, kiedy był ostatni odczyt („czas na odczyt · wczoraj”).
-  if (rodzaj === 'czas' && typeof gaz.dni === 'number' && gaz.dni > 0) {
-    podpis += ` · ${gaz.dni === 1 ? 'wczoraj' : `${gaz.dni} dni temu`}`;
-  }
-  podpisGazu.textContent = podpis;
-  podpisGazu.className = `kafel__podpis kafel__podpis--${rodzaj}`;
-  ustawStanMalegoKafla(stanPradu, odczyty && odczyty.prad, swiezy);
-  ustawStanMalegoKafla(stanWody, odczyty && odczyty.woda, swiezy);
+  const o = odczyty || {};
+  ustawKafelOdczytu(kafelGaz, podpisGazu, o.gaz, swiezy, true);
+  ustawKafelOdczytu(kafelPrad, stanPradu, o.prad, swiezy, false);
+  ustawKafelOdczytu(kafelWoda, stanWody, o.woda, swiezy, false);
+}
+
+// Dzisiejsza data lokalna jako "RRRR-MM-DD" — do sprawdzenia, czy odpowiedź jest z dzisiaj.
+function dzisLokalnieIso() {
+  const d = new Date();
+  return `${d.getFullYear()}-${dwie(d.getMonth() + 1)}-${dwie(d.getDate())}`;
 }
 
 // --- Temperatury -------------------------------------------------------------
@@ -238,7 +251,7 @@ function renderujZbieracz(z) {
 // ustawień). `czasMs` — kiedy odpowiedź została pobrana; `zBufora` — czy to
 // stare dane, których alarmów nie chcemy pokazywać bez sprawdzenia wieku.
 function renderujPulpit(wynik, czasMs, zBufora) {
-  const swiezy = Boolean(wynik) && String(wynik.sprawdzono || '').slice(0, 10) === dzisLokalnie();
+  const swiezy = Boolean(wynik) && String(wynik.sprawdzono || '').slice(0, 10) === dzisLokalnieIso();
   renderujOdczyty(wynik && wynik.odczyty, swiezy);
   renderujTemperatury(wynik && wynik.temperatury);
   renderujKociol(wynik && wynik.kociol);

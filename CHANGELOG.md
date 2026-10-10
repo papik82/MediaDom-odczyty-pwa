@@ -3,6 +3,24 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.7.0 — 2026-10-10
+
+### Zmienione
+- **Kafle odczytów (Gaz, Prąd, Woda) pokazują tylko dni od ostatniego odczytu**
+  („dziś”, „wczoraj”, „N dni temu”) — bez odliczania „za N dni” i plakietki
+  „✓ dziś” (decyzja Pawła 2026-10-10, BACKLOG pkt 29). Dni liczy telefon z daty
+  ostatniego odczytu, więc liczba jest prawdziwa także dla odpowiedzi z bufora
+  sprzed doby.
+- **Alarm po przekroczeniu limitu:** kafel dostaje żółte tło i obrys, a przed
+  liczbą dni znak ⚠. Gaz porównuje dni z `limit_dni` z webhooka (3 w sezonie,
+  10 poza) i dopisuje limit („⚠ 5 dni temu · limit 3”) — alarm liczony na telefonie,
+  więc działa także z bufora po zmianie doby. Prąd i woda mają limit
+  kalendarzowy (odczyt za bieżący miesiąc), więc alarm bierze flagę `czas` z webhooka,
+  ale tylko z odpowiedzi z dzisiaj.
+- Webhook (wersja 45) dokłada do `odczyty.gaz` pole `limit_dni`; pola `za_dni`
+  i `dzis` zostają w kontrakcie, PWA ich już nie używa.
+- `sw.js`: `WERSJA_CACHE` v53.
+
 ## 1.6.0 — 2026-10-09
 
 ### Dodane
