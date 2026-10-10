@@ -20,7 +20,8 @@ Prąd i Woda obok (Gaz: dni od ostatniego odczytu — „dziś” / „wczoraj�
 „N dni temu”, po przekroczeniu limitu żółty kafel z ⚠; Prąd i Woda — odliczanie
 do odczytu 1. dnia następnego miesiąca: „za N dni”, „✓ dziś”, „⚠ czas na
 odczyt”); wiersz temperatur w pięciu kolumnach (godzina i wiek pomiaru, zewn.,
-parter, piętro, ΔT); Kocioł (tryb i nastawy) i Zbieracz (werdykt, ostatni zapis,
+parter, piętro, ΔT); Kocioł (stan obwodów ikonami: kran = CWU, kaloryfer = CO, włączony kolorowy,
+wyłączony szary i przekreślony; tryb i nastawy) i Zbieracz (werdykt, ostatni zapis,
 bateria telefonu z trendem „doba do doby”, baterie Sonoffów); rząd Odczyty /
 Faktura / Pomysły / Ustawienia. **Wszystko z jednej akcji `pulpit`**
 (kontrakt: `../apps-script/CLAUDE.md`) — progi, werdykt, ΔT i `za_dni` liczy

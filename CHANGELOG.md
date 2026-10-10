@@ -3,6 +3,18 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.8.0 — 2026-10-10
+
+### Dodane
+- **Kafel Kocioł na pulpicie pokazuje stan obwodów ikonami:** kran (CWU) i
+  kaloryfer (CO). Włączony obwód jest kolorowy (kolory jak na paskach historii
+  kotła: CO pomarańczowy, CWU zielony), wyłączony — szary i przekreślony, żeby
+  stan nie zależał tylko od koloru; brak danych — szary bez przekreślenia.
+  Pod ikonami podpis „CWU + CO · od 2.10”, niżej nastawy jak dotąd. Ikony są
+  wbudowanym SVG (`currentColor`), `aria-label` mówi słownie, który obwód jest
+  włączony. Stan obwodów wynika z trybu (`OBWODY_TRYBU` w `js/nastawy.js`).
+- `sw.js`: `WERSJA_CACHE` v56.
+
 ## 1.7.2 — 2026-10-10
 
 ### Zmienione

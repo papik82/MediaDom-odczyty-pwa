@@ -40,7 +40,9 @@ const tempCzas = document.getElementById('pulpit-temp-czas');
 const tempWiek = document.getElementById('pulpit-temp-wiek');
 const tempDt = document.getElementById('pulpit-temp-dt');
 const kociolTryb = document.getElementById('pulpit-kociol-tryb');
-const kociolOd = document.getElementById('pulpit-kociol-od');
+const kociolIkony = document.getElementById('pulpit-kociol-ikony');
+const kociolCwu = document.getElementById('pulpit-kociol-cwu');
+const kociolCo = document.getElementById('pulpit-kociol-co');
 const kociolWiersze = document.getElementById('pulpit-kociol-wiersze');
 const zbKropka = document.getElementById('pulpit-zb-kropka');
 const zbWerdykt = document.getElementById('pulpit-zb-werdykt');
@@ -193,23 +195,32 @@ function renderujTemperatury(t) {
 
 // --- Kocioł ------------------------------------------------------------------
 
+// Ikona obwodu: kolorowa, gdy obwód jest włączony; szara i przekreślona, gdy
+// wyłączony (różnica nie tylko kolorem); szara bez przekreślenia, gdy stan nieznany.
+function ustawIkoneObwodu(el, stan) {
+  el.classList.toggle('ikona-obwodu--wyl', stan === 'wyl');
+  el.classList.toggle('ikona-obwodu--nieznany', stan === 'nieznany');
+}
+
 function renderujKociol(k) {
   kociolWiersze.innerHTML = '';
-  if (!k || !k.ok) {
-    kociolTryb.textContent = '—';
-    kociolOd.textContent = '';
+  if (!k || !k.ok || k.brak) {
+    ustawIkoneObwodu(kociolCwu, 'nieznany');
+    ustawIkoneObwodu(kociolCo, 'nieznany');
+    kociolIkony.setAttribute('aria-label', 'Stan kotła nieznany');
+    kociolTryb.textContent = k && k.brak ? 'brak zapisów' : '—';
     return;
   }
-  if (k.brak) {
-    kociolTryb.textContent = 'brak zapisów';
-    kociolOd.textContent = '';
-    return;
-  }
-  kociolTryb.textContent = ETYKIETY_TRYBU[k.tryb] || k.tryb;
-  const [, mm, dd] = (k.obowiazuje_od || '').slice(0, 10).split('-');
-  kociolOd.textContent = dd ? `od ${Number(dd)}.${mm}` : '';
-  // Tylko nastawy, które mają sens dla trybu (bez CO nie ma krzywej, bez CWU temperatury CWU).
   const obwody = obwodyTrybu(k.tryb);
+  ustawIkoneObwodu(kociolCwu, obwody.cwu ? 'wl' : 'wyl');
+  ustawIkoneObwodu(kociolCo, obwody.co ? 'wl' : 'wyl');
+  kociolIkony.setAttribute('aria-label',
+    `CWU ${obwody.cwu ? 'włączone' : 'wyłączone'}, CO ${obwody.co ? 'włączone' : 'wyłączone'}`);
+  // Podpis pod ikonami: tryb słownie i od kiedy obowiązuje („CWU + CO · od 2.10”).
+  const [, mm, dd] = (k.obowiazuje_od || '').slice(0, 10).split('-');
+  const od = dd ? ` · od ${Number(dd)}.${mm}` : '';
+  kociolTryb.textContent = `${ETYKIETY_TRYBU[k.tryb] || k.tryb}${od}`;
+  // Tylko nastawy, które mają sens dla trybu (bez CO nie ma krzywej, bez CWU temperatury CWU).
   const dodaj = (etykieta, wartosc, jednostka = '') => {
     if (wartosc === null || wartosc === undefined || wartosc === '') return;
     kociolWiersze.appendChild(wiersz(etykieta, `${liczbaPL(wartosc)}${jednostka}`));
