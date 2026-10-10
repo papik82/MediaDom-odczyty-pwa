@@ -1,6 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <g stroke="#3d4fb0" stroke-width="1.8" stroke-linecap="round">
-    <circle cx="12" cy="12" r="6" fill="none"/>
+  <!-- Ikona kafelka „Ustawienia” (od 1.9.1) — w stylu pozostałych ikon kart:
+       koło i znak w środku, ten sam kolor i grubość linii. Zębatka z ikony
+       nagłówka pomniejszona do środka koła (kreska 2,6 po skali 0,58 daje ok. 1,5). -->
+  <circle cx="12" cy="12" r="9" fill="none" stroke="#3d4fb0" stroke-width="1.7"/>
+  <g transform="translate(12 12) scale(0.58) translate(-12 -12)" fill="none" stroke="#3d4fb0" stroke-width="2.6" stroke-linecap="round">
+    <circle cx="12" cy="12" r="6"/>
     <line x1="18" y1="12" x2="20.7" y2="12"/>
     <line x1="16.24" y1="16.24" x2="18.15" y2="18.15"/>
     <line x1="12" y1="18" x2="12" y2="20.7"/>
@@ -10,5 +14,5 @@
     <line x1="12" y1="6" x2="12" y2="3.3"/>
     <line x1="16.24" y1="7.76" x2="18.15" y2="5.85"/>
   </g>
-  <circle cx="12" cy="12" r="2" fill="#3d4fb0"/>
+  <circle cx="12" cy="12" r="1.2" fill="#3d4fb0"/>
 </svg>

@@ -3,6 +3,17 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.9.1 — 2026-10-10
+
+### Zmienione
+- **Ikony kranu (CWU) i kaloryfera (CO) w kole** (jak ikony kart) i mniejsze
+  (27 px zamiast 34 px); nadal tylko dla aktywnych obwodów.
+- **Ikona „Ustawienia” w kole** (`ikony/ustawienia-kafel.svg`) — zębatka
+  pomniejszona do środka koła, w stylu pozostałych ikon.
+- **Kafel Temperatury ma nagłówek z ikoną** (`termometr.svg`, w kole) jak
+  Kocioł i Zbieracz; pod nim wiersz pięciu kolumn bez zmian.
+- `sw.js`: `WERSJA_CACHE` v59.
+
 ## 1.9.0 — 2026-10-10
 
 ### Dodane
