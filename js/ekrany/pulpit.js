@@ -195,25 +195,25 @@ function renderujTemperatury(t) {
 
 // --- Kocioł ------------------------------------------------------------------
 
-// Ikona obwodu: kolorowa, gdy obwód jest włączony; szara i przekreślona, gdy
-// wyłączony (różnica nie tylko kolorem); szara bez przekreślenia, gdy stan nieznany.
-function ustawIkoneObwodu(el, stan) {
-  el.classList.toggle('ikona-obwodu--wyl', stan === 'wyl');
-  el.classList.toggle('ikona-obwodu--nieznany', stan === 'nieznany');
+// Ikony obwodów (kran = CWU, kaloryfer = CO) pokazujemy TYLKO dla włączonych
+// obwodów — wyłączony albo nieznany obwód nie ma ikony. Gdy nie ma żadnej
+// (kocioł wyłączony, brak danych), znika też cały rząd, żeby nie zostawiał luki.
+function ustawIkonyObwodow(cwu, co) {
+  kociolCwu.classList.toggle('ukryty', !cwu);
+  kociolCo.classList.toggle('ukryty', !co);
+  kociolIkony.classList.toggle('ukryty', !cwu && !co);
 }
 
 function renderujKociol(k) {
   kociolWiersze.innerHTML = '';
   if (!k || !k.ok || k.brak) {
-    ustawIkoneObwodu(kociolCwu, 'nieznany');
-    ustawIkoneObwodu(kociolCo, 'nieznany');
+    ustawIkonyObwodow(false, false);
     kociolIkony.setAttribute('aria-label', 'Stan kotła nieznany');
     kociolTryb.textContent = k && k.brak ? 'brak zapisów' : '—';
     return;
   }
   const obwody = obwodyTrybu(k.tryb);
-  ustawIkoneObwodu(kociolCwu, obwody.cwu ? 'wl' : 'wyl');
-  ustawIkoneObwodu(kociolCo, obwody.co ? 'wl' : 'wyl');
+  ustawIkonyObwodow(obwody.cwu, obwody.co);
   kociolIkony.setAttribute('aria-label',
     `CWU ${obwody.cwu ? 'włączone' : 'wyłączone'}, CO ${obwody.co ? 'włączone' : 'wyłączone'}`);
   // Podpis pod ikonami: tryb słownie i od kiedy obowiązuje („CWU + CO · od 2.10”).

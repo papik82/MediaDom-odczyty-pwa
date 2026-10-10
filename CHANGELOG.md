@@ -3,6 +3,18 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.8.1 — 2026-10-10
+
+### Zmienione
+- **Ikony stanu kotła spójne z resztą aplikacji** (wariant B zatwierdzony przez
+  Pawła): kran (CWU) i kaloryfer (CO) jako same kontury w kolorze przewodnim,
+  ten sam styl linii co gaz, woda i prąd — zamiast kolorowych kafelków z 1.8.0.
+- **Ikona pokazuje się tylko dla aktywnego obwodu:** `cwu_co` — obie, `cwu`
+  — sam kran, `co` — sam kaloryfer, `off` i brak danych — żadnej (znika też
+  cały rząd). Wyłączony obwód nie ma już szarej, przekreślonej ikony. Stan słownie
+  zostaje w podpisie i w `aria-label`.
+- `sw.js`: `WERSJA_CACHE` v57.
+
 ## 1.8.0 — 2026-10-10
 
 ### Dodane

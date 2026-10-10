@@ -77,16 +77,13 @@
         <div class="pulpit__stan">
           <button class="kafel" id="przycisk-kociol">
             <span class="kafel__etykieta"><img class="kafel__ikona" src="ikony/kociol.svg" alt="">Kocioł</span>
-            <!-- Stan obwodów ikonami: kran = CWU (ciepła woda), kaloryfer = CO
-                 (ogrzewanie). Włączony obwód jest kolorowy, wyłączony szary
-                 i przekreślony; klasy ustawia js/ekrany/pulpit.js. -->
-            <span class="kociol-ikony" id="pulpit-kociol-ikony" role="img" aria-label="Stan kotła nieznany">
-              <span class="ikona-obwodu ikona-obwodu--cwu ikona-obwodu--nieznany" id="pulpit-kociol-cwu" title="CWU">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h8a4 4 0 0 1 4 4v1"/><path d="M9 9V6M6.5 6h5"/><path d="M16 17c-.9 1.3-1.4 2-1.4 2.6a1.4 1.4 0 0 0 2.8 0c0-.6-.5-1.3-1.4-2.6z"/></svg>
-              </span>
-              <span class="ikona-obwodu ikona-obwodu--co ikona-obwodu--nieznany" id="pulpit-kociol-co" title="CO">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="11" rx="2"/><path d="M8 6v11M12 6v11M16 6v11"/><path d="M5.5 17v2.5M18.5 17v2.5"/></svg>
-              </span>
+            <!-- Stan obwodów ikonami (wariant B, kontury jak ikony mediów):
+                 kran = CWU (ciepła woda), kaloryfer = CO (ogrzewanie).
+                 Pokazywane są TYLKO aktywne obwody — klasę `ukryty` zdejmuje
+                 js/ekrany/pulpit.js; przy wyłączonym kotle nie ma żadnej. -->
+            <span class="kociol-ikony ukryty" id="pulpit-kociol-ikony" role="img" aria-label="Stan kotła nieznany">
+              <svg class="ikona-obwodu ukryty" id="pulpit-kociol-cwu" viewBox="0 0 24 24" aria-hidden="true"><title>CWU</title><path d="M3.5 8.5h10a4 4 0 0 1 4 4v1.5" stroke-width="1.8"/><path d="M8 8.5V5M5.2 5h5.6" stroke-width="1.8"/><path d="M17.5 17.2c-1.1 1.6-1.7 2.4-1.7 3.2a1.7 1.7 0 0 0 3.4 0c0-.8-.6-1.6-1.7-3.2z" stroke-width="1.6"/></svg>
+              <svg class="ikona-obwodu ukryty" id="pulpit-kociol-co" viewBox="0 0 24 24" aria-hidden="true"><title>CO</title><rect x="3.5" y="6" width="17" height="11" rx="2" stroke-width="1.8"/><path d="M8.5 6v11M12 6v11M15.5 6v11" stroke-width="1.5"/><path d="M6 17v2.5M18 17v2.5" stroke-width="1.8"/></svg>
             </span>
             <span class="kafel__podpis kafel__podpis--kociol" id="pulpit-kociol-tryb"></span>
             <span class="kafel__wiersze" id="pulpit-kociol-wiersze"></span>
