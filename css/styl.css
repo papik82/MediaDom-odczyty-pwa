@@ -225,6 +225,22 @@ main {
   font-weight: 600;
 }
 
+/* Prąd i woda: „⚠ czas na odczyt” (żółty tekst w żółtym kaflu) i „✓ dziś”
+   (zielona plakietka). */
+.kafel__stan--alarm {
+  color: #8a5a00;
+  font-weight: 600;
+}
+
+.kafel__stan--dzis {
+  padding: 0.1rem 0.5rem;
+  border-radius: 8px;
+  background: #e3f4e6;
+  color: #1b6e2d;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 /* Temperatury: pięć kolumn — czas ostatniego pomiaru (godzina i wiek),
    zewn., parter, piętro i ΔT; pionowe kreski oddzielają czas i ΔT od pomiarów. */
 .temperatury {

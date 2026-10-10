@@ -97,23 +97,20 @@ function opiszDni(n) {
   return n === 1 ? 'wczoraj' : `${n} dni temu`;
 }
 
-// Alarm = przekroczony limit dni bez odczytu. Limit zna webhook (progi
-// przypomnień): gaz — `limit_dni` (3 w sezonie, 10 poza), więc porównujemy
-// z nim dni liczone lokalnie. Prąd i woda mają limit kalendarzowy („odczyt
-// za bieżący miesiąc”), który liczy tylko webhook — tu bierzemy jego flagę
-// `czas`, ale wyłącznie z odpowiedzi z dzisiaj (zmiana miesiąca w buforze
-// nie jest nam znana, więc bez świeżych danych alarmu nie zgadujemy).
-function czyPrzekroczono(kafel, dniLokalnie, swiezy) {
+// Alarm gazu = przekroczony limit dni bez odczytu. Limit zna webhook (progi
+// przypomnień): `limit_dni` (3 w sezonie, 10 poza), więc porównujemy z nim dni
+// liczone lokalnie — działa też z bufora po zmianie doby. (Prąd i woda mają
+// osobną ścieżkę: ustawKafelMiesieczny.)
+function czyPrzekroczono(kafel, dniLokalnie) {
   if (!kafel || dniLokalnie === null) return false;
-  if (typeof kafel.limit_dni === 'number') return dniLokalnie >= kafel.limit_dni;
-  return swiezy && kafel.czas === true;
+  return typeof kafel.limit_dni === 'number' && dniLokalnie >= kafel.limit_dni;
 }
 
-// Kafel w alarmie dostaje klasę `kafel--alarm` (żółte tło i obrys) i znak ⚠
-// przed liczbą dni; gaz dopisuje też limit („5 dni temu · limit 3”).
+// Kafel gazu w alarmie dostaje klasę `kafel--alarm` (żółte tło i obrys) i znak ⚠
+// przed liczbą dni oraz limit („5 dni temu · limit 3”).
 function ustawKafelOdczytu(kafelEl, tekstEl, kafel, swiezy, zLimitem) {
   const dniLokalnie = dniOdOdczytu(kafel);
-  const alarm = czyPrzekroczono(kafel, dniLokalnie, swiezy);
+  const alarm = czyPrzekroczono(kafel, dniLokalnie);
   let tekst = opiszDni(dniLokalnie);
   if (alarm && zLimitem && typeof kafel.limit_dni === 'number') tekst += ` · limit ${kafel.limit_dni}`;
   tekstEl.textContent = alarm ? `⚠ ${tekst}` : tekst;
@@ -121,11 +118,44 @@ function ustawKafelOdczytu(kafelEl, tekstEl, kafel, swiezy, zLimitem) {
   kafelEl.classList.toggle('kafel--alarm', alarm);
 }
 
+// Prąd i woda — odczyt raz w miesiącu, pierwszego dnia (założenie Pawła
+// 2026-10-10), więc zamiast dni od odczytu pokazujemy ODLICZANIE do następnego:
+//   „✓ dziś”          — odczyt zrobiony dzisiaj,
+//   „czas na odczyt”  — brak odczytu za bieżący miesiąc (alarm, żółty kafel;
+//                       flaga `czas` z webhooka, tylko z odpowiedzi z dzisiaj),
+//   „za N dni”        — dni do 1. dnia następnego miesiąca.
+// Odliczanie liczymy z daty telefonu, a bez dzisiejszej odpowiedzi (bufor
+// sprzed doby — mógł się zmienić miesiąc) pokazujemy „—”, zamiast zgadywać.
+function dniDoNastepnegoMiesiaca() {
+  const teraz = new Date();
+  const dzis = Date.UTC(teraz.getFullYear(), teraz.getMonth(), teraz.getDate());
+  return Math.round((Date.UTC(teraz.getFullYear(), teraz.getMonth() + 1, 1) - dzis) / 86400000);
+}
+
+function ustawKafelMiesieczny(kafelEl, stanEl, kafel, swiezy) {
+  const dniLokalnie = dniOdOdczytu(kafel);
+  let tekst = '—';
+  let rodzaj = 'neutralny';
+  if (kafel && dniLokalnie === 0) {
+    tekst = '✓ dziś';
+    rodzaj = 'dzis';
+  } else if (kafel && swiezy && kafel.czas === true) {
+    tekst = '⚠ czas na odczyt';
+    rodzaj = 'alarm';
+  } else if (kafel && swiezy) {
+    const za = dniDoNastepnegoMiesiaca();
+    tekst = `za ${za} ${za === 1 ? 'dzień' : 'dni'}`;
+  }
+  stanEl.textContent = tekst;
+  stanEl.className = `kafel__stan kafel__stan--${rodzaj}`;
+  kafelEl.classList.toggle('kafel--alarm', rodzaj === 'alarm');
+}
+
 function renderujOdczyty(odczyty, swiezy) {
   const o = odczyty || {};
   ustawKafelOdczytu(kafelGaz, podpisGazu, o.gaz, swiezy, true);
-  ustawKafelOdczytu(kafelPrad, stanPradu, o.prad, swiezy, false);
-  ustawKafelOdczytu(kafelWoda, stanWody, o.woda, swiezy, false);
+  ustawKafelMiesieczny(kafelPrad, stanPradu, o.prad, swiezy);
+  ustawKafelMiesieczny(kafelWoda, stanWody, o.woda, swiezy);
 }
 
 // Dzisiejsza data lokalna jako "RRRR-MM-DD" — do sprawdzenia, czy odpowiedź jest z dzisiaj.

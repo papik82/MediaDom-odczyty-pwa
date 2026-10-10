@@ -16,8 +16,10 @@ GitHub Pages, zapisuje dane do Arkusza Google przez webhook Apps Script.
 
 **Ekran startowy to pulpit** (od 1.6.0, `js/ekrany/pulpit.js`) — kafelki ze
 stanem domu zamiast listy kart. Od góry: pasek alarmów; kafel Gaz z kaflami
-Prąd i Woda obok (tylko dni od ostatniego odczytu: „dziś” / „wczoraj” / „N dni
-temu”; po przekroczeniu limitu kafel jest żółty i ma ⚠); wiersz temperatur w pięciu kolumnach (godzina i wiek pomiaru, zewn.,
+Prąd i Woda obok (Gaz: dni od ostatniego odczytu — „dziś” / „wczoraj” /
+„N dni temu”, po przekroczeniu limitu żółty kafel z ⚠; Prąd i Woda — odliczanie
+do odczytu 1. dnia następnego miesiąca: „za N dni”, „✓ dziś”, „⚠ czas na
+odczyt”); wiersz temperatur w pięciu kolumnach (godzina i wiek pomiaru, zewn.,
 parter, piętro, ΔT); Kocioł (tryb i nastawy) i Zbieracz (werdykt, ostatni zapis,
 bateria telefonu z trendem „doba do doby”, baterie Sonoffów); rząd Odczyty /
 Faktura / Pomysły / Ustawienia. **Wszystko z jednej akcji `pulpit`**
@@ -28,7 +30,7 @@ odświeżanie przy starcie, powrocie na start i z tła (raz na minutę) oraz od
 razu po zapisie (`naZmianieDanych`). Alarmy z bufora tylko do 30 min wieku. Dni od odczytu liczy telefon z
 daty ostatniego odczytu; alarm gazu = dni ≥ `limit_dni` z webhooka (liczone
 lokalnie, działa z bufora), alarm prądu i wody = flaga `czas` z webhooka, tylko
-z odpowiedzi z dzisiaj. Powłoka HTML jest statyczna —
+z odpowiedzi z dzisiaj (z bufora sprzed doby „—”). Powłoka HTML jest statyczna —
 kafelki działają offline, teksty stanu dopisuje JS (elementy `pulpit-…`).
 
 **Pięć mediów, każde niezależne.** Na pulpicie są trzy kafle odczytów (Gaz

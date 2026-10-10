@@ -3,6 +3,18 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.7.2 — 2026-10-10
+
+### Zmienione
+- **Kafle Prąd i Woda wracają do odliczania do następnego odczytu** (decyzja
+  Pawła 2026-10-10: odczyty tych mediów robi pierwszego dnia każdego
+  miesiąca): „za N dni” (do 1. dnia następnego miesiąca, liczone z daty telefonu),
+  „✓ dziś” w dniu odczytu i żółty alarm „⚠ czas na odczyt”, gdy odczytu za
+  bieżący miesiąc nie ma (flaga `czas` z webhooka, tylko z odpowiedzi z dzisiaj;
+  z bufora sprzed doby „—”). Kafel Gaz bez zmian: dni od ostatniego odczytu
+  i alarm po przekroczeniu limitu.
+- `sw.js`: `WERSJA_CACHE` v55.
+
 ## 1.7.1 — 2026-10-10
 
 ### Zmienione
@@ -18,6 +30,7 @@ zgodne z numerem w `js/wersja.js`.
 
 ### Zmienione
 - **Kafle odczytów (Gaz, Prąd, Woda) pokazują tylko dni od ostatniego odczytu**
+  (dla Prądu i Wody cofnięte w 1.7.2)
   („dziś”, „wczoraj”, „N dni temu”) — bez odliczania „za N dni” i plakietki
   „✓ dziś” (decyzja Pawła 2026-10-10, BACKLOG pkt 29). Dni liczy telefon z daty
   ostatniego odczytu, więc liczba jest prawdziwa także dla odpowiedzi z bufora
