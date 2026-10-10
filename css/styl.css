@@ -51,6 +51,10 @@ body {
   text-align: center;
 }
 
+.naglowek__odstep {
+  flex: 0 0 calc(24px + 1rem);   /* szerokość przycisku „home”: ikona 24 px + padding */
+}
+
 .przycisk-ikona {
   background: none;
   border: none;

@@ -3,6 +3,24 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.9.0 — 2026-10-10
+
+### Dodane
+- **Temperatura baterii telefonu na kaflu Zbieracz** („temp. baterii 29 °C”,
+  z pulsu; wyróżniona od 40 °C) — webhook (wersja 47) dokłada
+  `zbieracz.telefon.temp_baterii`.
+- **Alert o zbyt wysokiej temperaturze baterii** (po stronie webhooka, więc
+  widać go w pasku alarmów, na kaflu i na karcie Zbieracz): od 40 °C **uwaga**,
+  od 45 °C **alarm** (werdykt zbieracza „problem”) plus **mail** o przegrzaniu
+  i drugi „ostygła” po spadku poniżej 40 °C (jeden mail na zdarzenie). Progi:
+  `TEMP_BATERII_UWAGA` / `TEMP_BATERII_ALARM` w `apps-script/puls.js`.
+
+### Usunięte
+- **Ikona ustawień z górnego paska** — ustawienia są na kaflu pulpitu. Pasek
+  ma pusty odstęp po prawej, żeby tytuł został wyśrodkowany; plik
+  `ikony/ustawienia.svg` usunięty.
+- `sw.js`: `WERSJA_CACHE` v58.
+
 ## 1.8.1 — 2026-10-10
 
 ### Zmienione

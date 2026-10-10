@@ -5,7 +5,7 @@ import { wyczyscBufor } from '../bufor.js';
 import { pokazEkran, ekranStart, powiadomOZmianieUstawien } from '../nawigacja.js';
 
 const ekranUstawien = document.getElementById('ekran-ustawienia');
-// Przycisk w nagłówku i kafelek „Ustawienia” na pulpicie.
+// Kafelek „Ustawienia” na pulpicie (przycisk w nagłówku usunięty w 1.9.0).
 const przyciskiUstawien = document.querySelectorAll('[data-otworz-ustawienia]');
 const przyciskAnuluj = document.getElementById('przycisk-anuluj');
 const formularzUstawien = document.getElementById('formularz-ustawien');

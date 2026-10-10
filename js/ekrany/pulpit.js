@@ -26,6 +26,9 @@ const KLUCZ_BUFORA = 'pulpit';
 const MAKS_WIEK_ALARMOW_Z_BUFORA_MS = 30 * 60 * 1000;
 // Telefon: poniżej tylu % bateria jest wyróżniona (próg alarmu z puls.js).
 const PROG_BATERII_TELEFONU = 30;
+// Temperatura baterii telefonu od tylu °C jest wyróżniona (TEMP_BATERII_UWAGA
+// w apps-script/puls.js; alarm i mail od 45 °C robi webhook).
+const PROG_TEMP_BATERII = 40;
 // Temperatura starsza niż tyle godzin jest wyróżniona jako nieświeża
 // (ten sam próg ciszy co w webhooku: CISZA_PROG_H w luki.js).
 const PROG_STAROSCI_TEMP_H = 3;
@@ -276,6 +279,11 @@ function renderujZbieracz(z) {
       w.lastChild.appendChild(element('span', trend.uwaga ? 'kafel__trend kafel__trend--uwaga' : 'kafel__trend', ` ${trend.tekst}`));
     }
     zbWiersze.appendChild(w);
+    // Temperatura baterii telefonu (od pulsu); wyróżniona od progu uwagi.
+    if (typeof t.temp_baterii === 'number') {
+      zbWiersze.appendChild(wiersz('temp. baterii', `${liczbaPL(t.temp_baterii.toFixed(0))} °C`,
+        t.temp_baterii >= PROG_TEMP_BATERII ? 'kafel__wartosc--uwaga' : ''));
+    }
   } else {
     zbWiersze.appendChild(wiersz('telefon', 'brak pulsu', 'kafel__wartosc--uwaga'));
   }
