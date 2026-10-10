@@ -132,12 +132,6 @@ main {
   gap: 0.7rem;
 }
 
-.pulpit__prad-woda {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-}
-
 .kafel {
   display: flex;
   flex-direction: column;
@@ -190,30 +184,62 @@ main {
   color: #666;
 }
 
-/* Wspólna wysokość kafla Temperatury oraz Prądu i Wody (każdy osobno). Gaz nie
-   ma własnej wysokości: rozciąga się na dwa kafle obok (siatka ją wyrównuje),
-   czyli wynosi ok. dwóch takich kafli plus odstęp. Zmiana tej liczby przesuwa
-   wszystkie trzy kafle naraz. */
+/* Trzy wysokości kafli pulpitu (każdy kafel ma jedną z nich; treść może je
+   tylko zwiększyć, np. gdy tekst zawinie się na wąskim ekranie):
+     S — niski:   Gaz (cała szerokość) i rząd rzadszych funkcji,
+     M — średni:  Prąd, Woda (dwie kolumny) i Temperatury (cała szerokość),
+     L — wysoki:  Kocioł i Zbieracz (zawierają listy wierszy).
+   Zmiana liczby przesuwa wszystkie kafle danej grupy naraz. */
 .pulpit {
-  --wysokosc-kafla: 6.2rem;
+  --wys-s: 3.8rem;
+  --wys-m: 6.2rem;
+  --wys-l: 11.4rem;
 }
 
-/* Gaz — główna akcja ekranu: wyróżniony obrysem w kolorze przewodnim. */
+/* Rząd odczytów: Gaz na całą szerokość (główna akcja ekranu, wyróżniony
+   obrysem w kolorze przewodnim), pod nim Prąd i Woda w dwóch kolumnach. */
 .kafel--gaz {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
   justify-content: space-between;
+  min-height: var(--wys-s);
+  padding: 0.5rem 0.9rem;
   box-shadow: 0 0 0 2px var(--kolor-glowny), 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-/* Prąd i Woda — nazwa u góry, termin odczytu (dni / odliczanie) na dole,
-   wysokość jak kafla Temperatury. */
+.kafel--gaz .kafel__etykieta {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.kafel--gaz .kafel__ikona {
+  width: 26px;
+  height: 26px;
+}
+
+.kafel--gaz .kafel__tekst {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.kafel--gaz .kafel__tytul {
+  font-size: 1rem;
+}
+
+/* Prąd i Woda — nazwa u góry, termin odczytu (dni / odliczanie) na dole. */
 .kafel--maly {
-  flex: 1;
-  min-height: var(--wysokosc-kafla);
+  min-height: var(--wys-m);
   justify-content: space-between;
 }
 
 .kafel--temperatury {
-  min-height: var(--wysokosc-kafla);
+  min-height: var(--wys-m);
+}
+
+.pulpit__stan .kafel {
+  min-height: var(--wys-l);
 }
 
 .kafel__stan {
@@ -406,6 +432,8 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: var(--wys-s);
   gap: 0.25rem;
   padding: 0.55rem 0.2rem;
   border: none;

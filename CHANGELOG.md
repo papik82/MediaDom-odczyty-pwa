@@ -3,16 +3,30 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.11.0 — 2026-10-10
+
+### Zmienione
+- **Nowy, spokojniejszy układ pulpitu** (uwaga Pawła: za mało harmonijny, zbyt
+  wiele różnych wysokości): **Gaz na całą szerokość, niski, na samej górze**
+  (nazwa po lewej, „Zrób odczyt” i dni od odczytu po prawej); pod nim **Prąd i
+  Woda w dwóch kolumnach**; dalej Temperatury, para Kocioł + Zbieracz i rząd
+  rzadszych funkcji.
+- **Trzy wysokości kafli** (zmienne `--wys-s`, `--wys-m`, `--wys-l` w `.pulpit`):
+  **S** 3,8 rem (≈ 61 px) — Gaz i rząd rzadszych funkcji; **M** 6,2 rem (≈ 99 px)
+  — Prąd, Woda i Temperatury; **L** 11,4 rem (≈ 182 px) — Kocioł i Zbieracz.
+  Treść może wysokość tylko zwiększyć; sprawdzone na 375 i 320 px, także
+  w stanach alarmu — wysokości się nie rozjeżdżają.
+- `sw.js`: `WERSJA_CACHE` v61.
+
 ## 1.10.0 — 2026-10-10
 
 ### Zmienione
 - **Kafel Kocioł niższy:** ikony kranu (CWU) i kaloryfera (CO) stoją po prawej
   od opisu trybu, jedna pod drugą (1,6 rem), a opis ma dwie linie: tryb i „od 2.10”.
   Nadal tylko dla aktywnych obwodów.
-- **Kafle Prąd i Woda wysokie jak Temperatury** (zmienna CSS `--wysokosc-kafla`,
-  6,2 rem ≈ 99 px każdy): nazwa u góry, termin odczytu na dole. **Gaz rozciąga się
-  na oba** (≈ 210 px, bez własnej wysokości — siatka wyrównuje go do dwóch
-  kafli obok).
+- **Kafle Prąd i Woda wysokie jak Temperatury** (6,2 rem ≈ 99 px każdy): nazwa
+  u góry, termin odczytu na dole. Gaz rozciągał się na oba (≈ 210 px) — układ
+  zmieniony w 1.11.0.
 - Podpis pulpitu Zbieracz bez słowa „temu” („puls 20:21 · 10 min”) — mieści się
   w jednej linii, więc para Kocioł + Zbieracz ma 181 px zamiast 198 px.
 - `sw.js`: `WERSJA_CACHE` v60.

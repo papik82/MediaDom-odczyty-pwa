@@ -15,8 +15,8 @@ PWA do zapisywania odczytów liczników. Działa na telefonie, hostowana na
 GitHub Pages, zapisuje dane do Arkusza Google przez webhook Apps Script.
 
 **Ekran startowy to pulpit** (od 1.6.0, `js/ekrany/pulpit.js`) — kafelki ze
-stanem domu zamiast listy kart. Od góry: pasek alarmów; kafel Gaz z kaflami
-Prąd i Woda obok (Gaz: dni od ostatniego odczytu — „dziś” / „wczoraj” /
+stanem domu zamiast listy kart. Od góry: pasek alarmów; kafel Gaz (niski, na
+całą szerokość) i pod nim Prąd i Woda w dwóch kolumnach (Gaz: dni od ostatniego odczytu — „dziś” / „wczoraj” /
 „N dni temu”, po przekroczeniu limitu żółty kafel z ⚠; Prąd i Woda — odliczanie
 do odczytu 1. dnia następnego miesiąca: „za N dni”, „✓ dziś”, „⚠ czas na
 odczyt”); wiersz temperatur w pięciu kolumnach (godzina i wiek pomiaru, zewn.,
