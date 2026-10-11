@@ -1,4 +1,4 @@
-/* system-projektowy: wersja 1 */
+/* system-projektowy: wersja 2 */
 /* Wygląd pochodzi z systemu projektowego MediaDom (Claude Design) — zasady
    synchronizacji w CLAUDE.md, sekcja „System projektowy”. Wartości poniżej
    to kopia z project/tokens.json; w dalszej części pliku nie wpisujemy
@@ -12,7 +12,7 @@
   /* kolory */
   --kolor-glowny: #3d4fb0;
   --kolor-glowny-jasny: #e8ebfa;
-  --tlo-strony: #f4f5f9;
+  --tlo-strony: #eef5ee;
   --powierzchnia: #ffffff;
   --tekst: #1a1a1a;
   --tekst-drugorzedny: #666666;
@@ -58,6 +58,45 @@
   --czujnik-zapas-2: #d4537e;
   --czujnik-zapas-3: #ba7517;
   --czujnik-zapas-4: #888780;
+  --naglowek-tekst: #1f3a2e;
+  --laka-ikona: #2f5b45;
+  --przycisk-naglowka-tlo: #ffffff99;
+  --pasek-systemowy: #cfe8f2;
+  --laka-slonce: #fff6cf;
+  --laka-wzgorze-dalsze: #b9dfc6;
+  --laka-wzgorze-blizsze: #9ccfb0;
+  --laka-ziemia: #f3dfcf;
+  --laka-etykieta: #3f5248;
+  --laka-podpis: #4f6359;
+  --laka-linia: #d6e8dc;
+  --gaz-etykieta: #3b4787;
+  --gaz-tytul: #26357f;
+  --gaz-kolo: #ffffffcc;
+  --prad-etykieta: #6b5413;
+  --prad-wartosc: #4f3d0c;
+  --woda-etykieta: #24566e;
+  --kociol-etykieta: #5a4038;
+  --kociol-podpis: #5a4a44;
+  --kociol-linia: #f0dcd2;
+  --uwaga-znak-tlo: #f9e6bb;
+  --alarm-znak-tlo: #fadcd8;
+  --kropka-ok-poswiata: #cdebd6;
+  --temp-zewn-tekst: #1d5e94;
+  --temp-parter-tekst: #a2411f;
+  --temp-pietro-tekst: #1f7a45;
+  --rzadkie-tlo: #ffffffb3;
+  --stopka-tekst: #5b5048;
+
+  /* gradienty (tło strony, nagłówka i kafli pulpitu) */
+  --gradient-strony: linear-gradient(180deg, #e6f4ec 0%, #f4f4e2 46%, #fbefe4 100%);
+  --gradient-naglowka: linear-gradient(170deg, #cfe8f2 0%, #d8eedd 55%, #e9f2c9 100%);
+  --gradient-gaz: linear-gradient(120deg, #e7ebff 0%, #ccd5fb 100%);
+  --gradient-prad: linear-gradient(135deg, #fff6cf 0%, #ffe6a6 100%);
+  --gradient-woda: linear-gradient(135deg, #e2f4fc 0%, #c3e6f5 100%);
+  --gradient-temperatury: linear-gradient(135deg, #ffffffeb 0%, #ecf7f0eb 100%);
+  --gradient-kociol: linear-gradient(160deg, #ffffff 0%, #fdeee6 100%);
+  --gradient-zbieracz: linear-gradient(160deg, #ffffff 0%, #e8f5ec 100%);
+  --gradient-uwagi: linear-gradient(90deg, #fff1d6 0%, #fff8ea 100%);
 
   /* odstępy */
   --odstep-1: 0.25rem;
@@ -75,21 +114,34 @@
   --promien-segment: 9px;
   --promien-przycisk: 10px;
   --promien-karta: 12px;
-  --promien-kafel: 16px;
+  --promien-kafel: 18px;
+  --promien-kafel-glowny: 20px;
+  --promien-alarm: 14px;
+  --promien-rzadkie: 16px;
   --promien-pigulka: 999px;
 
-  /* cienie (obrysy odwołują się do koloru głównego i cienia kafla) */
-  --cien-kafel: 0 2px 6px rgba(0, 0, 0, 0.12);
+  /* cienie */
+  --cien-kafel: 0 6px 16px rgba(47, 91, 69, 0.10);
+  --cien-prad: 0 6px 14px rgba(160, 120, 20, 0.12);
+  --cien-woda: 0 6px 14px rgba(40, 110, 150, 0.12);
+  --cien-kociol: 0 6px 16px rgba(162, 65, 31, 0.10);
+  --cien-alarmu: 0 4px 12px rgba(138, 90, 0, 0.08);
   --cien-karta: 0 2px 6px rgba(0, 0, 0, 0.08);
-  --cien-maly: 0 1px 4px rgba(0, 0, 0, 0.1);
+  --cien-maly: 0 2px 8px rgba(47, 91, 69, 0.08);
   --cien-wskaznik: 0 1px 3px rgba(0, 0, 0, 0.25);
-  --obrys-gaz: 0 0 0 2px var(--kolor-glowny), var(--cien-kafel);
-  --obrys-po-terminie: 0 0 0 2px var(--uwaga-obrys), var(--cien-kafel);
+  --obrys-gaz: 0 0 0 2px #3d4fb0, 0 8px 18px rgba(61, 79, 176, 0.16);
+  --obrys-po-terminie: 0 0 0 2px #e0a100, 0 6px 14px rgba(138, 90, 0, 0.12);
 
-  /* rozmiary (wysokości kafli pulpitu: S Gaz/Prąd/Woda/rzadkie funkcje, M Temperatury, L Kocioł i Zbieracz) */
-  --wys-s: 3.8rem;
+  /* rozmiary (wysokości kafli pulpitu: Gaz, S Prąd/Woda/rzadkie funkcje, M Temperatury, L Kocioł i Zbieracz; nagłówek i stopka z łąką) */
+  --wys-s: 4rem;
+  --wys-gaz: 4.25rem;
+  --wys-naglowka-pulpitu: 9.375rem;
+  --wys-naglowka: 5rem;
+  --zakladka-naglowka: 2.5rem;
+  --wys-stopki-laki: 5.625rem;
+  --kolo-ikony-gazu: 2.5rem;
   --wys-m: 6.2rem;
-  --wys-l: 11.4rem;
+  --wys-l: 11.75rem;
   --szerokosc-tresci: 480px;
   --ikona-naglowka: 24px;
   --ikona-kafla: 20px;
@@ -107,7 +159,9 @@ html, body {
 
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: var(--tlo-strony);
+  background-color: var(--tlo-strony);        /* kolor zastępczy pod gradientem */
+  background-image: var(--gradient-strony);
+  background-attachment: fixed;               /* gradient stoi w miejscu, treść przewija się po nim */
   color: var(--tekst);
 }
 
@@ -115,32 +169,88 @@ body {
   display: none !important;
 }
 
-/* Nagłówek z tytułem i przyciskiem do ustawień. */
+/* Pulpit = widoczny ekran startowy. Nagłówek, stopka i treść wyglądają na nim
+   inaczej niż na pozostałych ekranach (słońce, wyższe wzgórza, dekoracja
+   w stopce), a nagłówek jest wspólny dla wszystkich ekranów — dlatego
+   rozróżniamy to selektorem :has() zamiast klasy ustawianej z JS. */
+
+/* Nagłówek „łąka” (od 1.14.0, system projektowy wersja 2): gradient nieba,
+   dwa wzgórza przy dolnej krawędzi i — tylko na pulpicie — słońce. Dekoracja
+   to inline SVG za treścią (aria-hidden), więc nie przeszkadza w obsłudze. */
 .naglowek {
+  position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  padding: var(--odstep-5) var(--odstep-6);
-  background: var(--kolor-glowny);
-  color: #fff;
+  height: var(--wys-naglowka);
+  padding: 0.9rem var(--odstep-5) 0;
+  overflow: hidden;
+  background: var(--gradient-naglowka);
+  color: var(--naglowek-tekst);
+}
+
+body:has(#ekran-start:not(.ukryty)) .naglowek {
+  height: var(--wys-naglowka-pulpitu);
+}
+
+.naglowek__laka,
+.naglowek__slonce {
+  position: absolute;
+  pointer-events: none;
+}
+
+.naglowek__laka {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.naglowek__slonce {
+  top: 4px;
+  right: 29px;                 /* środek słońca ok. 63 px od prawej i 38 px od góry */
+  width: 68px;
+  height: 68px;
+  display: none;
+}
+
+body:has(#ekran-start:not(.ukryty)) .naglowek__slonce {
+  display: block;
+}
+
+.laka-slonce { fill: var(--laka-slonce); }
+.laka-wzgorze-dalsze { fill: var(--laka-wzgorze-dalsze); }
+.laka-wzgorze-blizsze { fill: var(--laka-wzgorze-blizsze); }
+
+/* Treść nagłówka leży nad dekoracją. */
+.naglowek > :not(svg) {
+  position: relative;
 }
 
 .naglowek__tytul {
   margin: 0;
-  font-size: 1.25rem;
   flex: 1;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 44px;           /* wysokość przycisku „home” — tytuł na jego osi */
+  letter-spacing: 0.01em;
   text-align: center;
 }
 
 .naglowek__odstep {
-  flex: 0 0 calc(var(--ikona-naglowka) + 1rem);   /* szerokość przycisku „home”: ikona 24 px + padding */
+  flex: 0 0 44px;              /* szerokość przycisku „home” */
 }
 
 .przycisk-ikona {
-  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   border: none;
+  border-radius: var(--promien-alarm);
+  background: var(--przycisk-naglowka-tlo);
   line-height: 1;
-  padding: var(--odstep-2);
   cursor: pointer;
 }
 
@@ -151,29 +261,40 @@ body {
 }
 
 main {
+  position: relative;
   padding: var(--odstep-6);
   max-width: var(--szerokosc-tresci);
   margin: 0 auto;
 }
 
+/* Na pulpicie treść wchodzi na wzgórza nagłówka. */
+body:has(#ekran-start:not(.ukryty)) main {
+  margin-top: calc(-1 * var(--zakladka-naglowka));
+  padding-top: 0;
+}
+
 /* Pasek alarmów nad kartami (od 0.23.0) — „alarm” (coś dzieje się teraz:
-   bateria, puls, cisza czujników) na czerwono, „uwaga” (luki do importu)
-   w tonie kolejki offline. Kolory niosą znaczenie, więc nie zależą od
-   koloru przewodniego. */
+   bateria, puls, cisza czujników) na czerwono, „uwaga” (luki do importu,
+   przypomnienia) na żółtym gradiencie. Kolory niosą znaczenie, więc nie
+   zależą od koloru głównego ani od palety łąki. */
 .pasek-alarmow {
   display: flex;
   flex-direction: column;
   gap: var(--odstep-2);
-  margin-top: var(--odstep-5);
+}
+
+.pasek-alarmow:not(.ukryty) + .pulpit {
+  margin-top: var(--odstep-3);
 }
 
 .pasek-alarmow__pozycja {
   display: flex;
   gap: 0.6rem;
-  align-items: flex-start;
+  align-items: center;
   margin: 0;
   padding: var(--odstep-3) 0.9rem;
-  border-radius: var(--promien-karta);
+  border-radius: var(--promien-alarm);
+  box-shadow: var(--cien-alarmu);
   font-size: 0.92rem;
   line-height: 1.4;
 }
@@ -184,26 +305,36 @@ main {
 }
 
 .pasek-alarmow__pozycja--uwaga {
-  background: var(--uwaga-tlo);
+  background: var(--gradient-uwagi);
   color: var(--uwaga);
 }
 
+/* Znak „!” / „⚠” w kółku — zawsze obok słowa. */
 .pasek-alarmow__znak {
+  display: flex;
   flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
   font-weight: 700;
 }
 
+.pasek-alarmow__pozycja--alarm .pasek-alarmow__znak { background: var(--alarm-znak-tlo); }
+.pasek-alarmow__pozycja--uwaga .pasek-alarmow__znak { background: var(--uwaga-znak-tlo); }
+
 /* Pulpit na ekranie startowym (od 1.6.0) — kafelki ze stanem domu. Od góry:
-   odczyty liczników (Gaz z kaflami Prąd i Woda obok), pasek temperatur,
-   para Kocioł + Zbieracz i rząd rzadszych funkcji. Szerokość projektowana
-   pod telefon (375 px): dwie kolumny po ok. 160 px, temperatury w pięciu
-   kolumnach po ok. 65 px. Kolory stanu niosą znaczenie (zielony = ok,
-   żółty = uwaga / czas na odczyt, czerwony = problem). */
+   odczyty liczników (Gaz na całą szerokość, pod nim Prąd i Woda), pasek
+   temperatur, para Kocioł + Zbieracz i rząd rzadszych funkcji. Szerokość
+   projektowana pod telefon (375 px). Od 1.14.0 każdy kafel ma własny
+   pastelowy gradient i cień w jego odcieniu (system projektowy, wersja 2).
+   Kolory stanu niosą znaczenie (zielony = ok, żółty = uwaga / czas na
+   odczyt, czerwony = problem) i przykrywają gradient. */
 .pulpit {
   display: flex;
   flex-direction: column;
   gap: var(--odstep-3);
-  margin-top: var(--odstep-5);
 }
 
 .pulpit__odczyty,
@@ -229,16 +360,12 @@ main {
   cursor: pointer;
 }
 
-.kafel:active {
-  background: var(--kolor-glowny-jasny);
-}
-
 .kafel__etykieta {
   display: flex;
   align-items: center;
   gap: 0.4rem;
   font-size: 0.8rem;
-  color: var(--tekst-drugorzedny);
+  color: var(--laka-etykieta);
 }
 
 .kafel__ikona {
@@ -255,105 +382,148 @@ main {
 .kafel__tytul {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
   font-size: 1.1rem;
   font-weight: 600;
 }
 
 .kafel__podpis {
   font-size: 0.8rem;
-  color: var(--tekst-drugorzedny);
+  color: var(--laka-podpis);
 }
 
-/* Trzy wysokości kafli pulpitu (każdy kafel ma jedną z nich; treść może je
-   tylko zwiększyć, np. gdy tekst zawinie się na wąskim ekranie):
-     S — niski:   Gaz (cała szerokość), Prąd i Woda (dwie kolumny) oraz rząd
-                  rzadszych funkcji,
+/* Wysokości kafli pulpitu (każdy kafel ma jedną z nich; treść może je tylko
+   zwiększyć, np. gdy tekst zawinie się na wąskim ekranie):
+     Gaz — główna akcja, wyższy od S,
+     S — niski:   Prąd i Woda (dwie kolumny) oraz rząd rzadszych funkcji,
      M — średni:  Temperatury (cała szerokość),
      L — wysoki:  Kocioł i Zbieracz (zawierają listy wierszy).
    Zmiana liczby przesuwa wszystkie kafle danej grupy naraz. */
-/* Rząd odczytów: Gaz na całą szerokość (główna akcja ekranu, wyróżniony
-   obrysem w kolorze przewodnim), pod nim Prąd i Woda w dwóch kolumnach. */
+
+/* Gaz: na całą szerokość, obrys w kolorze głównym. Od lewej: ikona w kole,
+   kolumna „Gaz” nad „Zrób odczyt”, po prawej liczba dni od odczytu. */
 .kafel--gaz {
   grid-column: 1 / -1;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  min-height: var(--wys-s);
-  padding: var(--odstep-2) 0.9rem;
+  gap: var(--odstep-4);
+  min-height: var(--wys-gaz);
+  padding: 0 var(--odstep-5);
+  border-radius: var(--promien-kafel-glowny);
+  background: var(--gradient-gaz);
   box-shadow: var(--obrys-gaz);
 }
 
-.kafel--gaz .kafel__etykieta {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--tekst);
+.kafel__kolo {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--kolo-ikony-gazu);
+  height: var(--kolo-ikony-gazu);
+  border-radius: 50%;
+  background: var(--gaz-kolo);
 }
 
 .kafel--gaz .kafel__ikona {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
 }
 
-.kafel--gaz .kafel__tekst {
-  align-items: flex-end;
-  text-align: right;
+.kafel__kolumna {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.kafel--gaz .kafel__etykieta {
+  font-size: 0.8rem;
+  color: var(--gaz-etykieta);
 }
 
 .kafel--gaz .kafel__tytul {
-  font-size: 1rem;
+  font-size: 1.1rem;
+  color: var(--gaz-tytul);
 }
 
-/* Prąd i Woda — wysokość jak Gaz; w jednej linii: nazwa po lewej, termin odczytu
-   (dni / odliczanie) po prawej. */
+.kafel--gaz .kafel__podpis {
+  font-size: 0.85rem;
+  color: var(--gaz-etykieta);
+  text-align: right;
+}
+
+/* Prąd i Woda: etykieta z ikoną u góry, stan przyklejony do dołu. */
 .kafel--maly {
-  flex-direction: row;
-  align-items: center;
   justify-content: space-between;
   gap: 0.4rem;
   min-height: var(--wys-s);
-  padding: var(--odstep-2) 0.8rem;
+  padding: 0.6rem 0.9rem;
 }
 
+.kafel--prad {
+  background: var(--gradient-prad);
+  box-shadow: var(--cien-prad);
+}
+
+.kafel--prad .kafel__etykieta { color: var(--prad-etykieta); }
+.kafel--prad .kafel__stan { color: var(--prad-wartosc); }
+
+.kafel--woda {
+  background: var(--gradient-woda);
+  box-shadow: var(--cien-woda);
+}
+
+.kafel--woda .kafel__etykieta,
+.kafel--woda .kafel__stan { color: var(--woda-etykieta); }
+
 .kafel--temperatury {
+  gap: var(--odstep-2);
   min-height: var(--wys-m);
+  padding: var(--odstep-4) 0.9rem;
+  background: var(--gradient-temperatury);
 }
 
 .pulpit__stan .kafel {
+  gap: var(--odstep-2);
   min-height: var(--wys-l);
+  padding: var(--odstep-4) 0.9rem;
 }
 
 .kafel__stan {
+  align-self: flex-start;
   font-size: 0.85rem;
-  text-align: right;
+  font-weight: 600;
   line-height: 1.2;
-  color: var(--tekst-drugorzedny);
 }
 
-/* Alarm odczytu — przekroczony limit dni od ostatniego odczytu: żółte tło
-   i obrys w tonie paska alarmów, liczba dni pogrubiona. Przy Gazie obrys
-   w kolorze przewodnim ustępuje żółtemu. */
-.kafel--alarm,
-.kafel--gaz.kafel--alarm {
+/* Alarm odczytu — przekroczony limit dni od ostatniego odczytu: jednolite
+   żółte tło (zamiast gradientu) i żółty obrys; przy Gazie obrys w kolorze
+   głównym ustępuje żółtemu. Stan zawsze ma też słowo i znak ⚠. */
+.kafel.kafel--alarm {
   background: var(--uwaga-tlo);
   box-shadow: var(--obrys-po-terminie);
 }
 
-.kafel__tekst-alarm {
+.kafel:active {
+  background: var(--kolor-glowny-jasny);
+}
+
+.kafel .kafel__tekst-alarm {
   color: var(--uwaga);
   font-weight: 600;
 }
 
-/* Prąd i woda: „⚠ czas na odczyt” (żółty tekst w żółtym kaflu) i „✓ dziś”
+/* Prąd i woda: „⚠ zrób odczyt” (żółty tekst w żółtym kaflu) i „✓ dziś”
    (zielona plakietka). */
-.kafel__stan--alarm {
+.kafel .kafel__stan--alarm {
   color: var(--uwaga);
   font-weight: 600;
 }
 
-.kafel__stan--dzis {
+.kafel .kafel__stan--dzis {
   padding: 0.1rem var(--odstep-2);
-  border-radius: var(--promien-pole);
+  border-radius: var(--promien-pigulka);
   background: var(--dzis-tlo);
   color: var(--dzis);
   font-size: 0.75rem;
@@ -361,15 +531,12 @@ main {
 }
 
 /* Temperatury: pięć kolumn — czas ostatniego pomiaru (godzina i wiek),
-   zewn., parter, piętro i ΔT; pionowe kreski oddzielają czas i ΔT od pomiarów. */
-.kafel--temperatury {
-  gap: 0.4rem;
-}
-
+   zewn., parter, piętro i ΔT; pionowe kreski oddzielają czas i ΔT od pomiarów.
+   Wartości czujników mają ciemniejsze odcienie kolorów ich linii na wykresie. */
 .temperatury {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.15rem;
+  grid-template-columns: 1.1fr repeat(4, minmax(0, 1fr));
+  gap: var(--odstep-1);
   align-items: end;
   text-align: center;
 }
@@ -387,18 +554,24 @@ main {
 
 .temperatury__kolumna span {
   font-size: 0.68rem;
-  color: var(--tekst-drugorzedny);
+  color: var(--laka-podpis);
 }
 
 .temperatury__kolumna--czas {
+  align-items: flex-start;
   padding-right: var(--odstep-1);
-  border-right: 1px solid var(--linia);
+  border-right: 1px solid var(--laka-linia);
+  text-align: left;
 }
 
 .temperatury__kolumna--dt {
   padding-left: var(--odstep-1);
-  border-left: 1px solid var(--linia);
+  border-left: 1px solid var(--laka-linia);
 }
+
+.temperatury__wartosc--zewn { color: var(--temp-zewn-tekst); }
+.temperatury__wartosc--parter { color: var(--temp-parter-tekst); }
+.temperatury__wartosc--pietro { color: var(--temp-pietro-tekst); }
 
 /* Pomiar starszy niż próg ciszy — wyróżniony, żeby nie wziąć go za bieżący. */
 .temperatury__wiek--stary {
@@ -406,13 +579,14 @@ main {
   font-weight: 600;
 }
 
-/* Wiersze „etykieta — wartość” pod tytułem kafla (nastawy kotła, baterie). */
+/* Wiersze „etykieta — wartość” pod tytułem kafla (nastawy kotła, baterie),
+   przyklejone do dołu kafla. */
 .kafel__wiersze {
   display: flex;
   flex-direction: column;
-  margin-top: 0.35rem;
-  padding-top: 0.35rem;
-  border-top: 1px solid var(--linia);
+  margin-top: auto;
+  padding-top: var(--odstep-2);
+  border-top: 1px solid var(--laka-linia);
 }
 
 .kafel__wiersze:empty {
@@ -432,20 +606,24 @@ main {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--tekst-drugorzedny);
+  color: var(--laka-podpis);
 }
 
 .kafel__wiersz > :last-child {
   white-space: nowrap;
+  font-weight: 600;
 }
 
-.kafel__wartosc--uwaga {
-  color: var(--alarm);
+/* Wartość przekraczająca próg — kolor „uwaga”; waga 600 i miejsce w wierszu
+   też ją wyróżniają, więc kolor nie jest jedynym sygnałem. */
+.kafel__wiersz > .kafel__wartosc--uwaga {
+  color: var(--uwaga);
   font-weight: 600;
 }
 
 .kafel__trend {
-  color: var(--tekst-drugorzedny);
+  font-weight: 400;
+  color: var(--laka-podpis);
 }
 
 .kafel__trend--uwaga {
@@ -454,12 +632,25 @@ main {
 }
 
 /* Kocioł: opis trybu po lewej, po prawej stan obwodów ikonami jedna pod drugą —
-   kran (CWU) i kaloryfer (CO) w kole, w kolorze przewodnim, jak ikony kart
-   (kociol.svg, termometr.svg). Widoczne tylko aktywne obwody. Ikony obok
-   opisu, a nie pod nim, żeby kafel był niższy. */
+   kran (CWU) i kaloryfer (CO) w kole wypełnionym tłem obwodu. Widoczne tylko
+   aktywne obwody. Ikony obok opisu, a nie pod nim, żeby kafel był niższy. */
+.kafel--kociol {
+  background: var(--gradient-kociol);
+  box-shadow: var(--cien-kociol);
+}
+
+.kafel--kociol .kafel__etykieta { color: var(--kociol-etykieta); }
+.kafel--kociol .kafel__podpis { color: var(--kociol-podpis); }
+.kafel--kociol .kafel__wiersze { border-top-color: var(--kociol-linia); }
+.kafel--kociol .kafel__wiersz > :first-child { color: var(--kociol-podpis); }
+
+.kafel--zbieracz {
+  background: var(--gradient-zbieracz);
+}
+
 .kociol-tryb {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.4rem;
 }
@@ -477,30 +668,36 @@ main {
 }
 
 .ikona-obwodu {
-  width: 1.6rem;
-  height: 1.6rem;
-  fill: none;
-  stroke: var(--kolor-glowny);
+  width: 26px;
+  height: 26px;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.kafel__podpis--kociol {
+.ikona-obwodu--cwu { fill: var(--obwod-cwu-tlo); stroke: var(--obwod-cwu); }
+.ikona-obwodu--co { fill: var(--obwod-co-tlo); stroke: var(--obwod-co); }
+
+.kafel .kafel__podpis--kociol {
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--tekst);
 }
 
-/* Kropka werdyktu zbieracza. */
+/* Kropka werdyktu zbieracza; „działa” ma pierścień. Słowo obok (następny
+   element) bierze kolor stanu, więc kolor nie jest jedynym sygnałem. */
 .kropka {
   flex-shrink: 0;
-  width: 0.6rem;
-  height: 0.6rem;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--kropka-nieznany);
 }
-.kropka--ok { background: var(--kropka-ok); }
+.kropka--ok { background: var(--kropka-ok); box-shadow: 0 0 0 3px var(--kropka-ok-poswiata); }
 .kropka--uwaga { background: var(--uwaga-obrys); }
 .kropka--problem { background: var(--alarm); }
+.kropka--ok + span { color: var(--ok-ciemny); }
+.kropka--uwaga + span { color: var(--uwaga); }
+.kropka--problem + span { color: var(--alarm); }
 
 /* Rząd rzadszych funkcji: Odczyty, Faktura, Pomysły, Ustawienia. */
 .pulpit__rzadkie {
@@ -518,12 +715,12 @@ main {
   gap: var(--odstep-1);
   padding: 0.55rem 0.2rem;
   border: none;
-  border-radius: var(--promien-karta);
-  background: var(--powierzchnia);
+  border-radius: var(--promien-rzadkie);
+  background: var(--rzadkie-tlo);
   box-shadow: var(--cien-maly);
   font: inherit;
   font-size: 0.75rem;
-  color: var(--tekst);
+  color: var(--laka-ikona);
   cursor: pointer;
 }
 
@@ -532,13 +729,20 @@ main {
 }
 
 .pulpit__rzadkie img {
-  width: 22px;
-  height: 22px;
+  width: var(--ikona-kafla);
+  height: var(--ikona-kafla);
 }
 
 /* „Zaktualizowano 22:04” pod pulpitem. */
 .pulpit .status-bloku {
   text-align: center;
+  color: var(--laka-podpis);
+}
+
+/* Fokus z klawiatury: obrys 3 px w kolorze głównym z odstępem 2 px. */
+:focus-visible {
+  outline: 3px solid var(--kolor-glowny);
+  outline-offset: 2px;
 }
 
 /* Przedziały czasowe cyrkulacji — lista dynamicznie dodawanych/usuwanych
@@ -1328,13 +1532,44 @@ main {
 }
 
 /* Numer wersji — zawsze widoczny na dole, żeby łatwo sprawdzić, czy telefon
-   ma najnowszą wersję aplikacji po odświeżeniu. */
+   ma najnowszą wersję aplikacji po odświeżeniu. Na pulpicie stopka ma
+   dekorację łąki (pagórek i źdźbła, inline SVG), na innych ekranach jest
+   zwykłym wierszem tekstu. */
 .stopka {
-  text-align: center;
+  position: relative;
   padding: var(--odstep-5);
   font-size: 0.8rem;
-  color: var(--tekst-wyciszony);
+  color: var(--stopka-tekst);
+  text-align: center;
 }
+
+.stopka__laka {
+  display: none;
+}
+
+.stopka__tekst {
+  position: relative;
+}
+
+body:has(#ekran-start:not(.ukryty)) .stopka {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: var(--wys-stopki-laki);
+  padding: 0 0 0.9rem;
+}
+
+body:has(#ekran-start:not(.ukryty)) .stopka__laka {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.laka-ziemia { fill: var(--laka-ziemia); opacity: 0.7; }
+.laka-zdzbla { fill: none; stroke: var(--laka-wzgorze-blizsze); stroke-width: 1.6; stroke-linecap: round; }
 
 /* Kocioł — historia zmian pod formularzem: dwa paski (CO, CWU) z ostatnich
    12 miesięcy i pionowa oś ostatnich zmian. Kolory obwodów są wspólne

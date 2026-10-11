@@ -3,6 +3,27 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.14.0 — 2026-10-11
+
+### Zmienione
+- **Wygląd „Łąka” z systemu projektowego, wersja 2** (BACKLOG pkt 39).
+  Pastelowe tło strony (gradient), nagłówek z niebem, dwoma wzgórzami i —
+  na pulpicie — słońcem, treść pulpitu wchodzi na wzgórza; stopka z pagórkiem
+  i źdźbłami tylko na pulpicie. Każdy kafel pulpitu ma własny gradient,
+  cień i kolory tekstu (Gaz z ikoną w kole, Prąd żółty, Woda błękitna,
+  Temperatury z wartościami w kolorach czujników, Kocioł ceglasty,
+  Zbieracz miętowy); kafel po terminie odczytu zostaje jednolicie żółty.
+  Pasek alarmów z kółkiem na znak „!” / „⚠”, ikony obwodów kotła w kółku
+  w kolorze obwodu, rząd rzadkich funkcji na półprzezroczystym tle.
+  Ikony `ikony/*.svg` dostały kolory swoich kafli. Pasek systemowy telefonu
+  (`theme-color`, `theme_color`) ma górny kolor gradientu nagłówka.
+- `css/styl.css`: wartości w `:root` z `tokens.json` (wersja 2, nowe tokeny
+  `gradient-…`, `laka-…` i kolory kafli). Nagłówek i stopka na pulpicie
+  różnią się od pozostałych ekranów dzięki selektorowi `:has()` — bez zmian
+  w JS. Wartość przekraczająca próg na kaflach (np. bateria) jest teraz
+  w kolorze „uwaga” (żółtobrązowy), nie czerwonym — tak jak w makiecie.
+- Fokus z klawiatury: obrys 3 px w kolorze głównym.
+
 ## 1.13.1 — 2026-10-11
 
 ### Zmienione
