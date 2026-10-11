@@ -1,17 +1,98 @@
-/* Style aplikacji — pisane pod ekran telefonu, obsługa jedną ręką.
-   Duże, łatwe do trafienia elementy, minimum przewijania. */
-
-/* Kolory przewodnie w jednym miejscu (od 0.19.2, dopasowane do ikony
-   „borówka”). Zmiana odcienia aplikacji = zmiana tutaj, plus trzy miejsca,
-   których CSS nie sięga: <meta name="theme-color"> w index.html,
-   theme_color w manifest.json i kolor linii w ikonach ikony/*.svg (SVG
-   wczytane przez <img> nie widzą zmiennych CSS).
-   Kolory obwodów kotła (CO / CWU) i komunikatów niosą znaczenie, więc
-   zostają niezależne od koloru przewodniego. */
+/* system-projektowy: wersja 1 */
+/* Wygląd pochodzi z systemu projektowego MediaDom (Claude Design) — zasady
+   synchronizacji w CLAUDE.md, sekcja „System projektowy”. Wartości poniżej
+   to kopia z project/tokens.json; w dalszej części pliku nie wpisujemy
+   literałów koloru, odstępu, promienia ani cienia, tylko var(--token).
+   Poza zmiennymi, których CSS nie sięga: <meta name="theme-color"> w
+   index.html, theme_color w manifest.json i kolor linii w ikony/*.svg
+   (SVG wczytane przez <img> nie widzą zmiennych CSS) oraz kolory linii
+   wykresów w js/ekrany/wykres-doby.js. Kolory obwodów kotła i komunikatów
+   niosą znaczenie, więc nie zależą od koloru głównego. */
 :root {
-  --kolor-glowny: #3d4fb0;        /* nagłówek, przyciski, wskaźnik trybu; biały tekst ma kontrast ok. 7:1 */
-  --kolor-glowny-jasny: #e8ebfa;  /* tło wciśniętej karty */
-  --tlo-strony: #f4f5f9;          /* tło strony, nagłówek tabeli temperatur */
+  /* kolory */
+  --kolor-glowny: #3d4fb0;
+  --kolor-glowny-jasny: #e8ebfa;
+  --tlo-strony: #f4f5f9;
+  --powierzchnia: #ffffff;
+  --tekst: #1a1a1a;
+  --tekst-drugorzedny: #666666;
+  --tekst-opis: #555555;
+  --tekst-tabeli: #444444;
+  --tekst-wyciszony: #888888;
+  --tekst-nieaktywny: #9aa1a9;
+  --linia: #e3e5ee;
+  --linia-listy: #eeeeee;
+  --linia-siatki: #e3e7ec;
+  --obrys-pola: #cccccc;
+  --obrys-ramki: #d6d9e8;
+  --przycisk-drugorzedny: #e0e0e0;
+  --pole-nieaktywne-tlo: #eef1f4;
+  --pole-nieaktywne-obrys: #e0e3e7;
+  --neutralny-tlo: #ececec;
+  --alarm-tlo: #fdecea;
+  --alarm: #b3261e;
+  --uwaga-tlo: #fff4e0;
+  --uwaga: #8a5a00;
+  --uwaga-obrys: #e0a100;
+  --ok-tlo: #e6f4ea;
+  --ok: #1e7e34;
+  --ok-ciemny: #1e6b34;
+  --dzis-tlo: #e3f4e6;
+  --dzis: #1b6e2d;
+  --kropka-ok: #2e9e5b;
+  --kropka-nieznany: #999999;
+  --wczytywanie: #4a4a4a;
+  --obwod-co: #d85a30;
+  --obwod-co-tlo: #fbe9e3;
+  --obwod-co-tekst: #8a3a1d;
+  --obwod-cwu: #1d9e75;
+  --obwod-cwu-tlo: #e1f5ee;
+  --obwod-cwu-tekst: #085041;
+  --obwod-wylaczony: #e3e7ec;
+  --kropka-zmiany: #b0b7bf;
+  --obrys-wylaczony: #c4cad1;
+  --czujnik-parter: #d85a30;
+  --czujnik-pietro: #2e9e5b;
+  --czujnik-zewn: #378add;
+  --czujnik-zapas-1: #7f77dd;
+  --czujnik-zapas-2: #d4537e;
+  --czujnik-zapas-3: #ba7517;
+  --czujnik-zapas-4: #888780;
+
+  /* odstępy */
+  --odstep-1: 0.25rem;
+  --odstep-2: 0.5rem;
+  --odstep-3: 0.7rem;
+  --odstep-4: 0.75rem;
+  --odstep-5: 1rem;
+  --odstep-6: 1.25rem;
+  --odstep-7: 1.5rem;
+
+  /* promienie */
+  --promien-pasek: 4px;
+  --promien-plakietka: 6px;
+  --promien-pole: 8px;
+  --promien-segment: 9px;
+  --promien-przycisk: 10px;
+  --promien-karta: 12px;
+  --promien-kafel: 16px;
+  --promien-pigulka: 999px;
+
+  /* cienie (obrysy odwołują się do koloru głównego i cienia kafla) */
+  --cien-kafel: 0 2px 6px rgba(0, 0, 0, 0.12);
+  --cien-karta: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --cien-maly: 0 1px 4px rgba(0, 0, 0, 0.1);
+  --cien-wskaznik: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --obrys-gaz: 0 0 0 2px var(--kolor-glowny), var(--cien-kafel);
+  --obrys-po-terminie: 0 0 0 2px var(--uwaga-obrys), var(--cien-kafel);
+
+  /* rozmiary (wysokości kafli pulpitu: S Gaz/Prąd/Woda/rzadkie funkcje, M Temperatury, L Kocioł i Zbieracz) */
+  --wys-s: 3.8rem;
+  --wys-m: 6.2rem;
+  --wys-l: 11.4rem;
+  --szerokosc-tresci: 480px;
+  --ikona-naglowka: 24px;
+  --ikona-kafla: 20px;
 }
 
 * {
@@ -27,7 +108,7 @@ html, body {
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   background: var(--tlo-strony);
-  color: #1a1a1a;
+  color: var(--tekst);
 }
 
 .ukryty {
@@ -39,7 +120,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
+  padding: var(--odstep-5) var(--odstep-6);
   background: var(--kolor-glowny);
   color: #fff;
 }
@@ -52,26 +133,26 @@ body {
 }
 
 .naglowek__odstep {
-  flex: 0 0 calc(24px + 1rem);   /* szerokość przycisku „home”: ikona 24 px + padding */
+  flex: 0 0 calc(var(--ikona-naglowka) + 1rem);   /* szerokość przycisku „home”: ikona 24 px + padding */
 }
 
 .przycisk-ikona {
   background: none;
   border: none;
   line-height: 1;
-  padding: 0.5rem;
+  padding: var(--odstep-2);
   cursor: pointer;
 }
 
 .ikona-naglowka {
   display: block;
-  width: 24px;
-  height: 24px;
+  width: var(--ikona-naglowka);
+  height: var(--ikona-naglowka);
 }
 
 main {
-  padding: 1.25rem;
-  max-width: 480px;
+  padding: var(--odstep-6);
+  max-width: var(--szerokosc-tresci);
   margin: 0 auto;
 }
 
@@ -82,8 +163,8 @@ main {
 .pasek-alarmow {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: var(--odstep-2);
+  margin-top: var(--odstep-5);
 }
 
 .pasek-alarmow__pozycja {
@@ -91,20 +172,20 @@ main {
   gap: 0.6rem;
   align-items: flex-start;
   margin: 0;
-  padding: 0.7rem 0.9rem;
-  border-radius: 12px;
+  padding: var(--odstep-3) 0.9rem;
+  border-radius: var(--promien-karta);
   font-size: 0.92rem;
   line-height: 1.4;
 }
 
 .pasek-alarmow__pozycja--alarm {
-  background: #fdecea;
-  color: #b3261e;
+  background: var(--alarm-tlo);
+  color: var(--alarm);
 }
 
 .pasek-alarmow__pozycja--uwaga {
-  background: #fff4e0;
-  color: #8a5a00;
+  background: var(--uwaga-tlo);
+  color: var(--uwaga);
 }
 
 .pasek-alarmow__znak {
@@ -121,15 +202,15 @@ main {
 .pulpit {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  margin-top: 1rem;
+  gap: var(--odstep-3);
+  margin-top: var(--odstep-5);
 }
 
 .pulpit__odczyty,
 .pulpit__stan {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.7rem;
+  gap: var(--odstep-3);
 }
 
 .kafel {
@@ -137,13 +218,13 @@ main {
   flex-direction: column;
   gap: 0.15rem;
   width: 100%;
-  padding: 0.7rem 0.8rem;
+  padding: var(--odstep-3) 0.8rem;
   border: none;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  border-radius: var(--promien-kafel);
+  background: var(--powierzchnia);
+  box-shadow: var(--cien-kafel);
   font: inherit;
-  color: #1a1a1a;
+  color: var(--tekst);
   text-align: left;
   cursor: pointer;
 }
@@ -157,12 +238,12 @@ main {
   align-items: center;
   gap: 0.4rem;
   font-size: 0.8rem;
-  color: #666;
+  color: var(--tekst-drugorzedny);
 }
 
 .kafel__ikona {
-  width: 20px;
-  height: 20px;
+  width: var(--ikona-kafla);
+  height: var(--ikona-kafla);
   flex-shrink: 0;
 }
 
@@ -181,7 +262,7 @@ main {
 
 .kafel__podpis {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--tekst-drugorzedny);
 }
 
 /* Trzy wysokości kafli pulpitu (każdy kafel ma jedną z nich; treść może je
@@ -191,12 +272,6 @@ main {
      M — średni:  Temperatury (cała szerokość),
      L — wysoki:  Kocioł i Zbieracz (zawierają listy wierszy).
    Zmiana liczby przesuwa wszystkie kafle danej grupy naraz. */
-.pulpit {
-  --wys-s: 3.8rem;
-  --wys-m: 6.2rem;
-  --wys-l: 11.4rem;
-}
-
 /* Rząd odczytów: Gaz na całą szerokość (główna akcja ekranu, wyróżniony
    obrysem w kolorze przewodnim), pod nim Prąd i Woda w dwóch kolumnach. */
 .kafel--gaz {
@@ -205,14 +280,14 @@ main {
   align-items: center;
   justify-content: space-between;
   min-height: var(--wys-s);
-  padding: 0.5rem 0.9rem;
-  box-shadow: 0 0 0 2px var(--kolor-glowny), 0 2px 6px rgba(0, 0, 0, 0.12);
+  padding: var(--odstep-2) 0.9rem;
+  box-shadow: var(--obrys-gaz);
 }
 
 .kafel--gaz .kafel__etykieta {
   font-size: 1.05rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--tekst);
 }
 
 .kafel--gaz .kafel__ikona {
@@ -237,7 +312,7 @@ main {
   justify-content: space-between;
   gap: 0.4rem;
   min-height: var(--wys-s);
-  padding: 0.5rem 0.8rem;
+  padding: var(--odstep-2) 0.8rem;
 }
 
 .kafel--temperatury {
@@ -252,7 +327,7 @@ main {
   font-size: 0.85rem;
   text-align: right;
   line-height: 1.2;
-  color: #666;
+  color: var(--tekst-drugorzedny);
 }
 
 /* Alarm odczytu — przekroczony limit dni od ostatniego odczytu: żółte tło
@@ -260,27 +335,27 @@ main {
    w kolorze przewodnim ustępuje żółtemu. */
 .kafel--alarm,
 .kafel--gaz.kafel--alarm {
-  background: #fff4e0;
-  box-shadow: 0 0 0 2px #e0a100, 0 2px 6px rgba(0, 0, 0, 0.12);
+  background: var(--uwaga-tlo);
+  box-shadow: var(--obrys-po-terminie);
 }
 
 .kafel__tekst-alarm {
-  color: #8a5a00;
+  color: var(--uwaga);
   font-weight: 600;
 }
 
 /* Prąd i woda: „⚠ czas na odczyt” (żółty tekst w żółtym kaflu) i „✓ dziś”
    (zielona plakietka). */
 .kafel__stan--alarm {
-  color: #8a5a00;
+  color: var(--uwaga);
   font-weight: 600;
 }
 
 .kafel__stan--dzis {
-  padding: 0.1rem 0.5rem;
-  border-radius: 8px;
-  background: #e3f4e6;
-  color: #1b6e2d;
+  padding: 0.1rem var(--odstep-2);
+  border-radius: var(--promien-pole);
+  background: var(--dzis-tlo);
+  color: var(--dzis);
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -312,22 +387,22 @@ main {
 
 .temperatury__kolumna span {
   font-size: 0.68rem;
-  color: #666;
+  color: var(--tekst-drugorzedny);
 }
 
 .temperatury__kolumna--czas {
-  padding-right: 0.25rem;
-  border-right: 1px solid #e3e5ee;
+  padding-right: var(--odstep-1);
+  border-right: 1px solid var(--linia);
 }
 
 .temperatury__kolumna--dt {
-  padding-left: 0.25rem;
-  border-left: 1px solid #e3e5ee;
+  padding-left: var(--odstep-1);
+  border-left: 1px solid var(--linia);
 }
 
 /* Pomiar starszy niż próg ciszy — wyróżniony, żeby nie wziąć go za bieżący. */
 .temperatury__wiek--stary {
-  color: #b3261e !important;
+  color: var(--alarm) !important;
   font-weight: 600;
 }
 
@@ -337,7 +412,7 @@ main {
   flex-direction: column;
   margin-top: 0.35rem;
   padding-top: 0.35rem;
-  border-top: 1px solid #e3e5ee;
+  border-top: 1px solid var(--linia);
 }
 
 .kafel__wiersze:empty {
@@ -357,7 +432,7 @@ main {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #666;
+  color: var(--tekst-drugorzedny);
 }
 
 .kafel__wiersz > :last-child {
@@ -365,16 +440,16 @@ main {
 }
 
 .kafel__wartosc--uwaga {
-  color: #b3261e;
+  color: var(--alarm);
   font-weight: 600;
 }
 
 .kafel__trend {
-  color: #666;
+  color: var(--tekst-drugorzedny);
 }
 
 .kafel__trend--uwaga {
-  color: #8a5a00;
+  color: var(--uwaga);
   font-weight: 600;
 }
 
@@ -398,7 +473,7 @@ main {
 .kociol-ikony {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--odstep-1);
 }
 
 .ikona-obwodu {
@@ -412,7 +487,7 @@ main {
 
 .kafel__podpis--kociol {
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--tekst);
 }
 
 /* Kropka werdyktu zbieracza. */
@@ -421,16 +496,16 @@ main {
   width: 0.6rem;
   height: 0.6rem;
   border-radius: 50%;
-  background: #999;
+  background: var(--kropka-nieznany);
 }
-.kropka--ok { background: #2e9e5b; }
-.kropka--uwaga { background: #e0a100; }
-.kropka--problem { background: #b3261e; }
+.kropka--ok { background: var(--kropka-ok); }
+.kropka--uwaga { background: var(--uwaga-obrys); }
+.kropka--problem { background: var(--alarm); }
 
 /* Rząd rzadszych funkcji: Odczyty, Faktura, Pomysły, Ustawienia. */
 .pulpit__rzadkie {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--odstep-2);
 }
 
 .pulpit__rzadkie button {
@@ -440,15 +515,15 @@ main {
   align-items: center;
   justify-content: center;
   min-height: var(--wys-s);
-  gap: 0.25rem;
+  gap: var(--odstep-1);
   padding: 0.55rem 0.2rem;
   border: none;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border-radius: var(--promien-karta);
+  background: var(--powierzchnia);
+  box-shadow: var(--cien-maly);
   font: inherit;
   font-size: 0.75rem;
-  color: #1a1a1a;
+  color: var(--tekst);
   cursor: pointer;
 }
 
@@ -469,37 +544,37 @@ main {
 /* Przedziały czasowe cyrkulacji — lista dynamicznie dodawanych/usuwanych
    wierszy, może ich być kilka na dobę. */
 .blok-cyrkulacji {
-  margin-top: 1.25rem;
+  margin-top: var(--odstep-6);
 }
 
 .etykieta-cyrkulacji {
   font-weight: 600;
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--odstep-2);
 }
 
 .przedzial-cyrkulacji {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: var(--odstep-2);
+  margin-bottom: var(--odstep-2);
 }
 
 .przedzial-cyrkulacji input[type="time"] {
   flex: 1;
   padding: 0.6rem;
   font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border: 1px solid var(--obrys-pola);
+  border-radius: var(--promien-pole);
 }
 
 .przedzial-cyrkulacji__lacznik {
-  color: #666;
+  color: var(--tekst-drugorzedny);
 }
 
 .przycisk-usun-przedzial {
   background: none;
   border: none;
-  color: #b3261e;
+  color: var(--alarm);
   font-size: 1.3rem;
   line-height: 1;
   padding: 0.4rem 0.6rem;
@@ -508,7 +583,7 @@ main {
 
 /* Formularz ustawień. */
 .opis {
-  color: #555;
+  color: var(--tekst-opis);
   font-size: 0.95rem;
   line-height: 1.4;
 }
@@ -519,25 +594,25 @@ main {
 .podglad-zdjecia {
   display: block;
   width: 100%;
-  border-radius: 12px;
-  margin-top: 1rem;
+  border-radius: var(--promien-karta);
+  margin-top: var(--odstep-5);
 }
 
 /* Ekran prądu (od 0.20.0): trzy wiersze-karty, każdy z własnym zdjęciem,
    przyciskami i polem stanu; wspólne pole daty nad nimi. */
 .opis-ekranu {
-  margin: 0.25rem 0 0;
-  color: #666;
+  margin: var(--odstep-1) 0 0;
+  color: var(--tekst-drugorzedny);
   font-size: 0.9rem;
   line-height: 1.4;
 }
 
 .wiersz-pradu {
-  margin-top: 1rem;
-  padding: 0.9rem 1rem 1rem;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  margin-top: var(--odstep-5);
+  padding: 0.9rem var(--odstep-5) var(--odstep-5);
+  background: var(--powierzchnia);
+  border-radius: var(--promien-kafel);
+  box-shadow: var(--cien-karta);
 }
 
 /* Zapisany (albo odłożony do kolejki) wiersz jest zamrożony — przygaszony,
@@ -550,7 +625,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: var(--odstep-2);
 }
 
 .wiersz-pradu__nazwa {
@@ -561,39 +636,39 @@ main {
 .wiersz-pradu__opis {
   display: block;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--tekst-drugorzedny);
 }
 
 .wiersz-pradu__status {
   padding: 0.15rem 0.6rem;
-  border-radius: 999px;
+  border-radius: var(--promien-pigulka);
   font-size: 0.8rem;
   font-weight: 600;
 }
 
-.wiersz-pradu__status--wczytywanie { background: #eef1f4; color: #4a4a4a; }
-.wiersz-pradu__status--ok { background: #e6f4ea; color: #1e7e34; }
-.wiersz-pradu__status--blad { background: #fdecea; color: #b3261e; }
-.wiersz-pradu__status--kolejka { background: #fff4e0; color: #8a5a00; }
+.wiersz-pradu__status--wczytywanie { background: var(--pole-nieaktywne-tlo); color: var(--wczytywanie); }
+.wiersz-pradu__status--ok { background: var(--ok-tlo); color: var(--ok); }
+.wiersz-pradu__status--blad { background: var(--alarm-tlo); color: var(--alarm); }
+.wiersz-pradu__status--kolejka { background: var(--uwaga-tlo); color: var(--uwaga); }
 
 .wiersz-pradu__zdjecie {
   display: block;
   width: 100%;
-  margin-top: 0.75rem;
-  border-radius: 10px;
+  margin-top: var(--odstep-4);
+  border-radius: var(--promien-przycisk);
 }
 
 /* Trzy przyciski w jednym rzędzie — mniejsze niż na ekranie wyboru
    metody, bo na ekranie są trzy takie zestawy. */
 .wiersz-pradu__przyciski {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+  gap: var(--odstep-2);
+  margin-top: var(--odstep-4);
 }
 
 .wiersz-pradu__przyciski .przycisk-maly {
   flex: 1;
-  padding: 0.65rem 0.5rem;
+  padding: 0.65rem var(--odstep-2);
   font-size: 0.95rem;
 }
 
@@ -603,12 +678,12 @@ main {
 }
 
 .wiersz-pradu__pole {
-  margin-top: 0.75rem;
+  margin-top: var(--odstep-4);
 }
 
 .pole-formularza {
   display: block;
-  margin-top: 1.25rem;
+  margin-top: var(--odstep-6);
   font-weight: 600;
 }
 
@@ -618,25 +693,25 @@ main {
 .pole-formularza select {
   display: block;
   font-family: inherit;
-  background: #fff;
+  background: var(--powierzchnia);
   color: inherit;
   width: 100%;
   margin-top: 0.4rem;
-  padding: 0.75rem;
+  padding: var(--odstep-4);
   font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border: 1px solid var(--obrys-pola);
+  border-radius: var(--promien-pole);
 }
 
 /* Pole zbędne przy wybranym trybie kotła (np. krzywa przy wyłączonym CO) —
    wyszarzone razem z etykietą, żeby było widać, że to celowe, a nie awaria. */
 .pole-formularza--nieaktywne {
-  color: #9aa1a9;
+  color: var(--tekst-nieaktywny);
 }
 
 .pole-formularza--nieaktywne input {
-  background: #eef1f4;
-  border-color: #e0e3e7;
+  background: var(--pole-nieaktywne-tlo);
+  border-color: var(--pole-nieaktywne-obrys);
   cursor: not-allowed;
 }
 
@@ -649,8 +724,8 @@ main {
   display: flex;
   margin-top: 0.4rem;
   padding: 3px;
-  background: #e3e7ec;
-  border-radius: 12px;
+  background: var(--linia-siatki);
+  border-radius: var(--promien-karta);
 }
 
 .segment-tryb__wskaznik {
@@ -660,8 +735,8 @@ main {
   left: 0;
   width: 0;
   background: var(--kolor-glowny);
-  border-radius: 9px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  border-radius: var(--promien-segment);
+  box-shadow: var(--cien-wskaznik);
   transition: transform 0.25s ease, width 0.25s ease;
 }
 
@@ -669,13 +744,13 @@ main {
   position: relative;
   z-index: 1;
   flex: 1;
-  padding: 0.6rem 0.25rem;
+  padding: 0.6rem var(--odstep-1);
   border: none;
   background: none;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #4a4a4a;
-  border-radius: 9px;
+  color: var(--wczytywanie);
+  border-radius: var(--promien-segment);
   cursor: pointer;
   text-align: center;
   transition: color 0.2s ease;
@@ -693,8 +768,8 @@ main {
 .przyciski-formularza {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+  gap: var(--odstep-4);
+  margin-top: var(--odstep-7);
 }
 
 .przycisk-glowny,
@@ -702,11 +777,11 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--odstep-2);
   padding: 0.9rem;
   font-size: 1.05rem;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: var(--promien-przycisk);
   border: none;
   cursor: pointer;
 }
@@ -727,36 +802,36 @@ main {
 }
 
 .przycisk-drugorzedny {
-  background: #e0e0e0;
-  color: #1a1a1a;
+  background: var(--przycisk-drugorzedny);
+  color: var(--tekst);
 }
 
 .komunikat {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  border-radius: 8px;
-  background: #fdecea;
-  color: #b3261e;
+  margin-top: var(--odstep-5);
+  padding: var(--odstep-4);
+  border-radius: var(--promien-pole);
+  background: var(--alarm-tlo);
+  color: var(--alarm);
 }
 
 /* Ile odczytów czeka w kolejce offline na wysłanie — neutralny,
    informacyjny ton (nie błąd, nie sukces, tylko "jeszcze w drodze"). */
 .komunikat-kolejka {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  border-radius: 8px;
-  background: #fff4e0;
-  color: #8a5a00;
+  margin-top: var(--odstep-5);
+  padding: var(--odstep-4);
+  border-radius: var(--promien-pole);
+  background: var(--uwaga-tlo);
+  color: var(--uwaga);
   font-size: 0.9rem;
   line-height: 1.4;
 }
 
 .komunikat-sukces {
-  margin-top: 1.25rem;
-  padding: 0.75rem;
-  border-radius: 8px;
-  background: #e6f4ea;
-  color: #1e7e34;
+  margin-top: var(--odstep-6);
+  padding: var(--odstep-4);
+  border-radius: var(--promien-pole);
+  background: var(--ok-tlo);
+  color: var(--ok);
   font-size: 0.95rem;
   line-height: 1.4;
 }
@@ -764,31 +839,31 @@ main {
 /* Ekrany Odczyty i Temperatury — lista ostatnich odczytów i tabela temperatur
    dobowych, obie tylko do odczytu. */
 .podglad__naglowek {
-  margin: 1.5rem 0 0;
+  margin: var(--odstep-7) 0 0;
   font-size: 1rem;
   font-weight: 600;
 }
 
 .lista-odczytow {
-  margin-top: 0.5rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  margin-top: var(--odstep-2);
+  background: var(--powierzchnia);
+  border-radius: var(--promien-karta);
+  box-shadow: var(--cien-karta);
   overflow: hidden;
 }
 
 .lista-faktur {
-  margin-top: 0.5rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  margin-top: var(--odstep-2);
+  background: var(--powierzchnia);
+  border-radius: var(--promien-karta);
+  box-shadow: var(--cien-karta);
   overflow: hidden;
 }
 
 /* Ostatnie faktury na karcie Faktura: nagłówek pozycji (okres i kwota brutto,
    pod spodem m³ · kWh · dni) jest przyciskiem rozwijającym szczegóły okresów. */
 .faktura-pozycja {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--linia-listy);
 }
 
 .faktura-pozycja:last-child {
@@ -800,7 +875,7 @@ main {
   flex-direction: column;
   gap: 0.15rem;
   width: 100%;
-  padding: 0.7rem 0.9rem;
+  padding: var(--odstep-3) 0.9rem;
   border: none;
   background: none;
   font: inherit;
@@ -815,7 +890,7 @@ main {
 .faktura-pozycja__gora {
   display: flex;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: var(--odstep-4);
 }
 
 .faktura-pozycja__okres {
@@ -831,13 +906,13 @@ main {
 
 .faktura-pozycja__dol {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--tekst-drugorzedny);
 }
 
 .faktura-pozycja__szczegoly {
-  padding: 0 0.9rem 0.7rem;
+  padding: 0 0.9rem var(--odstep-3);
   font-size: 0.8rem;
-  color: #444;
+  color: var(--tekst-tabeli);
 }
 
 .faktura-pozycja__szczegoly p {
@@ -856,9 +931,9 @@ main {
 .wiersz-odczytu {
   display: flex;
   align-items: baseline;
-  gap: 0.75rem;
+  gap: var(--odstep-4);
   padding: 0.65rem 0.9rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--linia-listy);
   font-size: 0.9rem;
 }
 
@@ -867,7 +942,7 @@ main {
 }
 
 .wiersz-odczytu__data {
-  color: #666;
+  color: var(--tekst-drugorzedny);
   font-size: 0.78rem;
   white-space: nowrap;
 }
@@ -884,15 +959,15 @@ main {
 
 /* Uwaga pod polem daty na ekranie potwierdzenia: skąd wzięła się godzina. */
 .uwaga-pola {
-  margin: 0.5rem 0 1rem;
+  margin: var(--odstep-2) 0 var(--odstep-5);
   font-size: 0.85rem;
-  color: #555;
+  color: var(--tekst-opis);
 }
 .uwaga-pola--przyblizona {
-  padding: 0.5rem 0.65rem;
-  border-radius: 8px;
-  background: #fff4e0;
-  color: #8a5a00;
+  padding: var(--odstep-2) 0.65rem;
+  border-radius: var(--promien-pole);
+  background: var(--uwaga-tlo);
+  color: var(--uwaga);
 }
 
 /* Wiersz statusu pod nagłówkiem bloku na ekranach z danymi z arkusza: trzy stany —
@@ -900,7 +975,7 @@ main {
 .status-bloku {
   margin: 0.4rem 0 0;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--tekst-drugorzedny);
 }
 .status-bloku--wczytywanie::before {
   content: '';
@@ -915,10 +990,10 @@ main {
   animation: obrot 0.8s linear infinite;
 }
 .status-bloku--blad {
-  padding: 0.6rem 0.75rem;
-  border-radius: 8px;
-  background: #fdecea;
-  color: #b3261e;
+  padding: 0.6rem var(--odstep-4);
+  border-radius: var(--promien-pole);
+  background: var(--alarm-tlo);
+  color: var(--alarm);
   font-size: 0.9rem;
 }
 @keyframes obrot {
@@ -930,18 +1005,18 @@ main {
 
 .komunikat-pusto {
   padding: 0.9rem;
-  color: #666;
+  color: var(--tekst-drugorzedny);
   font-size: 0.9rem;
 }
 
 /* Tabela temperatur — może być szersza niż ekran, gdy czujników przybędzie,
    więc kontener przewija się w poziomie zamiast łamać układ strony. */
 .tabela-temperatur-kontener {
-  margin-top: 0.5rem;
+  margin-top: var(--odstep-2);
   overflow-x: auto;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background: var(--powierzchnia);
+  border-radius: var(--promien-karta);
+  box-shadow: var(--cien-karta);
 }
 
 .tabela-temperatur {
@@ -952,10 +1027,10 @@ main {
 
 .tabela-temperatur th,
 .tabela-temperatur td {
-  padding: 0.5rem 0.7rem;
+  padding: var(--odstep-2) var(--odstep-3);
   text-align: right;
   white-space: nowrap;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--linia-listy);
 }
 
 .tabela-temperatur th:first-child,
@@ -963,13 +1038,13 @@ main {
   text-align: left;
   position: sticky;
   left: 0;
-  background: #fff;
+  background: var(--powierzchnia);
 }
 
 .tabela-temperatur thead th {
   background: var(--tlo-strony);
   font-weight: 600;
-  color: #444;
+  color: var(--tekst-tabeli);
 }
 
 .tabela-temperatur tr:last-child td {
@@ -985,7 +1060,7 @@ main {
 .wiersz-dnia__strzalka {
   width: 1.5rem;
   padding-left: 0 !important;
-  color: #9aa1a9;
+  color: var(--tekst-nieaktywny);
   transition: transform 0.2s ease;
 }
 
@@ -1004,33 +1079,33 @@ main {
    wykres by się rozjechał. */
 .tabela-temperatur .wiersz-wykresu td {
   position: static;
-  padding: 0.5rem 0.5rem 0.75rem;
+  padding: var(--odstep-2) var(--odstep-2) var(--odstep-4);
   text-align: left;
   white-space: normal;
-  background: #fff;
+  background: var(--powierzchnia);
 }
 
 .wykres-doby {
   display: block;
   width: 100%;
-  max-width: 480px;
+  max-width: var(--szerokosc-tresci);
   height: auto;
 }
 
 .wykres-doby__siatka {
-  stroke: #e3e7ec;
+  stroke: var(--linia-siatki);
   stroke-width: 0.6;
 }
 
 .wykres-doby__opis {
   font-size: 9px;
-  fill: #888;
+  fill: var(--tekst-wyciszony);
 }
 
 .wykres-doby__wartosc {
   font-size: 9.5px;
   font-weight: 600;
-  fill: #444;
+  fill: var(--tekst-tabeli);
 }
 
 .wykres-doby__legenda {
@@ -1039,7 +1114,7 @@ main {
   gap: 0.35rem 0.9rem;
   margin-top: 0.3rem;
   font-size: 0.8rem;
-  color: #555;
+  color: var(--tekst-opis);
 }
 
 /* Kreska w kolorze serii przed nazwą czujnika — kolor przychodzi z JS
@@ -1056,7 +1131,7 @@ main {
 }
 
 .wykres-doby__uwaga {
-  color: #8a5a00;
+  color: var(--uwaga);
 }
 
 /* Ekran „Zbieracz” (od 1.1.0). Werdykt — plakietka w kolorach paska
@@ -1065,9 +1140,9 @@ main {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  margin: 0.75rem 0;
-  padding: 0.85rem 1rem;
-  border-radius: 12px;
+  margin: var(--odstep-4) 0;
+  padding: 0.85rem var(--odstep-5);
+  border-radius: var(--promien-karta);
 }
 
 .zbieracz__werdykt-tytul {
@@ -1079,23 +1154,23 @@ main {
 }
 
 .zbieracz__werdykt--ok {
-  background: #e6f4ea;
-  color: #1e6b34;
+  background: var(--ok-tlo);
+  color: var(--ok-ciemny);
 }
 
 .zbieracz__werdykt--uwaga {
-  background: #fff4e0;
-  color: #8a5a00;
+  background: var(--uwaga-tlo);
+  color: var(--uwaga);
 }
 
 .zbieracz__werdykt--problem {
-  background: #fdecea;
-  color: #b3261e;
+  background: var(--alarm-tlo);
+  color: var(--alarm);
 }
 
 .zbieracz__werdykt--nieznany {
-  background: #ececec;
-  color: #444;
+  background: var(--neutralny-tlo);
+  color: var(--tekst-tabeli);
 }
 
 /* Alarmy na ekranie zbieracza stoją pod werdyktem, nie nad kartami. */
@@ -1111,7 +1186,7 @@ main {
 /* Drobny dopisek pod wartością: „37 min temu”, źródło czujnika. */
 .zbieracz__dopisek {
   display: block;
-  color: #666;
+  color: var(--tekst-drugorzedny);
   font-size: 0.75rem;
   text-align: right;
 }
@@ -1126,7 +1201,7 @@ main {
    długa i musi się zawijać. */
 .pomysl {
   padding: 0.65rem 0.9rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--linia-listy);
 }
 
 .pomysl:last-child {
@@ -1144,36 +1219,36 @@ main {
   flex-wrap: wrap;
   gap: 0.4rem;
   align-items: center;
-  color: #666;
+  color: var(--tekst-drugorzedny);
   font-size: 0.78rem;
 }
 
 /* Plakietka statusu — kolory jak w pasku alarmów i werdykcie Zbieracza. */
 .pomysl__status {
-  padding: 0.1rem 0.5rem;
-  border-radius: 999px;
+  padding: 0.1rem var(--odstep-2);
+  border-radius: var(--promien-pigulka);
   font-weight: 600;
 }
 
 .pomysl__status--nowy { background: var(--kolor-glowny-jasny); color: var(--kolor-glowny); }
-.pomysl__status--przeniesiony { background: #e6f4ea; color: #1e6b34; }
-.pomysl__status--odrzucony { background: #ececec; color: #555; }
-.pomysl__status--kolejka { background: #fff4e0; color: #8a5a00; }
+.pomysl__status--przeniesiony { background: var(--ok-tlo); color: var(--ok-ciemny); }
+.pomysl__status--odrzucony { background: var(--neutralny-tlo); color: var(--tekst-opis); }
+.pomysl__status--kolejka { background: var(--uwaga-tlo); color: var(--uwaga); }
 
 /* Ekran faktury (od 1.3.0). Okres = ramka z polami w dwóch kolumnach —
    na telefonie 13 pól jedno pod drugim byłoby za długie. */
 .faktura__okres {
-  margin: 1rem 0 0;
-  padding: 0.5rem 0.9rem 0.9rem;
-  border: 1px solid #d6d9e8;
-  border-radius: 12px;
-  background: #fff;
+  margin: var(--odstep-5) 0 0;
+  padding: var(--odstep-2) 0.9rem 0.9rem;
+  border: 1px solid var(--obrys-ramki);
+  border-radius: var(--promien-karta);
+  background: var(--powierzchnia);
 }
 
 .faktura__okres-tytul {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--odstep-2);
   padding: 0 0.3rem;
   font-weight: 600;
 }
@@ -1181,7 +1256,7 @@ main {
 .faktura__siatka {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 0.75rem;
+  gap: 0 var(--odstep-4);
 }
 
 /* W siatce etykiety są drobniejsze, żeby dwa pola zmieściły się obok siebie. */
@@ -1193,24 +1268,24 @@ main {
 .faktura__ciaglosc {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: var(--odstep-2);
+  margin-bottom: var(--odstep-2);
 }
 
 .faktura__kontrola {
-  margin: 1rem 0 0;
-  padding: 0.7rem 0.9rem;
-  border-radius: 12px;
-  background: #ececec;
-  color: #444;
+  margin: var(--odstep-5) 0 0;
+  padding: var(--odstep-3) 0.9rem;
+  border-radius: var(--promien-karta);
+  background: var(--neutralny-tlo);
+  color: var(--tekst-tabeli);
   font-size: 0.9rem;
 }
 
-.faktura__kontrola--ok { background: #e6f4ea; color: #1e6b34; }
-.faktura__kontrola--roznica { background: #fdecea; color: #b3261e; }
+.faktura__kontrola--ok { background: var(--ok-tlo); color: var(--ok-ciemny); }
+.faktura__kontrola--roznica { background: var(--alarm-tlo); color: var(--alarm); }
 
 #przycisk-dodaj-okres {
-  margin-top: 0.75rem;
+  margin-top: var(--odstep-4);
 }
 
 /* Bateria i sygnał czujnika na karcie Zbieracz (od 1.4.0): wiersz czujnika
@@ -1221,12 +1296,12 @@ main {
 
 .zbieracz__stan-czujnika {
   flex-basis: 100%;
-  color: #666;
+  color: var(--tekst-drugorzedny);
   font-size: 0.75rem;
 }
 
 .zbieracz__stan-czujnika--uwaga {
-  color: #8a5a00;
+  color: var(--uwaga);
   font-weight: 600;
 }
 
@@ -1243,22 +1318,22 @@ main {
 }
 
 .wykres-doby__status {
-  margin: 0.25rem 0;
+  margin: var(--odstep-1) 0;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--tekst-drugorzedny);
 }
 
 .wykres-doby__status--blad {
-  color: #b3261e;
+  color: var(--alarm);
 }
 
 /* Numer wersji — zawsze widoczny na dole, żeby łatwo sprawdzić, czy telefon
    ma najnowszą wersję aplikacji po odświeżeniu. */
 .stopka {
   text-align: center;
-  padding: 1rem;
+  padding: var(--odstep-5);
   font-size: 0.8rem;
-  color: #888;
+  color: var(--tekst-wyciszony);
 }
 
 /* Kocioł — historia zmian pod formularzem: dwa paski (CO, CWU) z ostatnich
@@ -1266,11 +1341,11 @@ main {
    dla pasków, kropek i plakietek: CO ceglasty (ogrzewanie), CWU morski
    (woda); wyłączony — szary. */
 .historia-kotla {
-  margin-top: 0.5rem;
+  margin-top: var(--odstep-2);
   padding: 0.9rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background: var(--powierzchnia);
+  border-radius: var(--promien-karta);
+  box-shadow: var(--cien-karta);
   font-size: 0.9rem;
 }
 
@@ -1281,13 +1356,13 @@ main {
 .historia-kotla__podpis {
   margin: 0 0 0.4rem;
   font-size: 0.78rem;
-  color: #666;
+  color: var(--tekst-drugorzedny);
 }
 
 .wiersz-paska {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--odstep-2);
   margin-bottom: 0.35rem;
   font-size: 0.78rem;
 }
@@ -1300,7 +1375,7 @@ main {
 .wiersz-paska__dni {
   width: 3.4rem;
   text-align: right;
-  color: #666;
+  color: var(--tekst-drugorzedny);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1309,17 +1384,17 @@ main {
   flex: 1;
   display: flex;
   height: 12px;
-  border-radius: 4px;
+  border-radius: var(--promien-pasek);
   overflow: hidden;
-  background: #e3e7ec;
+  background: var(--linia-siatki);
 }
 
 .pasek-obwodu__odcinek { height: 100%; }
-.pasek-obwodu__odcinek--co { background: #d85a30; }
-.pasek-obwodu__odcinek--cwu { background: #1d9e75; }
-.pasek-obwodu__odcinek--wyl { background: #e3e7ec; }
+.pasek-obwodu__odcinek--co { background: var(--obwod-co); }
+.pasek-obwodu__odcinek--cwu { background: var(--obwod-cwu); }
+.pasek-obwodu__odcinek--wyl { background: var(--obwod-wylaczony); }
 .pasek-obwodu__odcinek--brak {
-  background: repeating-linear-gradient(135deg, #e3e7ec 0 3px, #fff 3px 6px);
+  background: repeating-linear-gradient(135deg, var(--linia-siatki) 0 3px, var(--powierzchnia) 3px 6px);
 }
 
 /* Zmiana nastawy bez zmiany wł./wył. — biała kreska w poprzek paska. */
@@ -1329,7 +1404,7 @@ main {
   bottom: 0;
   width: 2px;
   margin-left: -1px;
-  background: #fff;
+  background: var(--powierzchnia);
 }
 
 /* Podpisy miesięcy pod paskami — ta sama szerokość co pasek, czyli
@@ -1339,7 +1414,7 @@ main {
   height: 1.1rem;
   margin: 0 calc(3.4rem + 0.5rem) 0 calc(2.2rem + 0.5rem);
   font-size: 0.72rem;
-  color: #888;
+  color: var(--tekst-wyciszony);
 }
 
 .pasek-osi__podpis {
@@ -1358,7 +1433,7 @@ main {
 .historia-kotla__legenda {
   margin: 0.2rem 0 0;
   font-size: 0.72rem;
-  color: #888;
+  color: var(--tekst-wyciszony);
   line-height: 1.4;
 }
 
@@ -1371,7 +1446,7 @@ main {
 
 .zmiana-kotla {
   position: relative;
-  padding: 0 0 0.9rem 1.5rem;
+  padding: 0 0 0.9rem var(--odstep-7);
 }
 
 .zmiana-kotla::before {
@@ -1380,7 +1455,7 @@ main {
   left: 5px;
   top: 16px;
   bottom: 0;
-  border-left: 2px solid #e3e7ec;
+  border-left: 2px solid var(--linia-siatki);
 }
 
 .zmiana-kotla:last-child { padding-bottom: 0; }
@@ -1394,17 +1469,17 @@ main {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #b0b7bf;
+  background: var(--kropka-zmiany);
 }
-.zmiana-kotla__kropka--co { background: #d85a30; }
-.zmiana-kotla__kropka--cwu { background: #1d9e75; }
-.zmiana-kotla__kropka--oba { background: linear-gradient(90deg, #d85a30 50%, #1d9e75 50%); }
+.zmiana-kotla__kropka--co { background: var(--obwod-co); }
+.zmiana-kotla__kropka--cwu { background: var(--obwod-cwu); }
+.zmiana-kotla__kropka--oba { background: linear-gradient(90deg, var(--obwod-co) 50%, var(--obwod-cwu) 50%); }
 
 .zmiana-kotla__gora {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--odstep-2);
 }
 
 .zmiana-kotla__data {
@@ -1414,33 +1489,33 @@ main {
 
 .zmiana-kotla__plakietki {
   display: flex;
-  gap: 0.25rem;
+  gap: var(--odstep-1);
 }
 
 .plakietka-obwodu {
   padding: 0.1rem 0.45rem;
-  border-radius: 6px;
+  border-radius: var(--promien-plakietka);
   border: 1px solid transparent;
   font-size: 0.72rem;
   font-weight: 600;
 }
-.plakietka-obwodu--co { background: #fbe9e3; color: #8a3a1d; }
-.plakietka-obwodu--cwu { background: #e1f5ee; color: #085041; }
+.plakietka-obwodu--co { background: var(--obwod-co-tlo); color: var(--obwod-co-tekst); }
+.plakietka-obwodu--cwu { background: var(--obwod-cwu-tlo); color: var(--obwod-cwu-tekst); }
 /* Wyłączony obwód — przekreślony i obrysowany, żeby różnił się nie tylko
    kolorem (czytelne także dla osób słabiej rozróżniających barwy). */
 .plakietka-obwodu--wyl {
-  color: #999;
-  border: 1px dashed #c4cad1;
+  color: var(--kropka-nieznany);
+  border: 1px dashed var(--obrys-wylaczony);
   text-decoration: line-through;
 }
 
 .zmiana-kotla__opis {
   margin: 0.15rem 0 0;
-  color: #444;
+  color: var(--tekst-tabeli);
 }
 
 .zmiana-kotla__czas {
   margin: 0.1rem 0 0;
   font-size: 0.78rem;
-  color: #888;
+  color: var(--tekst-wyciszony);
 }

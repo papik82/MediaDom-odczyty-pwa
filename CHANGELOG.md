@@ -3,6 +3,19 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.13.1 — 2026-10-11
+
+### Zmienione
+- **Wygląd z systemu projektowego, wersja 1** (BACKLOG pkt 39, krok 0).
+  `css/styl.css` bierze kolory, odstępy, promienie, cienie i rozmiary
+  z tokenów systemu MediaDom (Claude Design): wartości w `:root`, reszta
+  pliku przez `var(--token)`, pierwsza linia
+  `/* system-projektowy: wersja 1 */`. Wygląd bez zmian — po rozwinięciu
+  zmiennych CSS jest tekstowo identyczny z poprzednim, a style obliczone
+  316 elementów pulpitu na 375 px nie różnią się niczym. Wartości spoza skali
+  tokenów (np. `0.9rem`, `#777`, `#bbb`, biały tekst na kolorze głównym)
+  zostały literałami.
+
 ## 1.13.0 — 2026-10-11
 
 ### Dodane
