@@ -3,6 +3,18 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.14.1 — 2026-10-11
+
+### Zmienione
+- **Wygląd z systemu projektowego, wersja 3.** Nowa ikona aplikacji
+  „Łąka o zmierzchu” (`ikony/ikona.svg`, też favicon): ten sam biały znak domu
+  z licznikiem na głębokiej zieleni, ze słońcem i wzgórzami. Tło ekranu
+  powitalnego (`background_color` w `manifest.json`) to `#e6f4ec` — górny kolor
+  gradientu strony, zamiast białego. W `styl.css` pięć nowych tokenów
+  (`ekran-powitalny`, `ikona-…`). Telefon wymienia ikonę na ekranie głównym
+  dopiero po ponownym dodaniu aplikacji; ekran powitalny po jej ponownym
+  zainstalowaniu.
+
 ## 1.14.0 — 2026-10-11
 
 ### Zmienione

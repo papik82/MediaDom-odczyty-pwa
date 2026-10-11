@@ -1,38 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Ikona aplikacji, lifting 0.19.1: tło „borówka” (jaśniejszy niebieski
-       przechodzący w granat z nutą fioletu) i grubsze linie znaku, żeby
-       ikona nie wyglądała na drobną obok innych aplikacji na ekranie. -->
   <defs>
-    <linearGradient id="tlo" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#6b86e0"/>
-      <stop offset="1" stop-color="#2f3d94"/>
+    <linearGradient id="tlo" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#5e9b83"></stop>
+      <stop offset="1" stop-color="#2f5b45"></stop>
     </linearGradient>
+    <clipPath id="ksztalt"><rect width="512" height="512" rx="112"></rect></clipPath>
   </defs>
-
-  <rect width="512" height="512" rx="112" fill="url(#tlo)"/>
-
-  <!-- Znak lekko powiększony (1,04) i zsunięty o 6 w dół, żeby optycznie
-       leżał na środku. Skala dobrana tak, żeby końce łuku manometru razem
-       z zaokrągleniem linii mieściły się w bezpiecznej strefie ikony
-       maskowalnej (koło o promieniu 40% boku, czyli 204,8 od środka) —
-       launcher może obciąć wszystko, co leży dalej. -->
-  <g transform="translate(256 262) scale(1.04) translate(-256 -256)">
-    <!-- Dach z okapem — linia wypuszczona poza ściany. -->
-    <path d="M117 229 L256 101 L395 229" fill="none" stroke="#ffffff"
-          stroke-width="34" stroke-linejoin="round" stroke-linecap="round"/>
-
-    <!-- Symboliczne ściany, krótkie odcinki zwieszone z dachu. -->
-    <line x1="136" y1="211" x2="136" y2="265" stroke="#ffffff"
-          stroke-width="30" stroke-linecap="round"/>
-    <line x1="376" y1="211" x2="376" y2="265" stroke="#ffffff"
-          stroke-width="30" stroke-linecap="round"/>
-
-    <!-- Manometr — łuk, wskazówka i oś. Symbol „odczytu”, wspólny dla gazu,
-         prądu i wody. -->
-    <path d="M140 387 A116 116 0 0 1 372 387" fill="none" stroke="#ffffff"
-          stroke-width="34" stroke-linecap="round"/>
-    <line x1="256" y1="387" x2="302" y2="324" stroke="#ffffff"
-          stroke-width="28" stroke-linecap="round"/>
-    <circle cx="256" cy="387" r="28" fill="#ffffff"/>
+  <g clip-path="url(#ksztalt)">
+    <rect width="512" height="512" fill="url(#tlo)"></rect>
+    <circle cx="404" cy="104" r="58" fill="#fff6cf" opacity="0.25"></circle>
+    <circle cx="404" cy="104" r="34" fill="#fff6cf"></circle>
+    <path d="M0 426 C120 392 260 400 512 414 L512 512 L0 512 Z" fill="#2a5240"></path>
+    <path d="M0 462 C150 438 330 452 512 446 L512 512 L0 512 Z" fill="#224636"></path>
+  </g>
+  <g transform="translate(256 262) scale(1.04) translate(-256 -256)" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M117 229 L256 101 L395 229" stroke-width="34"></path>
+    <path d="M136 211V265M376 211V265" stroke-width="30"></path>
+    <path d="M140 387 A116 116 0 0 1 372 387" stroke-width="34"></path>
+    <path d="M256 387 L302 324" stroke-width="28"></path>
+    <circle cx="256" cy="387" r="28" fill="#ffffff" stroke="none"></circle>
   </g>
 </svg>
