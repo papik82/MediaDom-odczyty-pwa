@@ -3,7 +3,7 @@
 
 import { MEDIA } from '../media.js';
 import { pobierzOstatnieOdczyty, pobierzTemperaturyDobowe } from '../webhook.js';
-import { formatujDataGodzinePodgladu, wczytajBlokPodgladu } from '../wspolne.js';
+import { element, formatujDataGodzinePodgladu, wczytajBlokPodgladu } from '../wspolne.js';
 import { pokazEkran, ekranStart, ukryjKomunikatStart } from '../nawigacja.js';
 import { poUstawieniach } from './ustawienia.js';
 import {
@@ -25,7 +25,7 @@ const statusTemperatur = document.getElementById('status-temperatur');
 // przed nadpisaniem przez odpowiedź z poprzedniego, już zamkniętego otwarcia.
 let generacjaPodgladu = 0;
 
-// --- Podgląd: ostatnie odczyty i temperatury dobowe (punkt 6 backlogu) ---
+// --- Ekrany Odczyty i Temperatury: ostatnie wpisy i temperatury dobowe ---
 //
 // Wyłącznie do odczytu — dwa niezależne zapytania do webhooka, każde może
 // się nie udać osobno (np. jedno się wczyta, drugie pokaże błąd), więc
@@ -35,22 +35,18 @@ function renderujOstatnieOdczyty(odczyty) {
   listaOstatnichOdczytow.innerHTML = '';
 
   if (!odczyty || odczyty.length === 0) {
-    const pusto = document.createElement('p');
-    pusto.className = 'komunikat-pusto';
-    pusto.textContent = 'Brak zapisanych odczytów.';
-    listaOstatnichOdczytow.appendChild(pusto);
+    listaOstatnichOdczytow.appendChild(element('p', 'komunikat-pusto', 'Brak zapisanych odczytów.'));
     return;
   }
 
+  // Tekst z arkusza wstawiamy przez textContent (element()), nie przez innerHTML.
   odczyty.forEach((o) => {
     const opisMedium = MEDIA[o.medium];
-    const wiersz = document.createElement('div');
-    wiersz.className = 'wiersz-odczytu';
-    wiersz.innerHTML = `
-      <span class="wiersz-odczytu__data">${formatujDataGodzinePodgladu(o.data_godzina)}</span>
-      <span class="wiersz-odczytu__medium">${opisMedium ? opisMedium.nazwa : o.medium}</span>
-      <span class="wiersz-odczytu__stan">${o.stan}${opisMedium ? ' ' + opisMedium.jednostka : ''}</span>
-    `;
+    const wiersz = element('div', 'wiersz-odczytu');
+    wiersz.appendChild(element('span', 'wiersz-odczytu__data', formatujDataGodzinePodgladu(o.data_godzina)));
+    wiersz.appendChild(element('span', 'wiersz-odczytu__medium', opisMedium ? opisMedium.nazwa : o.medium));
+    wiersz.appendChild(element('span', 'wiersz-odczytu__stan',
+      `${o.stan}${opisMedium ? ' ' + opisMedium.jednostka : ''}`));
     listaOstatnichOdczytow.appendChild(wiersz);
   });
 }
@@ -62,20 +58,24 @@ function renderujTemperaturyDobowe(dni) {
   tabelaTemperatur.innerHTML = '';
 
   if (!dni || dni.length === 0) {
-    tabelaTemperatur.innerHTML = '<tr><td class="komunikat-pusto">Brak danych o temperaturach.</td></tr>';
+    const pusty = element('tr');
+    pusty.appendChild(element('td', 'komunikat-pusto', 'Brak danych o temperaturach.'));
+    tabelaTemperatur.appendChild(pusty);
     return;
   }
 
   const czujniki = Array.from(new Set(dni.flatMap((d) => Object.keys(d.czujniki || {})))).sort();
 
-  const naglowek = document.createElement('tr');
-  naglowek.innerHTML = '<th>Data</th>' + czujniki.map((cz) => `<th>${cz}</th>`).join('');
-  const thead = document.createElement('thead');
+  const naglowek = element('tr');
+  naglowek.appendChild(element('th', '', 'Data'));
+  czujniki.forEach((cz) => naglowek.appendChild(element('th', '', cz)));
+  // Dodatkowa, wąska kolumna na strzałkę rozwijania (od 0.21.0).
+  const kolumnaStrzalki = element('th');
+  kolumnaStrzalki.setAttribute('aria-hidden', 'true');
+  naglowek.appendChild(kolumnaStrzalki);
+  const thead = element('thead');
   thead.appendChild(naglowek);
   tabelaTemperatur.appendChild(thead);
-
-  // Dodatkowa, wąska kolumna na strzałkę rozwijania (od 0.21.0).
-  naglowek.insertAdjacentHTML('beforeend', '<th aria-hidden="true"></th>');
 
   const tbody = document.createElement('tbody');
   dni.forEach((d) => {
@@ -87,11 +87,14 @@ function renderujTemperaturyDobowe(dni) {
     wiersz.tabIndex = 0;
     wiersz.setAttribute('role', 'button');
     wiersz.setAttribute('aria-expanded', 'false');
-    const komorki = czujniki.map((cz) => {
+    wiersz.appendChild(element('td', '', d.data));
+    czujniki.forEach((cz) => {
       const wartosc = d.czujniki ? d.czujniki[cz] : undefined;
-      return `<td>${typeof wartosc === 'number' ? wartosc.toFixed(1) + '°' : '—'}</td>`;
-    }).join('');
-    wiersz.innerHTML = `<td>${d.data}</td>${komorki}<td class="wiersz-dnia__strzalka" aria-hidden="true">▾</td>`;
+      wiersz.appendChild(element('td', '', typeof wartosc === 'number' ? wartosc.toFixed(1) + '°' : '—'));
+    });
+    const strzalka = element('td', 'wiersz-dnia__strzalka', '▾');
+    strzalka.setAttribute('aria-hidden', 'true');
+    wiersz.appendChild(strzalka);
     wiersz.addEventListener('click', () => przelaczWykres(wiersz, czujniki.length + 2));
     wiersz.addEventListener('keydown', (zdarzenie) => {
       if (zdarzenie.key === 'Enter' || zdarzenie.key === ' ') {

@@ -1,6 +1,6 @@
 {
-  "name": "Odczyty mediów",
-  "short_name": "Odczyty",
+  "name": "MediaDom",
+  "short_name": "MediaDom",
   "description": "Zapisywanie odczytów liczników mediów w domu",
   "start_url": "./index.html",
   "scope": "./",

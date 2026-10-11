@@ -185,7 +185,8 @@ function renderujTemperatury(t) {
   role.forEach((rola) => {
     tempRole[rola].textContent = t && t[rola] ? temp(t[rola].temp) : '—';
   });
-  tempDt.textContent = t && typeof t.dT === 'number' ? `${liczbaPL(t.dT.toFixed(1)).replace('-', '−')} K` : '—';
+  // ΔT w stopniach, jak pozostałe temperatury (różnica w K i w °C to ta sama liczba).
+  tempDt.textContent = t && typeof t.dT === 'number' ? `${liczbaPL(t.dT.toFixed(1)).replace('-', '−')}°` : '—';
 
   // Najnowszy pomiar spośród ról.
   const znaczniki = role.map((r) => t && t[r] && t[r].ostatni).filter(Boolean).sort();

@@ -34,7 +34,7 @@ formularzUstawien.addEventListener('submit', (zdarzenie) => {
   zdarzenie.preventDefault();
   zapiszUstawienia(poleAdres.value, poleToken.value);
   // Nowy adres/token to potencjalnie inny arkusz — dane z poprzedniego
-  // nie mogą się pokazać ani w buforze Podglądu, ani jako nastawy kotła
+  // nie mogą się pokazać ani w buforze ekranów, ani jako nastawy kotła
   // (moduł Kotła unieważnia je przez naZmianieUstawien).
   wyczyscBufor();
   powiadomOZmianieUstawien();

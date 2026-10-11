@@ -157,7 +157,7 @@ export async function przetworzKolejkeOffline() {
 
   aktualizujKomunikatKolejki();
   // Wysłane z kolejki wpisy zmieniły zawartość arkusza — patrz uwaga przy zapisie.
-  // Przy wpisach, które już były w arkuszu, też czyścimy bufor: Podgląd
+  // Przy wpisach, które już były w arkuszu, też czyścimy bufor: ekran Odczyty
   // mógł zapamiętać listę sprzed ich pierwszej (udanej) wysyłki.
   if (wyslanychOk > 0 || juzWArkuszu.length > 0) {
     wyczyscBuforKlucz('ostatnie_odczyty');

@@ -3,6 +3,26 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.12.0 — 2026-10-11
+
+### Zmienione
+- **Tytuł aplikacji „MediaDom”** (zamiast „Odczyty mediów”): `<title>`, nagłówek
+  w `index.html` oraz `name` i `short_name` w `manifest.json`. Nazwa pod ikoną
+  zainstalowanej PWA zmieni się dopiero po odświeżeniu manifestu (Android robi
+  to sam, z opóźnieniem) albo po ponownej instalacji.
+- **ΔT w stopniach** („14,4°”) jak pozostałe temperatury na pulpicie — zamiast
+  „K”. Liczbowo bez zmian (różnica temperatur w K i °C to ta sama wartość).
+- **Status bloków „Zaktualizowano 22:04”** zamiast „Wczytano w X s” (Odczyty,
+  Temperatury, Zbieracz, Pomysły, historia kotła) — godzina pobrania, nie czas
+  odpowiedzi serwera.
+- **Dane z arkusza nie trafiają już do `innerHTML`:** lista odczytów, tabela
+  temperatur (nagłówki z nazw czujników, wartości) i pola godzin cyrkulacji
+  budowane są przez `element()` / `textContent` / `value`.
+- `type="button"` na wszystkich przyciskach spoza formularzy w `index.html`.
+- Ikona `ikony/podglad.svg` → `ikony/odczyty.svg` (nazwa zgodna z ekranem).
+- Poprawione nieaktualne komentarze o „Podglądzie” i „punkcie 6” (JS, CSS, HTML).
+- `sw.js`: `WERSJA_CACHE` v63.
+
 ## 1.11.1 — 2026-10-10
 
 ### Zmienione

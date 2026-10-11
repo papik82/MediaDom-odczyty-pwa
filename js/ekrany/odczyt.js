@@ -221,7 +221,7 @@ formularzPotwierdzenia.addEventListener('submit', async (zdarzenie) => {
     }
 
     // Lista ostatnich odczytów w buforze jest już nieaktualna (doszedł nowy
-    // wpis) — wyrzucamy ją, żeby Podgląd nie pokazał najpierw listy bez niego.
+    // wpis) — wyrzucamy ją, żeby ekran Odczyty nie pokazał najpierw listy bez niego.
     wyczyscBuforKlucz('ostatnie_odczyty');
     pokazKomunikatStart(`Zapisano: ${opisMedium.nazwa} — ${poleStan.value} ${opisMedium.jednostka} ` +
       `(poprzedni stan: ${odpowiedz.poprzedni_stan}, przyrost: ${odpowiedz.przyrost}).`);

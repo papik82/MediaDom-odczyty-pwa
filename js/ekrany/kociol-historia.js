@@ -11,7 +11,7 @@ const historiaKotla = document.getElementById('historia-kotla');
 // --- Kocioł: historia zmian (paski CO/CWU i oś ostatnich zmian) -----------
 //
 // Tylko do odczytu, pod formularzem. Dane z akcji historia_kotla, przez bufor
-// w localStorage jak bloki Podglądu — to bezpieczne, bo historia niczego nie
+// w localStorage jak bloki ekranów Odczyty i Temperatury — to bezpieczne, bo historia niczego nie
 // podpowiada do formularza (podpowiedź idzie osobno, z ostatni_kociol).
 //
 // Cztery tryby kotła rozkładamy na dwa niezależne obwody: CO (ogrzewanie)

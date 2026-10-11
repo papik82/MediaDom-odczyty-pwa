@@ -514,7 +514,8 @@ main {
 }
 
 /* Podgląd zdjęcia licznika na ekranie potwierdzenia — do przepisania
-   wskazania, dopóki nie ma modelu wizyjnego (punkt 6). */
+   wskazania (przy mediach z OCR wartość podpowiada model, ale wpis zawsze
+   zatwierdza użytkownik). */
 .podglad-zdjecia {
   display: block;
   width: 100%;
@@ -760,8 +761,8 @@ main {
   line-height: 1.4;
 }
 
-/* Ekran podglądu — lista ostatnich odczytów i tabela temperatur dobowych,
-   obie tylko do odczytu (punkt 6 backlogu). */
+/* Ekrany Odczyty i Temperatury — lista ostatnich odczytów i tabela temperatur
+   dobowych, obie tylko do odczytu. */
 .podglad__naglowek {
   margin: 1.5rem 0 0;
   font-size: 1rem;
@@ -818,7 +819,7 @@ main {
   color: #8a5a00;
 }
 
-/* Wiersz statusu pod nagłówkiem bloku na ekranie Podgląd: trzy stany —
+/* Wiersz statusu pod nagłówkiem bloku na ekranach z danymi z arkusza: trzy stany —
    wczytywanie (kręcący się znaczek), informacja o czasie, błąd. */
 .status-bloku {
   margin: 0.4rem 0 0;

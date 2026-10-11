@@ -92,22 +92,22 @@ export function ustawStatusBloku(blok, tekst, rodzaj) {
   blok.textContent = tekst;
 }
 
-// Wczytuje jeden blok ekranu Podgląd według wzorca "pokaż stare, odśwież
-// w tle" (BACKLOG pkt 12): jeśli w buforze (js/bufor.js) jest poprzednia
+// Wczytuje jeden blok ekranu (Odczyty, Temperatury, Zbieracz, Pomysły, historia
+// kotła) według wzorca "pokaż stare, odśwież w tle" (BACKLOG pkt 12): jeśli w buforze (js/bufor.js) jest poprzednia
 // odpowiedź, rysujemy ją OD RAZU i dopiero potem odpytujemy webhook; świeża
 // odpowiedź podmienia widok. Dzięki temu ekran nie jest pusty przez 1–2 s
 // (a czasem kilkanaście) po każdym otwarciu. Bez bufora — jak dotąd:
 // "Wczytywanie…" i czekanie.
 //
-// Mierzymy też czas odpowiedzi i pokazujemy go po wczytaniu — dane do oceny,
-// czy bufor rzeczywiście pomaga; z telefonu nie zajrzymy do konsoli.
+// Po wczytaniu status mówi, o której dane zostały pobrane („Zaktualizowano
+// 22:04”) — to użytkownika interesuje, a nie czas odpowiedzi serwera (ten pomiar
+// był potrzebny tylko przy ocenie bufora, BACKLOG pkt 12).
 // Spóźniona odpowiedź z poprzedniego otwarcia ekranu jest ignorowana
 // (licznik generacji, jak w ekranie Kocioł).
 //
 // Używana też przez sekcję historii na ekranie Kocioł — stąd `czyAktualny`:
 // każdy ekran sprawdza aktualność swoim licznikiem generacji.
 export async function wczytajBlokPodgladu(czyAktualny, blok) {
-  const start = performance.now();
   const zBufora = odczytajBufor(blok.klucz);
 
   if (zBufora) {
@@ -135,8 +135,10 @@ export async function wczytajBlokPodgladu(czyAktualny, blok) {
       if (!zBufora || JSON.stringify(zBufora.dane) !== JSON.stringify(wynik)) {
         blok.renderuj(wynik);
       }
-      const sekundy = ((performance.now() - start) / 1000).toFixed(1).replace('.', ',');
-      ustawStatusBloku(blok.status, `Wczytano w ${sekundy} s`, 'info');
+      const teraz = new Date();
+      const dwie = (n) => String(n).padStart(2, '0');
+      ustawStatusBloku(blok.status,
+        `Zaktualizowano ${dwie(teraz.getHours())}:${dwie(teraz.getMinutes())}`, 'info');
     } else {
       pokazBlad(wynik.blad || 'błąd webhooka');
     }

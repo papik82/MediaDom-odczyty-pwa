@@ -62,7 +62,7 @@ export function pobierzHistorieKotla(dni = 365, ile = 6) {
   return wyslij({ akcja: 'historia_kotla', dni, ile });
 }
 
-// Ekran podglądu (punkt 6 backlogu) — tylko do odczytu, dwa niezależne
+// Ekrany Odczyty i Temperatury — tylko do odczytu, dwa niezależne
 // zapytania zamiast jednego łączonego: każde ma swój, prosty kontrakt,
 // tak jak reszta akcji w tym pliku.
 export function pobierzOstatnieOdczyty(ile = 30) {
@@ -75,7 +75,7 @@ export function pobierzTemperaturyDobowe(dni = 30) {
 
 // Średnie godzinowe jednej doby (data "RRRR-MM-DD") — do wykresu, który
 // rozwija się po stuknięciu dnia w tabeli temperatur (od 0.21.0).
-// Pobierane dopiero na żądanie, nie razem z całym Podglądem.
+// Pobierane dopiero na żądanie, nie razem z całą listą dni.
 export function pobierzTemperaturyGodzinowe(data) {
   return wyslij({ akcja: 'temperatury_godzinowe', data });
 }

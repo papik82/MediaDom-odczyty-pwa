@@ -6,7 +6,7 @@ import { czyUstawieniaZapisane } from '../ustawienia.js';
 import { zapiszKociol, pobierzOstatnieNastawyKotla } from '../webhook.js';
 import { dodajDoKolejki } from '../kolejka.js';
 import { aktualizujKomunikatKolejki } from '../kolejka-wysylka.js';
-import { sformatujDataGodzinaLokalnie, MIN_ODSTEP_POBRANIA_MS } from '../wspolne.js';
+import { element, sformatujDataGodzinaLokalnie, MIN_ODSTEP_POBRANIA_MS } from '../wspolne.js';
 import {
   ETYKIETY_TRYBU, obwodyTrybu, liczbaAlboNull, dopelnijGodzine, serializujCyrkulacje,
   sparsujCyrkulacje, czyTeSameNastawy,
@@ -134,15 +134,20 @@ opcjeTrybu.forEach((przycisk) => {
 ustawTryb('off');
 
 function dodajPrzedzialCyrkulacji(godzinaOd = '', godzinaDo = '') {
-  const wiersz = document.createElement('div');
-  wiersz.className = 'przedzial-cyrkulacji';
-  wiersz.innerHTML = `
-    <input type="time" class="cyrkulacja-od" value="${dopelnijGodzine(godzinaOd)}">
-    <span class="przedzial-cyrkulacji__lacznik">–</span>
-    <input type="time" class="cyrkulacja-do" value="${dopelnijGodzine(godzinaDo)}">
-    <button type="button" class="przycisk-usun-przedzial" aria-label="Usuń przedział">✕</button>
-  `;
-  wiersz.querySelector('.przycisk-usun-przedzial').addEventListener('click', () => wiersz.remove());
+  // Godziny pochodzą z arkusza (tekst „cyrkulacja”), więc pola budujemy przez DOM
+  // i `value`, a nie przez innerHTML z wstawioną wartością.
+  const wiersz = element('div', 'przedzial-cyrkulacji');
+  const od = element('input', 'cyrkulacja-od');
+  od.type = 'time';
+  od.value = dopelnijGodzine(godzinaOd);
+  const do_ = element('input', 'cyrkulacja-do');
+  do_.type = 'time';
+  do_.value = dopelnijGodzine(godzinaDo);
+  const usun = element('button', 'przycisk-usun-przedzial', '✕');
+  usun.type = 'button';
+  usun.setAttribute('aria-label', 'Usuń przedział');
+  usun.addEventListener('click', () => wiersz.remove());
+  wiersz.append(od, element('span', 'przedzial-cyrkulacji__lacznik', '–'), do_, usun);
   listaCyrkulacji.appendChild(wiersz);
 }
 
@@ -289,7 +294,7 @@ function otworzKociol() {
   wczytajOstatnieNastawyKotla(generacjaKotla);
 
   // Historia zmian — niezależnie od podpowiedzi formularza: własne żądanie,
-  // własny wiersz statusu i bufor, tak jak bloki Podglądu.
+  // własny wiersz statusu i bufor, tak jak bloki ekranów Odczyty i Temperatury.
   const generacja = generacjaKotla;
   otworzHistorieKotla(() => generacja === generacjaKotla);
 }

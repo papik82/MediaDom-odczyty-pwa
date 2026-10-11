@@ -7,7 +7,7 @@ import { element, liczbaPL, svg } from '../wspolne.js';
 // ---------------------------------------------------------------------------
 // Wykres doby (od 0.21.0) — rozwija się pod stukniętym dniem w tabeli
 // temperatur. Dane godzinowe (akcja temperatury_godzinowe, z temp_godz)
-// pobieramy dopiero na żądanie i trzymamy w pamięci do zamknięcia Podglądu:
+// pobieramy dopiero na żądanie i trzymamy w pamięci do zamknięcia ekranu Temperatury:
 // historyczne godziny się nie zmieniają, więc ponowne rozwinięcie tego
 // samego dnia jest natychmiastowe.
 // ---------------------------------------------------------------------------

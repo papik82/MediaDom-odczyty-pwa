@@ -1,4 +1,5 @@
-// Bufor odpowiedzi webhooka w localStorage — dla ekranu Podgląd.
+// Bufor odpowiedzi webhooka w localStorage — dla ekranów Odczyty, Temperatury, Zbieracz,
+// Pomysły, historii kotła i pulpitu.
 //
 // Wzorzec "pokaż stare, odśwież w tle": ekran od razu rysuje ostatnio pobrane
 // dane, a świeża odpowiedź podmienia je, gdy dojdzie. Webhook Apps Script ma
