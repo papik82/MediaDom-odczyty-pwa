@@ -777,6 +777,82 @@ main {
   overflow: hidden;
 }
 
+.lista-faktur {
+  margin-top: 0.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Ostatnie faktury na karcie Faktura: nagłówek pozycji (okres i kwota brutto,
+   pod spodem m³ · kWh · dni) jest przyciskiem rozwijającym szczegóły okresów. */
+.faktura-pozycja {
+  border-bottom: 1px solid #eee;
+}
+
+.faktura-pozycja:last-child {
+  border-bottom: none;
+}
+
+.faktura-pozycja__glowa {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.faktura-pozycja__glowa:active {
+  background: var(--kolor-glowny-jasny);
+}
+
+.faktura-pozycja__gora {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.faktura-pozycja__okres {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.faktura-pozycja__kwota {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.faktura-pozycja__dol {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.faktura-pozycja__szczegoly {
+  padding: 0 0.9rem 0.7rem;
+  font-size: 0.8rem;
+  color: #444;
+}
+
+.faktura-pozycja__szczegoly p {
+  margin: 0.2rem 0;
+}
+
+.faktura-pozycja__numer {
+  font-weight: 600;
+}
+
+.faktura-pozycja__uwagi {
+  color: #777;
+  font-style: italic;
+}
+
 .wiersz-odczytu {
   display: flex;
   align-items: baseline;

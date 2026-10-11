@@ -3,6 +3,23 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.13.0 — 2026-10-11
+
+### Dodane
+- **Karta „Faktura” pokazuje listę ostatnich faktur** (BACKLOG pkt 38) pod
+  przyciskami importu: okres rozliczeniowy, kwota brutto oraz „m³ · kWh · dni”.
+  Stuknięcie faktury rozwija numer i szczegóły okresów (m³, kWh, współczynnik,
+  brutto, uwagi) — tylko podgląd. Do 12 faktur (ok. dwa lata); brutto wyliczone
+  z okresów (brak kwoty z faktury) oznaczone gwiazdką.
+- Nowa akcja webhooka `ostatnie_faktury` (wersja 48, kontrakt w
+  `apps-script/CLAUDE.md`) i atrapa w `.claude/mock_webhook.py`.
+- Lista przez bufor „stare, potem świeże” (`ostatnie_faktury`, status
+  „Zaktualizowano HH:MM”); po zapisie nowej faktury bufor jest unieważniany, a lista
+  chowa się, gdy otwarty jest formularz.
+- Liczby z twardą spacją tysięcy („1 134”, „1 468,88 zł”) — własny zapis, bo
+  `toLocaleString('pl-PL')` nie grupuje liczb czterocyfrowych.
+- `sw.js`: `WERSJA_CACHE` v64.
+
 ## 1.12.0 — 2026-10-11
 
 ### Zmienione

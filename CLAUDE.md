@@ -135,7 +135,10 @@ w `js/ekrany/zbieracz.js`). Wiek pulsu („37 min temu”) liczy telefon od znac
 i sygnał Zigbee (`opiszStanCzujnika`; `PROG_BATERII_CZUJNIKA` = 20 — ta sama
 wartość co w `apps-script/luki.js`).
 
-**Karta „Faktura”** (od 1.3.0) — import faktury za gaz z PDF: plik
+**Karta „Faktura”** — od 1.13.0 na górze lista ostatnich faktur z arkusza
+(akcja `ostatnie_faktury`, do 12, przez bufor; stuknięcie rozwija szczegóły
+okresów, tylko podgląd; lista chowa się przy otwartym formularzu, a po zapisie
+nowej faktury bufor jest unieważniany). Poniżej import (od 1.3.0) — import faktury za gaz z PDF: plik
 (base64) → `odczytaj_fakture` (Gemini proponuje, nic nie zapisuje) →
 formularz → `zapisz_fakture`. Zasada jak przy zdjęciu licznika: **model
 podpowiada, zapis tylko po zatwierdzeniu**. Kontrole na ekranie

@@ -330,6 +330,15 @@
       <input type="file" id="plik-faktury" accept="application/pdf" class="ukryty">
       <p id="status-faktury" class="status-bloku ukryty" role="status"></p>
 
+      <!-- Ostatnie faktury z arkusza (od 1.13.0) — tylko do odczytu; stuknięcie
+           faktury pokazuje szczegóły okresów. Znika, gdy otwarty jest formularz
+           nowej faktury. -->
+      <div id="blok-listy-faktur">
+        <h3 class="podglad__naglowek">Ostatnie faktury</h3>
+        <p id="status-listy-faktur" class="status-bloku ukryty" role="status"></p>
+        <div id="lista-faktur" class="lista-faktur"></div>
+      </div>
+
       <form id="formularz-faktury" class="ukryty">
         <div id="ciaglosc-faktury" class="faktura__ciaglosc"></div>
         <label class="pole-formularza">

@@ -117,6 +117,12 @@ export function zapiszFakture(faktura) {
   return wyslij({ akcja: 'zapisz_fakture', ...faktura });
 }
 
+// Lista ostatnich faktur z zakładki `faktury` (tylko do odczytu, od 1.13.0):
+// jedna pozycja na fakturę (okres, m³, kWh, brutto) ze szczegółami okresów.
+export function pobierzOstatnieFaktury(ile = 12) {
+  return wyslij({ akcja: 'ostatnie_faktury', ile });
+}
+
 export function pobierzPomysly(ile = 10) {
   return wyslij({ akcja: 'lista_pomyslow', status: 'wszystkie', ile });
 }
