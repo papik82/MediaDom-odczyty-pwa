@@ -367,7 +367,8 @@ i `preview.html` do systemu.
 z systemu. Makieta nie zmienia kontraktu webhooka ani zasad z tego pliku
 (zapis po zatwierdzeniu, działanie offline, polski interfejs).
 
-**Krok 0 (jednorazowo):**
+**Krok 0 (jednorazowo) — zrobiony 2026-10-11** (PWA 1.13.1; ikony wgrane
+do systemu, grupa „Ikony”, 15 plików):
 - Zamień w `styl.css` literały kolorów, odstępów, promieni i cieni na
   `var(--token)` według `project/tokens.json`, dodaj linię wersji.
   Wygląd ma zostać identyczny — porównaj zrzuty pulpitu przed i po
