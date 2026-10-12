@@ -3,7 +3,7 @@
 
 import { MEDIA } from '../media.js';
 import { pobierzOstatnieOdczyty, pobierzTemperaturyDobowe } from '../webhook.js';
-import { element, formatujDataGodzinePodgladu, liczbaPL, wczytajBlokPodgladu } from '../wspolne.js';
+import { element, liczbaPL, wczytajBlokPodgladu } from '../wspolne.js';
 import { pokazEkran, ekranStart, ukryjKomunikatStart } from '../nawigacja.js';
 import { poUstawieniach } from './ustawienia.js';
 import {
@@ -31,29 +31,43 @@ let generacjaPodgladu = 0;
 // się nie udać osobno (np. jedno się wczyta, drugie pokaże błąd), więc
 // obsługujemy je niezależnie zamiast jednym wspólnym try/catch.
 
-// Opis przyrostu dobowego pod stanem licznika (BACKLOG pkt 42). Liczby daje
+// Data na liście Odczyty w skróconej formie, żeby cztery kolumny zmieściły się
+// w jednej linii na wąskim ekranie: bieżący rok bez roku („12.10 17:28”),
+// starsze z dwiema cyframi roku („18.06.24 17:30”). Pełna data jest w arkuszu.
+function skrocDate(tekstIso) {
+  const data = tekstIso ? new Date(tekstIso) : null;
+  if (!data || Number.isNaN(data.getTime())) return tekstIso || '—';
+  const dwie = (l) => String(l).padStart(2, '0');
+  const rok = data.getFullYear() === new Date().getFullYear() ? '' : `.${dwie(data.getFullYear() % 100)}`;
+  return `${dwie(data.getDate())}.${dwie(data.getMonth() + 1)}${rok} ${dwie(data.getHours())}:${dwie(data.getMinutes())}`;
+}
+
+// Przyrost na dobę w osobnej kolumnie listy (BACKLOG pkt 42; od 1.15.1 w tej
+// samej linii co stan, żeby nie zwiększać wysokości wiersza). Liczby daje
 // webhook (`przyrost_doba`, `dni_od_poprzedniego`, `przyrost_pominiety`) —
-// tutaj tylko tekst. Zwraca null, gdy nie ma czego pokazać (pierwszy odczyt
-// medium, starszy webhook bez tych pól).
+// tutaj tylko tekst. Jednostki nie powtarzamy: to ta sama co przy stanie, na
+// dobę (opisuje to akapit nad listą). Zwraca null, gdy nie ma czego pokazać
+// (pierwszy odczyt medium, starszy webhook bez tych pól), a w przeciwnym razie
+// { wartosc, dopisek } — dopisek jest przyciemniony, może być pusty.
 //
 // Zasada projektu: porównujemy wartości na dobę, nie surowe różnice, więc przy
-// dłuższym odstępie podajemy średnią z liczbą dób („śr. z 7 d”), a przy
-// wyraźnie krótszym niż doba — z ilu godzin, bo taka liczba jest mniej pewna.
-function opiszPrzyrost(odczyt, opisMedium) {
-  if (odczyt.przyrost_pominiety === 'wymiana') return '— wymiana licznika';
-  if (odczyt.przyrost_pominiety === 'spadek') return '— wskazanie spadło';
+// dłuższym odstępie dopisujemy, z ilu dób jest średnia („30 d”), a przy
+// wyraźnie krótszym niż doba — z ilu godzin („1 h”), bo taka liczba jest
+// mniej pewna.
+function opiszPrzyrost(odczyt) {
+  if (odczyt.przyrost_pominiety === 'wymiana') return { wartosc: '—', dopisek: 'wymiana' };
+  if (odczyt.przyrost_pominiety === 'spadek') return { wartosc: '—', dopisek: 'spadek' };
   if (typeof odczyt.przyrost_doba !== 'number') return null;
 
-  const jednostka = opisMedium ? ` ${opisMedium.jednostka}/d` : '/d';
-  let tekst = liczbaPL(Number(odczyt.przyrost_doba.toFixed(2))) + jednostka;
-
+  const wartosc = liczbaPL(Number(odczyt.przyrost_doba.toFixed(2)));
   const dni = odczyt.dni_od_poprzedniego;
+  let dopisek = '';
   if (typeof dni === 'number') {
     // Odczyty „codzienne” wypadają co 0,9–1,1 doby — to nie jest odstęp krótki.
-    if (dni < 0.75) tekst += ` · z ${Math.max(1, Math.round(dni * 24))} h`;
-    else if (dni >= 1.5) tekst += ` · śr. z ${Math.round(dni)} d`;
+    if (dni < 0.75) dopisek = `${Math.max(1, Math.round(dni * 24))} h`;
+    else if (dni >= 1.5) dopisek = `${Math.round(dni)} d`;
   }
-  return tekst;
+  return { wartosc, dopisek };
 }
 
 function renderujOstatnieOdczyty(odczyty) {
@@ -68,13 +82,17 @@ function renderujOstatnieOdczyty(odczyty) {
   odczyty.forEach((o) => {
     const opisMedium = MEDIA[o.medium];
     const wiersz = element('div', 'wiersz-odczytu');
-    wiersz.appendChild(element('span', 'wiersz-odczytu__data', formatujDataGodzinePodgladu(o.data_godzina)));
+    wiersz.appendChild(element('span', 'wiersz-odczytu__data', skrocDate(o.data_godzina)));
     wiersz.appendChild(element('span', 'wiersz-odczytu__medium', opisMedium ? opisMedium.nazwa : o.medium));
-    const stan = element('span', 'wiersz-odczytu__stan',
-      `${o.stan}${opisMedium ? ' ' + opisMedium.jednostka : ''}`);
-    const przyrost = opiszPrzyrost(o, opisMedium);
-    if (przyrost) stan.appendChild(element('span', 'wiersz-odczytu__przyrost', przyrost));
-    wiersz.appendChild(stan);
+    wiersz.appendChild(element('span', 'wiersz-odczytu__stan',
+      `${o.stan}${opisMedium ? ' ' + opisMedium.jednostka : ''}`));
+    const przyrost = element('span', 'wiersz-odczytu__przyrost');
+    const opis = opiszPrzyrost(o);
+    if (opis) {
+      przyrost.appendChild(document.createTextNode(opis.wartosc));
+      if (opis.dopisek) przyrost.appendChild(element('span', 'wiersz-odczytu__dopisek', opis.dopisek));
+    }
+    wiersz.appendChild(przyrost);
     listaOstatnichOdczytow.appendChild(wiersz);
   });
 }

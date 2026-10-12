@@ -109,7 +109,7 @@ wcześniej jeden wspólny „Podgląd”) — tylko do odczytu, żeby sprawdzić
 z telefonu, co poszło do arkusza. „Odczyty” pokazuje ostatnie wpisy
 z `odczyty` (akcja `ostatnie_odczyty`), „Temperatury” — średnie dobowe
 z `temp_doba` (akcja `temperatury_dobowe`). Od 1.15.0 wpis na liście „Odczyty”
-ma pod stanem przyrost na dobę (`przyrost_doba` z webhooka, `opiszPrzyrost`
+ma w ostatniej kolumnie przyrost na dobę (`przyrost_doba` z webhooka, `opiszPrzyrost`
 w `js/ekrany/podglad.js`; „—” z powodem przy wymianie licznika). Każdy ekran pobiera tylko swoje
 dane, z buforem w `localStorage` (`js/bufor.js`) — ekran od razu pokazuje
 poprzednie dane, świeże je podmieniają — i ma własny wiersz statusu

@@ -3,6 +3,17 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.15.1 — 2026-10-12
+
+### Zmienione
+- **Karta Odczyty: przyrost na dobę w osobnej kolumnie** zamiast drugiego
+  wiersza pod stanem — wpis znów zajmuje jedną linię (42 px), lista nie rośnie.
+  Żeby cztery kolumny zmieściły się na 375 px: data skrócona (bieżący rok bez
+  roku, starsze z dwiema cyframi roku), mniejsze odstępy, jednostka przyrostu
+  tylko przy stanie (to ta sama, na dobę). Dopisek po wartości: „30 d” / „1 h”
+  (z ilu dób lub godzin), „wymiana” / „spadek” przy braku liczby. Opis nad
+  listą wyjaśnia kolumnę.
+
 ## 1.15.0 — 2026-10-12
 
 ### Dodane
