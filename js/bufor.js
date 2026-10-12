@@ -39,6 +39,18 @@ export function odczytajBufor(klucz) {
   }
 }
 
+// Lista Odczyty ma osobny bufor dla każdego filtra (wszystko / gaz / prąd / woda).
+// Po zapisie nowego odczytu wszystkie są nieaktualne.
+export const FILTRY_ODCZYTOW = ['', 'gaz', 'prad', 'woda'];
+
+export function kluczBuforaOdczytow(filtr) {
+  return filtr ? `ostatnie_odczyty_${filtr}` : 'ostatnie_odczyty';
+}
+
+export function wyczyscBuforOdczytow() {
+  FILTRY_ODCZYTOW.forEach((filtr) => wyczyscBuforKlucz(kluczBuforaOdczytow(filtr)));
+}
+
 export function wyczyscBuforKlucz(klucz) {
   try {
     localStorage.removeItem(PREFIKS + klucz);

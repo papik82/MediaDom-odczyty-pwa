@@ -8,7 +8,7 @@ import { wyslijOdczyt, rozpoznajZdjecie } from '../webhook.js';
 import { zrobZdjecie, wybierzZGalerii, blobDoBase64 } from '../aparat.js';
 import { dodajDoKolejki } from '../kolejka.js';
 import { aktualizujKomunikatKolejki } from '../kolejka-wysylka.js';
-import { wyczyscBuforKlucz } from '../bufor.js';
+import { wyczyscBuforOdczytow } from '../bufor.js';
 import { sformatujDataGodzinaLokalnie, zrodloOdczytu, ustawUwageCzasu } from '../wspolne.js';
 import { pokazEkran, ekranStart, pokazKomunikatStart, ukryjKomunikatStart } from '../nawigacja.js';
 import { otworzUstawienia } from './ustawienia.js';
@@ -222,7 +222,7 @@ formularzPotwierdzenia.addEventListener('submit', async (zdarzenie) => {
 
     // Lista ostatnich odczytów w buforze jest już nieaktualna (doszedł nowy
     // wpis) — wyrzucamy ją, żeby ekran Odczyty nie pokazał najpierw listy bez niego.
-    wyczyscBuforKlucz('ostatnie_odczyty');
+    wyczyscBuforOdczytow();
     pokazKomunikatStart(`Zapisano: ${opisMedium.nazwa} — ${poleStan.value} ${opisMedium.jednostka} ` +
       `(poprzedni stan: ${odpowiedz.poprzedni_stan}, przyrost: ${odpowiedz.przyrost}).`);
     zwolnijPodgladZdjecia();

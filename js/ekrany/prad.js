@@ -6,7 +6,7 @@ import { wyslijOdczyt, rozpoznajZdjecie } from '../webhook.js';
 import { zrobZdjecie, wybierzZGalerii, blobDoBase64 } from '../aparat.js';
 import { dodajDoKolejki } from '../kolejka.js';
 import { aktualizujKomunikatKolejki } from '../kolejka-wysylka.js';
-import { wyczyscBuforKlucz } from '../bufor.js';
+import { wyczyscBuforOdczytow } from '../bufor.js';
 import { sformatujDataGodzinaLokalnie, zrodloOdczytu, ustawUwageCzasu } from '../wspolne.js';
 import { pokazEkran, ekranStart, pokazKomunikatStart, ukryjKomunikatStart } from '../nawigacja.js';
 import { otworzUstawienia } from './ustawienia.js';
@@ -295,7 +295,7 @@ formularzPradu.addEventListener('submit', async (zdarzenie) => {
     przyciskZapiszPrad.disabled = false;
   }
 
-  if (zapisane.length > 0) wyczyscBuforKlucz('ostatnie_odczyty');
+  if (zapisane.length > 0) wyczyscBuforOdczytow();
   aktualizujKomunikatKolejki();
   if (generacja !== generacjaPradu) return; // ktoś wyszedł z ekranu w trakcie
 

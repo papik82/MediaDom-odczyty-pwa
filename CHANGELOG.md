@@ -3,6 +3,18 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.16.0 — 2026-10-12
+
+### Dodane
+- **Karta Odczyty: filtr mediów u góry** — `Wszystko · Gaz · Prąd · Woda`
+  (Prąd = T1, T2 i suma razem). Ten sam segmentowy przełącznik z przesuwającym
+  się wskaźnikiem co tryb kotła. Filtr działa na serwerze (opcjonalny parametr
+  `medium` akcji `ostatnie_odczyty`, wersja 51 wdrożenia), więc każdy filtr
+  pokazuje do 20 wpisów swojego medium, także gdy leżą daleko w historii.
+  Każdy filtr ma własny bufor „stare, potem świeże”; zapis odczytu czyści
+  wszystkie (`wyczyscBuforOdczytow` w `js/bufor.js`). Wybór pamiętany do
+  zamknięcia aplikacji. Opis nad listą skrócony. Atrapa webhooka obsługuje filtr.
+
 ## 1.15.2 — 2026-10-12
 
 ### Zmienione

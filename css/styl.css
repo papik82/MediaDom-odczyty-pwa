@@ -981,6 +981,12 @@ body:has(#ekran-start:not(.ukryty)) main {
   cursor: default;
 }
 
+/* Filtr mediów na liście Odczyty — ten sam segment co tryb kotła, tylko
+   z odstępem pod opisem i nad listą. */
+.segment-filtr {
+  margin: var(--odstep-4) 0;
+}
+
 .przyciski-formularza {
   display: flex;
   flex-direction: column;

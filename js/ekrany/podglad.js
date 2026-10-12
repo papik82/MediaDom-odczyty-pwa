@@ -3,6 +3,7 @@
 
 import { MEDIA } from '../media.js';
 import { pobierzOstatnieOdczyty, pobierzTemperaturyDobowe } from '../webhook.js';
+import { kluczBuforaOdczytow } from '../bufor.js';
 import { element, liczbaPL, wczytajBlokPodgladu } from '../wspolne.js';
 import { pokazEkran, ekranStart, ukryjKomunikatStart } from '../nawigacja.js';
 import { poUstawieniach } from './ustawienia.js';
@@ -19,6 +20,9 @@ const przyciskZamknijTemperatury = document.getElementById('przycisk-zamknij-tem
 const listaOstatnichOdczytow = document.getElementById('lista-ostatnich-odczytow');
 const tabelaTemperatur = document.getElementById('tabela-temperatur');
 const statusOdczytow = document.getElementById('status-odczytow');
+const segmentFiltru = document.getElementById('segment-filtr-odczytow');
+const wskaznikFiltru = segmentFiltru.querySelector('.segment-tryb__wskaznik');
+const opcjeFiltru = Array.from(segmentFiltru.querySelectorAll('.segment-tryb__opcja'));
 const statusTemperatur = document.getElementById('status-temperatur');
 
 // Ta sama rola co generacjaKotla/generacjaPotwierdzenia — chroni podgląd
@@ -166,20 +170,51 @@ const ILE_POZYCJI_PODGLADU = 20;
 // (wcześniej jeden ekran czekał na dwa zapytania naraz). Wspólny licznik
 // generacji wystarcza, bo naraz widać najwyżej jeden z tych ekranów:
 // spóźniona odpowiedź z poprzedniego otwarcia nie narysuje się w nowym.
-function otworzOdczyty() {
-  ukryjKomunikatStart();
+// Wybrany filtr mediów na liście Odczyty: '' (wszystko), 'gaz', 'prad' (T1, T2
+// i suma) albo 'woda'. Pamiętany tylko do zamknięcia aplikacji — po ponownym
+// uruchomieniu lista znów pokazuje wszystko.
+let filtrOdczytow = '';
+
+// Wskaźnik segmentu stoi pod wybranym przyciskiem. Pozycję liczymy z realnego
+// położenia przycisku (jak przy trybie kotła), więc ekran musi być już widoczny
+// — na ukrytym offsetWidth to 0.
+function ustawWskaznikFiltru() {
+  const wybrana = opcjeFiltru.find((o) => o.dataset.wartosc === filtrOdczytow);
+  if (!wybrana) return;
+  opcjeFiltru.forEach((o) => o.setAttribute('aria-checked', String(o === wybrana)));
+  wskaznikFiltru.style.width = `${wybrana.offsetWidth}px`;
+  wskaznikFiltru.style.transform = `translateX(${wybrana.offsetLeft}px)`;
+}
+
+// Wczytuje listę dla bieżącego filtra. Każdy filtr ma własny bufor, więc
+// przełączenie na wcześniej oglądane medium pokazuje je od razu.
+function wczytajOdczyty() {
   generacjaPodgladu++;
   const generacja = generacjaPodgladu;
   listaOstatnichOdczytow.innerHTML = '';
-  pokazEkran(ekranOdczyty);
+  const filtr = filtrOdczytow;
 
   wczytajBlokPodgladu(() => generacja === generacjaPodgladu, {
     status: statusOdczytow,
-    klucz: 'ostatnie_odczyty',
-    pobierz: () => pobierzOstatnieOdczyty(ILE_POZYCJI_PODGLADU),
+    klucz: kluczBuforaOdczytow(filtr),
+    pobierz: () => pobierzOstatnieOdczyty(ILE_POZYCJI_PODGLADU, filtr),
     renderuj: (wynik) => renderujOstatnieOdczyty(wynik.odczyty),
   });
 }
+
+function otworzOdczyty() {
+  ukryjKomunikatStart();
+  pokazEkran(ekranOdczyty);
+  ustawWskaznikFiltru();
+  wczytajOdczyty();
+}
+
+opcjeFiltru.forEach((opcja) => opcja.addEventListener('click', () => {
+  if (opcja.dataset.wartosc === filtrOdczytow) return;
+  filtrOdczytow = opcja.dataset.wartosc;
+  ustawWskaznikFiltru();
+  wczytajOdczyty();
+}));
 
 function otworzTemperatury() {
   ukryjKomunikatStart();

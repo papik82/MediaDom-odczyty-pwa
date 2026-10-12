@@ -5,7 +5,7 @@
 import { MEDIA } from './media.js';
 import { wyslij, pobierzOstatnieOdczyty, pobierzOstatnieNastawyKotla } from './webhook.js';
 import { liczbaWKolejce, pobierzKolejke, usunPierwszyZKolejki } from './kolejka.js';
-import { wyczyscBuforKlucz } from './bufor.js';
+import { wyczyscBuforKlucz, wyczyscBuforOdczytow } from './bufor.js';
 import { ETYKIETY_TRYBU, czyTeSameNastawy } from './nastawy.js';
 import { pokazKomunikatStart } from './nawigacja.js';
 
@@ -160,7 +160,7 @@ export async function przetworzKolejkeOffline() {
   // Przy wpisach, które już były w arkuszu, też czyścimy bufor: ekran Odczyty
   // mógł zapamiętać listę sprzed ich pierwszej (udanej) wysyłki.
   if (wyslanychOk > 0 || juzWArkuszu.length > 0) {
-    wyczyscBuforKlucz('ostatnie_odczyty');
+    wyczyscBuforOdczytow();
     wyczyscBuforKlucz('pomysly');   // pomysł z kolejki doszedł — lista w buforze jest stara
   }
 

@@ -65,8 +65,11 @@ export function pobierzHistorieKotla(dni = 365, ile = 6) {
 // Ekrany Odczyty i Temperatury — tylko do odczytu, dwa niezależne
 // zapytania zamiast jednego łączonego: każde ma swój, prosty kontrakt,
 // tak jak reszta akcji w tym pliku.
-export function pobierzOstatnieOdczyty(ile = 30) {
-  return wyslij({ akcja: 'ostatnie_odczyty', ile });
+// `medium` opcjonalne: 'gaz' | 'woda' | 'prad' (prąd = T1, T2 i suma) — filtr
+// działa na serwerze, żeby lista pokazała `ile` wpisów TEGO medium, a nie tylko
+// to, co wpadło w ostatnie wpisy wszystkich mediów.
+export function pobierzOstatnieOdczyty(ile = 30, medium = '') {
+  return wyslij(medium ? { akcja: 'ostatnie_odczyty', ile, medium } : { akcja: 'ostatnie_odczyty', ile });
 }
 
 export function pobierzTemperaturyDobowe(dni = 30) {

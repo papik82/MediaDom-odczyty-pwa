@@ -290,7 +290,14 @@
          / błąd). -->
     <section id="ekran-odczyty" class="ekran ukryty">
       <h2>Odczyty</h2>
-      <p class="opis-ekranu">Ostatnie wpisy z arkusza, wszystkie media razem. Środkowa kolumna: przyrost na dobę.</p>
+      <p class="opis-ekranu">Ostatnie wpisy z arkusza. Środkowa kolumna: przyrost na dobę.</p>
+      <div class="segment-tryb segment-filtr" id="segment-filtr-odczytow" role="radiogroup" aria-label="Filtr mediów">
+        <span class="segment-tryb__wskaznik" aria-hidden="true"></span>
+        <button type="button" class="segment-tryb__opcja" data-wartosc="" role="radio" aria-checked="true">Wszystko</button>
+        <button type="button" class="segment-tryb__opcja" data-wartosc="gaz" role="radio" aria-checked="false">Gaz</button>
+        <button type="button" class="segment-tryb__opcja" data-wartosc="prad" role="radio" aria-checked="false">Prąd</button>
+        <button type="button" class="segment-tryb__opcja" data-wartosc="woda" role="radio" aria-checked="false">Woda</button>
+      </div>
       <p id="status-odczytow" class="status-bloku ukryty" role="status"></p>
       <div id="lista-ostatnich-odczytow" class="lista-odczytow"></div>
 

@@ -107,7 +107,8 @@ w archiwum; odczyt przyjmuje też przecinek (od 1.1.1, `../dokumentacja/decyzje.
 **Karty „Odczyty” i „Temperatury”** (nie media; od 0.22.0 dwa osobne ekrany,
 wcześniej jeden wspólny „Podgląd”) — tylko do odczytu, żeby sprawdzić
 z telefonu, co poszło do arkusza. „Odczyty” pokazuje ostatnie wpisy
-z `odczyty` (akcja `ostatnie_odczyty`), „Temperatury” — średnie dobowe
+z `odczyty` (akcja `ostatnie_odczyty`; od 1.16.0 z filtrem mediów Wszystko / Gaz / Prąd /
+Woda — parametr `medium`, osobny bufor na filtr), „Temperatury” — średnie dobowe
 z `temp_doba` (akcja `temperatury_dobowe`). Od 1.15.0 wpis na liście „Odczyty”
 ma kolumnę przyrostu na dobę przed stanem (`przyrost_doba` z webhooka, `opiszPrzyrost`
 w `js/ekrany/podglad.js`; od 1.15.2 z jednostką i bez dopisków, „—” przy wymianie
