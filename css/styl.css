@@ -1185,6 +1185,14 @@ body:has(#ekran-start:not(.ukryty)) main {
 .wiersz-odczytu__stan {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  text-align: right;
+}
+
+/* Przyrost na dobę pod stanem licznika (karta Odczyty, od 1.15.0). */
+.wiersz-odczytu__przyrost {
+  display: block;
+  color: var(--tekst-drugorzedny);
+  font-size: 0.75rem;
 }
 
 /* Uwaga pod polem daty na ekranie potwierdzenia: skąd wzięła się godzina. */

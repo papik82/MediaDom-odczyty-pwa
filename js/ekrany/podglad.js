@@ -3,7 +3,7 @@
 
 import { MEDIA } from '../media.js';
 import { pobierzOstatnieOdczyty, pobierzTemperaturyDobowe } from '../webhook.js';
-import { element, formatujDataGodzinePodgladu, wczytajBlokPodgladu } from '../wspolne.js';
+import { element, formatujDataGodzinePodgladu, liczbaPL, wczytajBlokPodgladu } from '../wspolne.js';
 import { pokazEkran, ekranStart, ukryjKomunikatStart } from '../nawigacja.js';
 import { poUstawieniach } from './ustawienia.js';
 import {
@@ -31,6 +31,31 @@ let generacjaPodgladu = 0;
 // się nie udać osobno (np. jedno się wczyta, drugie pokaże błąd), więc
 // obsługujemy je niezależnie zamiast jednym wspólnym try/catch.
 
+// Opis przyrostu dobowego pod stanem licznika (BACKLOG pkt 42). Liczby daje
+// webhook (`przyrost_doba`, `dni_od_poprzedniego`, `przyrost_pominiety`) —
+// tutaj tylko tekst. Zwraca null, gdy nie ma czego pokazać (pierwszy odczyt
+// medium, starszy webhook bez tych pól).
+//
+// Zasada projektu: porównujemy wartości na dobę, nie surowe różnice, więc przy
+// dłuższym odstępie podajemy średnią z liczbą dób („śr. z 7 d”), a przy
+// wyraźnie krótszym niż doba — z ilu godzin, bo taka liczba jest mniej pewna.
+function opiszPrzyrost(odczyt, opisMedium) {
+  if (odczyt.przyrost_pominiety === 'wymiana') return '— wymiana licznika';
+  if (odczyt.przyrost_pominiety === 'spadek') return '— wskazanie spadło';
+  if (typeof odczyt.przyrost_doba !== 'number') return null;
+
+  const jednostka = opisMedium ? ` ${opisMedium.jednostka}/d` : '/d';
+  let tekst = liczbaPL(Number(odczyt.przyrost_doba.toFixed(2))) + jednostka;
+
+  const dni = odczyt.dni_od_poprzedniego;
+  if (typeof dni === 'number') {
+    // Odczyty „codzienne” wypadają co 0,9–1,1 doby — to nie jest odstęp krótki.
+    if (dni < 0.75) tekst += ` · z ${Math.max(1, Math.round(dni * 24))} h`;
+    else if (dni >= 1.5) tekst += ` · śr. z ${Math.round(dni)} d`;
+  }
+  return tekst;
+}
+
 function renderujOstatnieOdczyty(odczyty) {
   listaOstatnichOdczytow.innerHTML = '';
 
@@ -45,8 +70,11 @@ function renderujOstatnieOdczyty(odczyty) {
     const wiersz = element('div', 'wiersz-odczytu');
     wiersz.appendChild(element('span', 'wiersz-odczytu__data', formatujDataGodzinePodgladu(o.data_godzina)));
     wiersz.appendChild(element('span', 'wiersz-odczytu__medium', opisMedium ? opisMedium.nazwa : o.medium));
-    wiersz.appendChild(element('span', 'wiersz-odczytu__stan',
-      `${o.stan}${opisMedium ? ' ' + opisMedium.jednostka : ''}`));
+    const stan = element('span', 'wiersz-odczytu__stan',
+      `${o.stan}${opisMedium ? ' ' + opisMedium.jednostka : ''}`);
+    const przyrost = opiszPrzyrost(o, opisMedium);
+    if (przyrost) stan.appendChild(element('span', 'wiersz-odczytu__przyrost', przyrost));
+    wiersz.appendChild(stan);
     listaOstatnichOdczytow.appendChild(wiersz);
   });
 }

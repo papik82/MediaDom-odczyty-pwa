@@ -3,6 +3,20 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.15.0 — 2026-10-12
+
+### Dodane
+- **Karta Odczyty: przyrost na dobę przy każdym odczycie** (BACKLOG pkt 42).
+  Pod stanem licznika mały wiersz „4,36 m³/d” (prąd: kWh/d). Przyrost liczy
+  webhook (wersja 50 wdrożenia) względem poprzedniego odczytu tego samego
+  medium, z dokładnych znaczników czasu — PWA tylko wyświetla. Przy odstępie
+  od 1,5 doby dopisek „śr. z N d”, przy odstępie krótszym niż 0,75 doby „z N h”
+  (taka liczba jest mniej pewna). Gdy wskazanie spadło albo uwagi mówią
+  o wymianie licznika, zamiast liczby „— wskazanie spadło” / „— wymiana
+  licznika”; pierwszy odczyt medium — bez wiersza. Starszy webhook bez nowych
+  pól: lista wygląda jak dotąd. Atrapa `.claude/mock_webhook.py` zwraca wpisy
+  ze wszystkimi przypadkami.
+
 ## 1.14.2 — 2026-10-12
 
 ### Zmienione
