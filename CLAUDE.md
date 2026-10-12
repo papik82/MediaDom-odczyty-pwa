@@ -347,8 +347,11 @@ wartości w `:root`.
    = `--` + nazwa tokenu (kolory, odstępy, promienie, cienie, rozmiary).
    Token, którego nie ma w CSS, dopisz; zmiennej, której nie ma w
    systemie, nie usuwaj — wypisz ją w relacji.
-3. Kolor `kolor-glowny` dodatkowo w `<meta name="theme-color">`
-   (index.html), `theme_color` w manifest.json i liniach `ikony/*.svg`.
+3. Token `pasek-systemowy` (od wersji 2; wcześniej `kolor-glowny`) dodatkowo
+  w `<meta name="theme-color">` (index.html) i `theme_color` w
+  manifest.json. Kolory linii `ikony/*.svg` według
+  `project/assets/Ikony/README.md` (od wersji 2 każda ikona ma kolor
+  swojego kafla).
 4. Przeczytaj `project/README.md` i README zmienionych komponentów;
    jeśli zasady (np. układ kafli) się zmieniły, dostosuj HTML i CSS.
 5. Podbij numer w pierwszej linii `styl.css` i wydaj zmianę według

@@ -1,4 +1,4 @@
-/* system-projektowy: wersja 3 */
+/* system-projektowy: wersja 4 */
 /* Wygląd pochodzi z systemu projektowego MediaDom (Claude Design) — zasady
    synchronizacji w CLAUDE.md, sekcja „System projektowy”. Wartości poniżej
    to kopia z project/tokens.json; w dalszej części pliku nie wpisujemy
@@ -25,7 +25,10 @@
   --linia-siatki: #e3e7ec;
   --obrys-pola: #cccccc;
   --obrys-ramki: #d6d9e8;
-  --przycisk-drugorzedny: #e0e0e0;
+  --przycisk-drugorzedny: #ffffff;
+  --zielen-akcji: #2f5b45;
+  --zielen-akcji-ciemna: #234737;
+  --zielen-akcji-jasna: #dcefe3;
   --pole-nieaktywne-tlo: #eef1f4;
   --pole-nieaktywne-obrys: #e0e3e7;
   --neutralny-tlo: #ececec;
@@ -92,7 +95,7 @@
   --ikona-wzgorze-dalsze: #2a5240;
   --ikona-wzgorze-blizsze: #224636;
 
-  /* gradienty (tło strony, nagłówka i kafli pulpitu) */
+  /* gradienty (tło strony, nagłówka, przycisku głównego i kafli pulpitu) */
   --gradient-strony: linear-gradient(180deg, #e6f4ec 0%, #f4f4e2 46%, #fbefe4 100%);
   --gradient-naglowka: linear-gradient(170deg, #cfe8f2 0%, #d8eedd 55%, #e9f2c9 100%);
   --gradient-gaz: linear-gradient(120deg, #e7ebff 0%, #ccd5fb 100%);
@@ -102,6 +105,7 @@
   --gradient-kociol: linear-gradient(160deg, #ffffff 0%, #fdeee6 100%);
   --gradient-zbieracz: linear-gradient(160deg, #ffffff 0%, #e8f5ec 100%);
   --gradient-uwagi: linear-gradient(90deg, #fff1d6 0%, #fff8ea 100%);
+  --gradient-przycisku: linear-gradient(160deg, #3d7a5e 0%, #2f5b45 100%);
 
   /* odstępy */
   --odstep-1: 0.25rem;
@@ -125,7 +129,7 @@
   --promien-rzadkie: 16px;
   --promien-pigulka: 999px;
 
-  /* cienie */
+  /* cienie i obrysy */
   --cien-kafel: 0 6px 16px rgba(47, 91, 69, 0.10);
   --cien-prad: 0 6px 14px rgba(160, 120, 20, 0.12);
   --cien-woda: 0 6px 14px rgba(40, 110, 150, 0.12);
@@ -135,9 +139,12 @@
   --cien-maly: 0 2px 8px rgba(47, 91, 69, 0.08);
   --cien-wskaznik: 0 1px 3px rgba(0, 0, 0, 0.25);
   --obrys-gaz: 0 0 0 2px #3d4fb0, 0 8px 18px rgba(61, 79, 176, 0.16);
+  --obrys-prad: 0 0 0 2px #6b5413, 0 6px 14px rgba(160, 120, 20, 0.12);
+  --obrys-woda: 0 0 0 2px #24566e, 0 6px 14px rgba(40, 110, 150, 0.12);
+  --cien-przycisku: 0 4px 12px rgba(47, 91, 69, 0.22);
   --obrys-po-terminie: 0 0 0 2px #e0a100, 0 6px 14px rgba(138, 90, 0, 0.12);
 
-  /* ozmiary (wysokości kafli pulpitu: Gaz, S Prąd/Woda/rzadkie funkcje, M Temperatury, L Kocioł i Zbieracz; nagłówek i stopka z łąką) */
+  /* rozmiary (wysokości kafli pulpitu: Gaz, S Prąd/Woda/rzadkie funkcje, M Temperatury, L Kocioł i Zbieracz; nagłówek i stopka z łąką) */
   --wys-s: 4rem;
   --wys-gaz: 4.25rem;
   --wys-naglowka-pulpitu: 9.375rem;
@@ -468,7 +475,7 @@ body:has(#ekran-start:not(.ukryty)) main {
 
 .kafel--prad {
   background: var(--gradient-prad);
-  box-shadow: var(--cien-prad);
+  box-shadow: var(--obrys-prad);
 }
 
 .kafel--prad .kafel__etykieta { color: var(--prad-etykieta); }
@@ -476,7 +483,7 @@ body:has(#ekran-start:not(.ukryty)) main {
 
 .kafel--woda {
   background: var(--gradient-woda);
-  box-shadow: var(--cien-woda);
+  box-shadow: var(--obrys-woda);
 }
 
 .kafel--woda .kafel__etykieta,
@@ -943,7 +950,7 @@ body:has(#ekran-start:not(.ukryty)) main {
   bottom: 3px;
   left: 0;
   width: 0;
-  background: var(--kolor-glowny);
+  background: var(--zielen-akcji);
   border-radius: var(--promien-segment);
   box-shadow: var(--cien-wskaznik);
   transition: transform 0.25s ease, width 0.25s ease;
@@ -1005,14 +1012,28 @@ body:has(#ekran-start:not(.ukryty)) main {
   cursor: default;
 }
 
+/* Przyciski w zieleni łąki (system projektowy, wersja 4). Główny: gradient,
+   cień, biały tekst; wciśnięty ciemniejszy. Drugorzędny: biel z obrysem
+   1,5 px — obrys jako wewnętrzny box-shadow, żeby nie zmieniał rozmiaru
+   przycisku. */
 .przycisk-glowny {
-  background: var(--kolor-glowny);
+  background: var(--gradient-przycisku);
+  box-shadow: var(--cien-przycisku);
   color: #fff;
+}
+
+.przycisk-glowny:active:not(:disabled) {
+  background: var(--zielen-akcji-ciemna);
 }
 
 .przycisk-drugorzedny {
   background: var(--przycisk-drugorzedny);
-  color: var(--tekst);
+  box-shadow: inset 0 0 0 1.5px var(--zielen-akcji);
+  color: var(--zielen-akcji);
+}
+
+.przycisk-drugorzedny:active:not(:disabled) {
+  background: var(--zielen-akcji-jasna);
 }
 
 .komunikat {

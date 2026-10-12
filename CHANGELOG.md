@@ -3,6 +3,19 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.14.2 — 2026-10-12
+
+### Zmienione
+- **Wygląd z systemu projektowego, wersja 4.** Przyciski w zieleni łąki:
+  główny z gradientem, cieniem i ciemniejszym kolorem po wciśnięciu,
+  drugorzędny biały z zielonym obrysem 1,5 px (obrys jako wewnętrzny cień, więc
+  rozmiar się nie zmienia); wybrany segment trybu kotła w zieleni akcji.
+  Kafle Prąd i Woda mają obrys 2 px w swoich kolorach (jak Gaz); kafel po
+  terminie odczytu nadal ma żółty obrys i tło. Ikony `galeria.svg` i
+  `recznie.svg` w kolorze zieleni akcji. Sześć nowych tokenów w `styl.css`
+  (`zielen-akcji…`, `gradient-przycisku`, `obrys-prad`, `obrys-woda`,
+  `cien-przycisku`), `przycisk-drugorzedny` zmieniony na biel.
+
 ## 1.14.1 — 2026-10-11
 
 ### Zmienione
