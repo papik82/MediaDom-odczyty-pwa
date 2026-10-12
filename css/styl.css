@@ -1190,29 +1190,32 @@ body:has(#ekran-start:not(.ukryty)) main {
 /* Lista Odczyty: cztery kolumny w jednej linii (od 1.15.1) — ciaśniejsze odstępy,
    nazwa medium nie zawija się. Zbieracz ma te same klasy, więc zakres wąski. */
 #lista-ostatnich-odczytow .wiersz-odczytu {
-  gap: var(--odstep-2);
+  gap: 0.4rem;
+}
+
+#lista-ostatnich-odczytow .wiersz-odczytu__data {
+  font-size: 0.72rem;
 }
 
 #lista-ostatnich-odczytow .wiersz-odczytu__medium {
   white-space: nowrap;
 }
 
+/* Stała szerokość stanu, żeby kolumna przyrostu stała w jednej pionowej linii. */
+#lista-ostatnich-odczytow .wiersz-odczytu__stan {
+  flex: 0 0 4.6rem;
+  text-align: right;
+}
+
 /* Przyrost na dobę — kolumna po prawej, w tej samej linii co stan (od 1.15.1).
    Stała szerokość, żeby liczby w kolejnych wierszach stały pod sobą. */
 .wiersz-odczytu__przyrost {
-  flex: 0 0 3.9rem;
+  flex: 0 0 4.4rem;
   text-align: right;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   color: var(--tekst-drugorzedny);
-  font-size: 0.8rem;
-}
-
-/* „30 d” / „1 h” / „wymiana” — drobny, jaśniejszy dopisek po wartości. */
-.wiersz-odczytu__dopisek {
-  margin-left: 0.25em;
-  color: var(--tekst-wyciszony);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
 }
 
 /* Uwaga pod polem daty na ekranie potwierdzenia: skąd wzięła się godzina. */

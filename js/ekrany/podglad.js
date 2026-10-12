@@ -42,32 +42,26 @@ function skrocDate(tekstIso) {
   return `${dwie(data.getDate())}.${dwie(data.getMonth() + 1)}${rok} ${dwie(data.getHours())}:${dwie(data.getMinutes())}`;
 }
 
-// Przyrost na dobę w osobnej kolumnie listy (BACKLOG pkt 42; od 1.15.1 w tej
-// samej linii co stan, żeby nie zwiększać wysokości wiersza). Liczby daje
+// Przyrost na dobę w osobnej kolumnie listy (BACKLOG pkt 42). Liczby daje
 // webhook (`przyrost_doba`, `dni_od_poprzedniego`, `przyrost_pominiety`) —
-// tutaj tylko tekst. Jednostki nie powtarzamy: to ta sama co przy stanie, na
-// dobę (opisuje to akapit nad listą). Zwraca null, gdy nie ma czego pokazać
-// (pierwszy odczyt medium, starszy webhook bez tych pól), a w przeciwnym razie
-// { wartosc, dopisek } — dopisek jest przyciemniony, może być pusty.
+// tutaj tylko tekst, z jednostką medium na dobę (m³/d, kWh/d).
 //
-// Zasada projektu: porównujemy wartości na dobę, nie surowe różnice, więc przy
-// dłuższym odstępie dopisujemy, z ilu dób jest średnia („30 d”), a przy
-// wyraźnie krótszym niż doba — z ilu godzin („1 h”), bo taka liczba jest
-// mniej pewna.
-function opiszPrzyrost(odczyt) {
-  if (odczyt.przyrost_pominiety === 'wymiana') return { wartosc: '—', dopisek: 'wymiana' };
-  if (odczyt.przyrost_pominiety === 'spadek') return { wartosc: '—', dopisek: 'spadek' };
-  if (typeof odczyt.przyrost_doba !== 'number') return null;
+// Wartość to średnia na 24 h, policzona proporcjonalnie z przyrostu od
+// poprzedniego odczytu, bez dopisku o długości okresu. Pokazujemy „—” zamiast
+// liczby, gdy:
+//  - webhook jej nie podał (wymiana licznika, spadek wskazania, pierwszy
+//    odczyt medium, starszy webhook bez tych pól),
+//  - odstęp od poprzedniego odczytu jest krótszy niż 0,5 doby — przeliczenie
+//    kilku godzin na dobę mnoży błąd odczytu i daje absurdy (decyzja 2026-10-12).
+const MIN_DOBY_DLA_PRZYROSTU = 0.5;
 
-  const wartosc = liczbaPL(Number(odczyt.przyrost_doba.toFixed(2)));
+function opiszPrzyrost(odczyt, opisMedium) {
   const dni = odczyt.dni_od_poprzedniego;
-  let dopisek = '';
-  if (typeof dni === 'number') {
-    // Odczyty „codzienne” wypadają co 0,9–1,1 doby — to nie jest odstęp krótki.
-    if (dni < 0.75) dopisek = `${Math.max(1, Math.round(dni * 24))} h`;
-    else if (dni >= 1.5) dopisek = `${Math.round(dni)} d`;
-  }
-  return { wartosc, dopisek };
+  // Pierwszy odczyt medium nie ma poprzedniego — nie ma czego porównywać,
+  // więc kolumna zostaje pusta (a nie „—”, które znaczy „nie da się policzyć”).
+  if (typeof dni !== 'number') return '';
+  if (typeof odczyt.przyrost_doba !== 'number' || dni < MIN_DOBY_DLA_PRZYROSTU) return '—';
+  return liczbaPL(Number(odczyt.przyrost_doba.toFixed(2))) + (opisMedium ? ` ${opisMedium.jednostka}/d` : '/d');
 }
 
 function renderujOstatnieOdczyty(odczyty) {
@@ -84,15 +78,9 @@ function renderujOstatnieOdczyty(odczyty) {
     const wiersz = element('div', 'wiersz-odczytu');
     wiersz.appendChild(element('span', 'wiersz-odczytu__data', skrocDate(o.data_godzina)));
     wiersz.appendChild(element('span', 'wiersz-odczytu__medium', opisMedium ? opisMedium.nazwa : o.medium));
+    wiersz.appendChild(element('span', 'wiersz-odczytu__przyrost', opiszPrzyrost(o, opisMedium)));
     wiersz.appendChild(element('span', 'wiersz-odczytu__stan',
       `${o.stan}${opisMedium ? ' ' + opisMedium.jednostka : ''}`));
-    const przyrost = element('span', 'wiersz-odczytu__przyrost');
-    const opis = opiszPrzyrost(o);
-    if (opis) {
-      przyrost.appendChild(document.createTextNode(opis.wartosc));
-      if (opis.dopisek) przyrost.appendChild(element('span', 'wiersz-odczytu__dopisek', opis.dopisek));
-    }
-    wiersz.appendChild(przyrost);
     listaOstatnichOdczytow.appendChild(wiersz);
   });
 }

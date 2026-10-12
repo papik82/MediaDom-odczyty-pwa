@@ -109,8 +109,9 @@ wcześniej jeden wspólny „Podgląd”) — tylko do odczytu, żeby sprawdzić
 z telefonu, co poszło do arkusza. „Odczyty” pokazuje ostatnie wpisy
 z `odczyty` (akcja `ostatnie_odczyty`), „Temperatury” — średnie dobowe
 z `temp_doba` (akcja `temperatury_dobowe`). Od 1.15.0 wpis na liście „Odczyty”
-ma w ostatniej kolumnie przyrost na dobę (`przyrost_doba` z webhooka, `opiszPrzyrost`
-w `js/ekrany/podglad.js`; „—” z powodem przy wymianie licznika). Każdy ekran pobiera tylko swoje
+ma kolumnę przyrostu na dobę przed stanem (`przyrost_doba` z webhooka, `opiszPrzyrost`
+w `js/ekrany/podglad.js`; od 1.15.2 z jednostką i bez dopisków, „—” przy wymianie
+licznika, spadku wskazania i odstępie < 0,5 doby). Każdy ekran pobiera tylko swoje
 dane, z buforem w `localStorage` (`js/bufor.js`) — ekran od razu pokazuje
 poprzednie dane, świeże je podmieniają — i ma własny wiersz statusu
 (wczytywanie / czas wczytania / błąd).
@@ -286,14 +287,18 @@ nie frontu. Nie duplikuj go tutaj.
 ## Wydanie zmiany (zasada potwierdzona przez właściciela 2026-10-07)
 
 Po każdej zmianie kodu aplikacji, w tej kolejności:
-1. test w przeglądarce na szerokości telefonu (niżej),
+1. test w przeglądarce na szerokości telefonu (niżej); **zmiana wizualna
+   (układ, kolory, tekst na ekranie) — najpierw pokaż właścicielowi zrzut
+   z podglądu i poczekaj na akceptację, dopiero potem kroki 2–5** (zasada
+   2026-10-12; zmiany niewidoczne, np. logika, idą jak dotąd),
 2. podbić wersję w `js/wersja.js` i `WERSJA_CACHE` w `sw.js`; nowy plik
    (np. ikona, moduł ekranu) dopisać do `PLIKI_POWLOKI` w `sw.js` — brakujący plik
    wywraca instalację service workera,
 3. wpis w `CHANGELOG.md`, aktualizacja `../dokumentacja/BACKLOG.md`
    i tego pliku, jeśli zmienia się opis ekranów,
 4. `git status` — `sekrety.local.json` nie może być w poczekalni,
-5. **commit i push bez pytania o zgodę**, potem krótka relacja. Commity po
+5. **commit i push bez pytania o zgodę** (po akceptacji wyglądu, jeśli zmiana
+   była wizualna), potem krótka relacja. Commity po
    polsku, krótkie, „dlaczego” zamiast „co”.
 
 GitHub Pages publikuje zwykle w minutę–dwie, ale wdrożenie potrafi wisieć

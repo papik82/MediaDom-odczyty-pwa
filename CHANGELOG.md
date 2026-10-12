@@ -3,6 +3,20 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.15.2 — 2026-10-12
+
+### Zmienione
+- **Karta Odczyty: przyrost na dobę bez dopisków, z jednostką, w kolejności
+  data · medium · przyrost · stan.** Wartość to średnia na 24 h policzona
+  proporcjonalnie z przyrostu od poprzedniego odczytu (m³/d, kWh/d). Zniknęły
+  dopiski „30 d” / „1 h” / „wymiana” / „spadek”. „—” pojawia się, gdy liczby
+  nie ma (wymiana licznika, spadek wskazania) albo gdy odstęp od poprzedniego
+  odczytu jest krótszy niż 0,5 doby (`MIN_DOBY_DLA_PRZYROSTU` w `podglad.js`) —
+  przeliczenie kilku godzin na dobę mnoży błąd odczytu i daje absurdy (np.
+  9,6 m³/d z 1 h). Pierwszy odczyt medium ma pustą kolumnę. Opis nad listą:
+  „Środkowa kolumna: przyrost na dobę.” Wszystkie wiersze 42 px, sprawdzone na
+  375 px także w najszerszym układzie (stara data + „12,34 kWh/d”).
+
 ## 1.15.1 — 2026-10-12
 
 ### Zmienione
