@@ -987,6 +987,27 @@ body:has(#ekran-start:not(.ukryty)) main {
   margin: var(--odstep-4) 0;
 }
 
+/* Podpowiedź „zrób odczyt gazu” w formularzu Kocioł (od 1.17.0): żółte tło jak
+   przypomnienia na pasku alarmów, nie blokuje zapisu. */
+.podpowiedz-gazu {
+  margin-top: var(--odstep-6);
+  padding: var(--odstep-4);
+  border-radius: var(--promien-pole);
+  background: var(--uwaga-tlo);
+  color: var(--uwaga);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.podpowiedz-gazu p {
+  margin: 0 0 var(--odstep-3);
+}
+
+/* Przycisk pod komunikatem sukcesu na ekranie startowym („Odczyt gazu teraz”). */
+.przycisk-pod-komunikatem {
+  margin-top: var(--odstep-3);
+}
+
 .przyciski-formularza {
   display: flex;
   flex-direction: column;

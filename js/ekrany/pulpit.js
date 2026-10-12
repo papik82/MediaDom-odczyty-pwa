@@ -15,7 +15,7 @@ import { pobierzPulpit } from '../webhook.js';
 import { czyUstawieniaZapisane } from '../ustawienia.js';
 import { zapiszBufor, odczytajBufor, opiszWiek } from '../bufor.js';
 import { element, liczbaPL, ustawStatusBloku, MIN_ODSTEP_POBRANIA_MS } from '../wspolne.js';
-import { naPowrotNaStart, naZmianieUstawien, naZmianieDanych, czyStartWidoczny } from '../nawigacja.js';
+import { naPowrotNaStart, naZmianieUstawien, naZmianieDanych, czyStartWidoczny, daneZPulpitu } from '../nawigacja.js';
 import { ETYKIETY_TRYBU, obwodyTrybu } from '../nastawy.js';
 import { renderujAlarmy } from './alarmy.js';
 import { PROG_BATERII_CZUJNIKA } from './zbieracz.js';
@@ -308,6 +308,9 @@ function renderujZbieracz(z) {
 // ustawień). `czasMs` — kiedy odpowiedź została pobrana; `zBufora` — czy to
 // stare dane, których alarmów nie chcemy pokazywać bez sprawdzenia wieku.
 function renderujPulpit(wynik, czasMs, zBufora) {
+  // Dla formularza Kocioł: ostatni odczyt gazu i okno tolerancji (nie zależą od wieku bufora).
+  daneZPulpitu.gazOstatni = (wynik && wynik.odczyty && wynik.odczyty.gaz && wynik.odczyty.gaz.ostatni) || null;
+  daneZPulpitu.tolerancjaKotlaMin = (wynik && wynik.tolerancja_kociol_min) || null;
   const swiezy = Boolean(wynik) && String(wynik.sprawdzono || '').slice(0, 10) === dzisLokalnieIso();
   renderujOdczyty(wynik && wynik.odczyty, swiezy);
   renderujTemperatury(wynik && wynik.temperatury);

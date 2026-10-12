@@ -101,3 +101,19 @@ export function sparsujCyrkulacje(tekst) {
     return { od: od || '', do: do_ || '' };
   });
 }
+
+// Czy przed (albo po) zmianie nastaw kotła trzeba zrobić odczyt gazu. Okres
+// między odczytami, w którym nastawy zmieniły się w środku, jest MIESZANY
+// i wypada z analiz (decyzje.md M2); zmiana wypada „na granicy” okresów, gdy
+// odczyt jest nie wcześniejszy niż `tolerancjaMin` przed jej początkiem —
+// stąd ta sama reguła co w alarmie `kociol_bez_odczytu` w webhooku.
+// Daty to teksty ISO czasu lokalnego (z webhooka i z pola datetime-local).
+// Brak danych (nieznany ostatni odczyt, offline) = false: nie straszymy bez
+// podstawy.
+export function czyPotrzebnyOdczytGazu(gazOstatniIso, obowiazujeOdIso, tolerancjaMin) {
+  if (!gazOstatniIso || !obowiazujeOdIso) return false;
+  const gaz = new Date(gazOstatniIso).getTime();
+  const zmiana = new Date(obowiazujeOdIso).getTime();
+  if (Number.isNaN(gaz) || Number.isNaN(zmiana)) return false;
+  return gaz < zmiana - (tolerancjaMin || 30) * 60000;
+}

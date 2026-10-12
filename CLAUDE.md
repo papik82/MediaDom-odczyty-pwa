@@ -78,7 +78,11 @@ czas telefonu, `js/exif.js`), z widoczną informacją o źródle godziny. Wysył
 znacznik, a nie czas serwera — ΔT liczy się dokładnie między momentami
 odczytów, więc godzina musi być prawdziwa.
 
-**Karta kotła** (nie medium, osobno pod kartami mediów) — formularz zmiany nastaw. Ostatnie
+**Karta kotła** (nie medium, osobno pod kartami mediów) — formularz zmiany nastaw. Od 1.17.0: przy ręcznym włączeniu obwodu puste pola dostają ostatnie
+niepuste nastawy z historii (`ostatnie_co` / `ostatnie_cwu`, notka z datą pod polami), a gdy
+ostatni odczyt gazu jest starszy niż `tolerancja_kociol_min` przed zmianą, pod formularzem
+jest podpowiedź „zrób odczyt gazu” (bez blokady zapisu), po zapisie przycisk „Odczyt gazu
+teraz”, a pasek alarmów dostaje alarm `kociol_bez_odczytu` (BACKLOG pkt 40, 41). Ostatnie
 nastawy (`ostatni_kociol`) pobiera **z wyprzedzeniem** — przy starcie, powrocie
 na ekran startowy i powrocie z tła — trzyma je tylko w pamięci (do 5 min)
 i wypełnia nimi pola od razu po wejściu; nigdy z `localStorage`, bo

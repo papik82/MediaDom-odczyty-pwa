@@ -126,6 +126,7 @@
       </div>
 
       <p id="komunikat-start" class="komunikat-sukces ukryty"></p>
+      <button type="button" id="przycisk-akcji-komunikatu" class="przycisk-drugorzedny przycisk-pod-komunikatem ukryty"></button>
       <p id="komunikat-kolejka" class="komunikat-kolejka ukryty"></p>
     </section>
 
@@ -251,6 +252,7 @@
           Temperatura CWU (°C)
           <input type="number" id="pole-temp-cwu" inputmode="numeric" step="1" min="0" required>
         </label>
+        <p id="podpowiedz-nastaw" class="uwaga-pola uwaga-pola--przyblizona ukryty" role="status"></p>
 
         <div class="blok-cyrkulacji">
           <p class="etykieta-cyrkulacji">Cyrkulacja — przedziały czasu</p>
@@ -264,6 +266,11 @@
           Obowiązuje od
           <input type="datetime-local" id="pole-obowiazuje-od" required>
         </label>
+
+        <div id="podpowiedz-odczytu-gazu" class="podpowiedz-gazu ukryty" role="status">
+          <p id="tekst-podpowiedzi-gazu"></p>
+          <button type="button" id="przycisk-odczyt-z-kotla" class="przycisk-drugorzedny">Zrób odczyt gazu</button>
+        </div>
 
         <div class="przyciski-formularza">
           <button type="submit" id="przycisk-zapisz-kociol" class="przycisk-glowny">Zapisz zmianę</button>

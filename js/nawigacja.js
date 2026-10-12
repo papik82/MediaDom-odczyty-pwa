@@ -7,18 +7,38 @@
 
 export const ekranStart = document.getElementById('ekran-start');
 const komunikatStart = document.getElementById('komunikat-start');
+const przyciskKomunikatu = document.getElementById('przycisk-akcji-komunikatu');
+
+// Dane z pulpitu potrzebne innym ekranom (formularz Kocioł pyta o ostatni odczyt gazu).
+// Pulpit je tu odkłada po każdej odpowiedzi — moduły nie importują się nawzajem,
+// więc wspólny stan leży w nawigacji, tak jak haki niżej.
+export const daneZPulpitu = { gazOstatni: null, tolerancjaKotlaMin: null };
 
 // Komunikat nad kartami ekranu startowego (wynik zapisu, wysyłki z kolejki).
 // Pokazuje się po zapisie danych (odczyt, kocioł, faktura, wysyłka z kolejki),
 // więc przy okazji powiadamia pulpit, że jego dane są nieaktualne.
-export function pokazKomunikatStart(tekst) {
+// `akcja` (opcjonalna) — { etykieta, wykonaj }: przycisk pod komunikatem, np.
+// „Odczyt gazu teraz” po zapisie nastaw kotła. Znika razem z komunikatem.
+export function pokazKomunikatStart(tekst, akcja = null) {
   komunikatStart.textContent = tekst;
   komunikatStart.classList.remove('ukryty');
+  if (akcja) {
+    przyciskKomunikatu.textContent = akcja.etykieta;
+    przyciskKomunikatu.onclick = () => {
+      ukryjKomunikatStart();
+      akcja.wykonaj();
+    };
+    przyciskKomunikatu.classList.remove('ukryty');
+  } else {
+    przyciskKomunikatu.classList.add('ukryty');
+  }
   powiadomOZmianieDanych();
 }
 
 export function ukryjKomunikatStart() {
   komunikatStart.classList.add('ukryty');
+  przyciskKomunikatu.classList.add('ukryty');
+  przyciskKomunikatu.onclick = null;
 }
 
 export function czyKomunikatStartWidoczny() {

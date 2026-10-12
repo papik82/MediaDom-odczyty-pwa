@@ -3,6 +3,31 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.17.0 — 2026-10-12
+
+### Dodane
+- **Kocioł: podpowiedź ostatnich nastaw przy włączaniu obwodu** (BACKLOG pkt 40).
+  Po sezonie letnim ostatni wpis ma tryb `cwu` bez krzywej i przesunięcia, więc
+  przy przełączeniu na CO / CWU+CO formularz podpowiadał puste pola. Teraz
+  puste pola włączanego obwodu dostają ostatnie niepuste nastawy z historii
+  (`ostatnie_co`, `ostatnie_cwu` w odpowiedzi `ostatni_kociol`, wersja 52
+  wdrożenia); żółta notka pod polami mówi, z jakiego dnia są („sprawdź, czy
+  nadal aktualne”). Dotyczy tylko ręcznej zmiany trybu, nie wczytywania
+  formularza; pola zostają edytowalne, a ręczna poprawka zdejmuje notkę.
+  Zapis jak dotąd tylko po zatwierdzeniu.
+- **Kocioł: przypomnienie o odczycie gazu przy zmianie nastaw** (pkt 41), trzy
+  miejsca: (1) żółty box „Najpierw zrób odczyt gazu” z przyciskiem w formularzu,
+  gdy jest zmiana nastaw, a ostatni odczyt gazu jest starszy niż okno tolerancji
+  (`tolerancja_kociol_min` ze `slownik`, 30 min) przed datą „Obowiązuje od” —
+  nie blokuje zapisu; (2) przycisk „Odczyt gazu teraz” pod komunikatem po zapisie
+  (`pokazKomunikatStart` przyjmuje opcjonalną akcję); (3) alarm „Zmiana nastaw
+  kotła … bez odczytu gazu” na pasku alarmów (webhook, rodzaj `kociol_bez_odczytu`),
+  znika po odczycie gazu. Okres między odczytami z nastawą zmienioną w środku
+  jest MIESZANY i wypada z analiz (`decyzje.md` M2) — odczyt w oknie tolerancji
+  od zmiany sprawia, że zmiana wypada na granicy okresów.
+- `pulpit` zwraca `tolerancja_kociol_min`; PWA odkłada ją i ostatni odczyt gazu
+  w `daneZPulpitu` (`js/nawigacja.js`) dla formularza Kocioł.
+
 ## 1.16.0 — 2026-10-12
 
 ### Dodane

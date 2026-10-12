@@ -6,13 +6,16 @@ import { czyUstawieniaZapisane } from '../ustawienia.js';
 import { zapiszKociol, pobierzOstatnieNastawyKotla } from '../webhook.js';
 import { dodajDoKolejki } from '../kolejka.js';
 import { aktualizujKomunikatKolejki } from '../kolejka-wysylka.js';
-import { element, sformatujDataGodzinaLokalnie, MIN_ODSTEP_POBRANIA_MS } from '../wspolne.js';
+import {
+  element, sformatujDataGodzinaLokalnie, formatujDataGodzinePodgladu, MIN_ODSTEP_POBRANIA_MS,
+} from '../wspolne.js';
 import {
   ETYKIETY_TRYBU, obwodyTrybu, liczbaAlboNull, dopelnijGodzine, serializujCyrkulacje,
-  sparsujCyrkulacje, czyTeSameNastawy,
+  sparsujCyrkulacje, czyTeSameNastawy, czyPotrzebnyOdczytGazu,
 } from '../nastawy.js';
 import {
   pokazEkran, ekranStart, pokazKomunikatStart, ukryjKomunikatStart, naPowrotNaStart, naZmianieUstawien,
+  daneZPulpitu,
 } from '../nawigacja.js';
 import { otworzUstawienia } from './ustawienia.js';
 import { otworzHistorieKotla } from './kociol-historia.js';
@@ -32,12 +35,21 @@ const poleObowiazujeOd = document.getElementById('pole-obowiazuje-od');
 const przyciskZapiszKociol = document.getElementById('przycisk-zapisz-kociol');
 const przyciskAnulujKociol = document.getElementById('przycisk-anuluj-kociol');
 const komunikatKotla = document.getElementById('komunikat-kotla');
+const podpowiedzNastaw = document.getElementById('podpowiedz-nastaw');
+const podpowiedzGazu = document.getElementById('podpowiedz-odczytu-gazu');
+const tekstPodpowiedziGazu = document.getElementById('tekst-podpowiedzi-gazu');
+const przyciskOdczytZKotla = document.getElementById('przycisk-odczyt-z-kotla');
 
 // Nastawy pobrane z webhooka przy otwarciu ekranu — punkt odniesienia do
 // wykrywania, czy formularz w ogóle się różni (wpis ma sens tylko wtedy).
 // null = brak punktu odniesienia (pusty arkusz albo offline) — wtedy nie
 // blokujemy wysyłki, bo nie ma z czym porównać.
 let ostatnieNastawyKotla = null;
+// Ostatnie NIEPUSTE nastawy obwodów z historii (`ostatnie_co`, `ostatnie_cwu` w odpowiedzi
+// ostatni_kociol, BACKLOG pkt 40) — podpowiedź przy włączaniu obwodu, który w ostatnim
+// wpisie był wyłączony (np. CO po lecie). null = brak albo starszy webhook.
+let ostatnieCoZHistorii = null;
+let ostatnieCwuZHistorii = null;
 // Rośnie przy każdym otwarciu karty „Kocioł” — pozwala wczytajOstatnieNastawyKotla
 // poznać, że użytkownik zdążył zamknąć/otworzyć ekran ponownie, zanim
 // odpowiedź webhooka wróciła, i nie nadpisywać pól nieaktualną odpowiedzią.
@@ -79,11 +91,13 @@ function przesunWskaznikTrybu(przycisk) {
   wskaznikTrybu.style.transform = `translateX(${przycisk.offsetLeft}px)`;
 }
 
-function ustawTryb(wartosc) {
+// `zHistorii` = true tylko przy ręcznym wyborze trybu: wtedy puste pola włączanego obwodu
+// dostają podpowiedź z historii. Przy wczytywaniu formularza nie wpisujemy nic sami.
+function ustawTryb(wartosc, zHistorii = false) {
   const wybrany = opcjeTrybu.find((p) => p.dataset.wartosc === wartosc) || opcjeTrybu[0];
   opcjeTrybu.forEach((p) => p.setAttribute('aria-checked', String(p === wybrany)));
   przesunWskaznikTrybu(wybrany);
-  zastosujRegulyPolKotla();
+  zastosujRegulyPolKotla(zHistorii);
 }
 
 // Wyszarzanie zbędnych pól: bez CO nie ma krzywej ani przesunięcia, bez CWU
@@ -94,28 +108,118 @@ function ustawTryb(wartosc) {
 // Pole zablokowane jest czyszczone, ale jego wartość chowamy w data-schowane
 // i przywracamy, gdy obwód wróci — przeklikanie trybu tam i z powrotem nie
 // kasuje więc wpisanej krzywej. Schowek zeruje się przy każdym otwarciu ekranu.
+// `zrodlo` — skąd wziąć podpowiedź z historii, gdy obwód właśnie się włącza, a pole jest puste.
 const POLA_OBWODOW = [
-  { pole: poleKrzywa, obwod: 'co' },
-  { pole: polePrzesuniecie, obwod: 'co' },
-  { pole: poleTempCwu, obwod: 'cwu' },
+  { pole: poleKrzywa, obwod: 'co', zrodlo: () => ostatnieCoZHistorii },
+  { pole: polePrzesuniecie, obwod: 'co', zrodlo: () => ostatnieCoZHistorii },
+  { pole: poleTempCwu, obwod: 'cwu', zrodlo: () => ostatnieCwuZHistorii },
 ];
+const POLE_W_HISTORII = new Map([
+  [poleKrzywa, 'krzywa_grzewcza'], [polePrzesuniecie, 'przesuniecie'], [poleTempCwu, 'temp_cwu'],
+]);
 let wczytywanieKotla = false;   // w trakcie wczytywania wszystkie pola i tak są zablokowane
 
-function zastosujRegulyPolKotla() {
+function zastosujRegulyPolKotla(zHistorii = false) {
   const obwody = obwodyTrybu(pobierzTryb());
-  POLA_OBWODOW.forEach(({ pole, obwod }) => {
+  POLA_OBWODOW.forEach(({ pole, obwod, zrodlo }) => {
     const potrzebne = obwody[obwod];
     if (!potrzebne && pole.value !== '') {
       pole.dataset.schowane = pole.value;
       pole.value = '';
     } else if (potrzebne && pole.value === '' && pole.dataset.schowane) {
       pole.value = pole.dataset.schowane;
+    } else if (zHistorii && potrzebne && pole.value === '') {
+      // Obwód się włącza, a pole jest puste (np. CO po lecie: ostatni wpis miał tryb
+      // `cwu`) — podpowiadamy ostatnią niepustą wartość z historii. Pole zostaje
+      // edytowalne, zapis dopiero po zatwierdzeniu; skąd wartość, mówi podpowiedź pod polami.
+      const wpis = zrodlo();
+      const wartosc = wpis ? wpis[POLE_W_HISTORII.get(pole)] : null;
+      if (wartosc !== null && wartosc !== undefined) {
+        pole.value = wartosc;
+        pole.dataset.zHistorii = wpis.obowiazuje_od;
+      }
     }
+    if (!potrzebne) delete pole.dataset.zHistorii;
     if (potrzebne) delete pole.dataset.schowane;
     pole.disabled = wczytywanieKotla || !potrzebne;
     pole.closest('.pole-formularza').classList.toggle('pole-formularza--nieaktywne', !potrzebne);
   });
+  odswiezPodpowiedzNastaw();
+  odswiezPodpowiedzOdczytuGazu();
 }
+
+// Krótka informacja pod polami: które wartości wpisano z historii i z jakiego dnia.
+// Znika, gdy pole zostanie poprawione ręcznie albo obwód się wyłączy.
+function odswiezPodpowiedzNastaw() {
+  const dataWpisu = (iso) => formatujDataGodzinePodgladu(iso).slice(0, 10);
+  const opisy = [];
+  const krzywa = poleKrzywa.dataset.zHistorii;
+  const przesuniecie = polePrzesuniecie.dataset.zHistorii;
+  if (krzywa && przesuniecie && krzywa === przesuniecie) {
+    opisy.push(`krzywa i przesunięcie z ${dataWpisu(krzywa)}`);
+  } else {
+    if (krzywa) opisy.push(`krzywa z ${dataWpisu(krzywa)}`);
+    if (przesuniecie) opisy.push(`przesunięcie z ${dataWpisu(przesuniecie)}`);
+  }
+  if (poleTempCwu.dataset.zHistorii) opisy.push(`temperatura CWU z ${dataWpisu(poleTempCwu.dataset.zHistorii)}`);
+
+  podpowiedzNastaw.classList.toggle('ukryty', opisy.length === 0);
+  if (opisy.length > 0) {
+    podpowiedzNastaw.textContent = `Wpisano ostatnie nastawy z historii (${opisy.join(', ')}) — sprawdź, czy nadal aktualne.`;
+  }
+}
+
+// Ręczna poprawka pola zdejmuje oznaczenie „z historii”.
+POLA_OBWODOW.forEach(({ pole }) => pole.addEventListener('input', () => {
+  delete pole.dataset.zHistorii;
+  odswiezPodpowiedzNastaw();
+}));
+
+// Nastawy z formularza w postaci wysyłanej do webhooka — wspólne dla zapisu
+// i dla podpowiedzi o odczycie gazu (która musi wiedzieć, czy coś się zmieniło).
+function zbierzDaneKotla() {
+  return {
+    tryb: pobierzTryb(),
+    krzywa_grzewcza: liczbaAlboNull(poleKrzywa.value),
+    przesuniecie: liczbaAlboNull(polePrzesuniecie.value),
+    temp_cwu: liczbaAlboNull(poleTempCwu.value),
+    cyrkulacja: serializujCyrkulacje(odczytajPrzedzialyCyrkulacji()),
+    obowiazuje_od: `${poleObowiazujeOd.value}:00`,
+  };
+}
+
+// Tekst: ile minut okna tolerancji (z webhooka, `slownik`); 30 min, gdy nieznane.
+function toleranciaKotlaMin() {
+  return daneZPulpitu.tolerancjaKotlaMin || 30;
+}
+
+// Podpowiedź „Najpierw zrób odczyt gazu” (BACKLOG pkt 41, wariant 1): pokazuje się,
+// gdy w formularzu jest zmiana nastaw, a ostatni odczyt gazu jest starszy niż
+// okno tolerancji przed jej początkiem. NIE blokuje zapisu — to tylko ostrzeżenie.
+function odswiezPodpowiedzOdczytuGazu() {
+  const zmiana = !wczytywanieKotla && poleObowiazujeOd.value !== ''
+    && (!ostatnieNastawyKotla || !czyTeSameNastawy(ostatnieNastawyKotla, zbierzDaneKotla()));
+  const potrzebny = zmiana
+    && czyPotrzebnyOdczytGazu(daneZPulpitu.gazOstatni, poleObowiazujeOd.value, toleranciaKotlaMin());
+  podpowiedzGazu.classList.toggle('ukryty', !potrzebny);
+  if (potrzebny) {
+    tekstPodpowiedziGazu.textContent =
+      `Najpierw zrób odczyt gazu — ostatni jest z ${formatujDataGodzinePodgladu(daneZPulpitu.gazOstatni)}. ` +
+      `Odczyt w ciągu ${toleranciaKotlaMin()} min od zmiany nastaw sprawia, że okres między ` +
+      'odczytami nie wypadnie z analiz. Zapisu to nie blokuje.';
+  }
+}
+
+// Przejście do odczytu gazu z formularza: ten sam kafel Gaz co na ekranie startowym.
+function otworzOdczytGazu() {
+  document.getElementById('pulpit-gaz').click();
+}
+przyciskOdczytZKotla.addEventListener('click', otworzOdczytGazu);
+
+// Każda zmiana w formularzu może włączyć albo wyłączyć podpowiedź o odczycie gazu.
+['input', 'change', 'click'].forEach((zdarzenie) => {
+  formularzKotla.addEventListener(zdarzenie, () => odswiezPodpowiedzOdczytuGazu());
+});
 
 function wyczyscSchowanePolaKotla() {
   POLA_OBWODOW.forEach(({ pole }) => { delete pole.dataset.schowane; });
@@ -126,7 +230,7 @@ function pobierzTryb() {
 }
 
 opcjeTrybu.forEach((przycisk) => {
-  przycisk.addEventListener('click', () => ustawTryb(przycisk.dataset.wartosc));
+  przycisk.addEventListener('click', () => ustawTryb(przycisk.dataset.wartosc, true));
 });
 
 // Przy starcie wskaźnik musi trafić pod domyślnie zaznaczony przycisk —
@@ -172,7 +276,7 @@ function ustawWczytywanieKotla(wTrakcie) {
   opcjeTrybu.forEach((p) => { p.disabled = wTrakcie; });
   // Pola krzywej, przesunięcia i temperatury CWU: blokada na czas wczytywania,
   // a po nim — według trybu (zastosujRegulyPolKotla).
-  zastosujRegulyPolKotla();
+  zastosujRegulyPolKotla(false);
   przyciskDodajPrzedzial.disabled = wTrakcie;
   przyciskZapiszKociol.disabled = wTrakcie;
   if (wTrakcie) {
@@ -243,6 +347,9 @@ async function wczytajOstatnieNastawyKotla(generacja) {
       return;
     }
 
+    ostatnieCoZHistorii = wynik.ostatnie_co || null;
+    ostatnieCwuZHistorii = wynik.ostatnie_cwu || null;
+
     poleKrzywa.value = wynik.krzywa_grzewcza ?? '';
     polePrzesuniecie.value = wynik.przesuniecie ?? '';
     poleTempCwu.value = wynik.temp_cwu ?? '';
@@ -285,6 +392,9 @@ function otworzKociol() {
   listaCyrkulacji.innerHTML = '';
   wyczyscSchowanePolaKotla();
   ostatnieNastawyKotla = null;
+  ostatnieCoZHistorii = null;
+  ostatnieCwuZHistorii = null;
+  POLA_OBWODOW.forEach(({ pole }) => { delete pole.dataset.zHistorii; });
   pokazEkran(ekranKociol);
   // Wskaźnik trybu liczy swoją pozycję z realnych wymiarów przycisku
   // (offsetLeft/offsetWidth) — musi więc zostać ustawiony PO pokazEkran,
@@ -314,14 +424,12 @@ przyciskAnulujKociol.addEventListener('click', () => {
 formularzKotla.addEventListener('submit', async (zdarzenie) => {
   zdarzenie.preventDefault();
 
-  const daneKotla = {
-    tryb: pobierzTryb(),
-    krzywa_grzewcza: liczbaAlboNull(poleKrzywa.value),
-    przesuniecie: liczbaAlboNull(polePrzesuniecie.value),
-    temp_cwu: liczbaAlboNull(poleTempCwu.value),
-    cyrkulacja: serializujCyrkulacje(odczytajPrzedzialyCyrkulacji()),
-    obowiazuje_od: `${poleObowiazujeOd.value}:00`,
-  };
+  const daneKotla = zbierzDaneKotla();
+  // Czy po zapisie przypomnieć o odczycie gazu — liczymy teraz, zanim zapis
+  // odświeży dane pulpitu (BACKLOG pkt 41, wariant 2).
+  const akcjaOdczytu = czyPotrzebnyOdczytGazu(daneZPulpitu.gazOstatni, poleObowiazujeOd.value, toleranciaKotlaMin())
+    ? { etykieta: 'Odczyt gazu teraz', wykonaj: otworzOdczytGazu }
+    : null;
 
   if (ostatnieNastawyKotla && czyTeSameNastawy(ostatnieNastawyKotla, daneKotla)) {
     komunikatKotla.textContent = 'Brak zmian względem poprzednich nastaw — nic nie wysłano.';
@@ -342,7 +450,7 @@ formularzKotla.addEventListener('submit', async (zdarzenie) => {
       return;
     }
 
-    pokazKomunikatStart(`Zapisano zmianę nastaw kotła: ${ETYKIETY_TRYBU[daneKotla.tryb] || daneKotla.tryb}.`);
+    pokazKomunikatStart(`Zapisano zmianę nastaw kotła: ${ETYKIETY_TRYBU[daneKotla.tryb] || daneKotla.tryb}.`, akcjaOdczytu);
     uniewaznNastawyKotla();   // powrót na ekran startowy pobierze świeże nastawy
     pokazEkran(ekranStart);
   } catch (blad) {
@@ -359,7 +467,7 @@ formularzKotla.addEventListener('submit', async (zdarzenie) => {
     // Jak przy odczytach: to nie musi być brak internetu, a zapis mógł dojść.
     const przyczyna = navigator.onLine ? 'brak odpowiedzi serwera' : 'brak połączenia';
     pokazKomunikatStart(`Nie udało się potwierdzić zapisu (${przyczyna}) — zmiana nastaw kotła ` +
-      'zapisana lokalnie. Aplikacja wyśle ją sama albo sprawdzi, że już doszła.');
+      'zapisana lokalnie. Aplikacja wyśle ją sama albo sprawdzi, że już doszła.', akcjaOdczytu);
     pokazEkran(ekranStart);
   } finally {
     przyciskZapiszKociol.disabled = false;
