@@ -2,6 +2,7 @@
 // kolejka offline, powrót z tła, aktualizacja przez service workera.
 // Każdy ekran ma własny moduł w js/ekrany/ — tu tylko je ładujemy.
 
+import './pora.js';           // pora dnia (data-pora na <html>) — jak najwcześniej
 import { czyUstawieniaZapisane } from './ustawienia.js';
 import { WERSJA_APLIKACJI } from './wersja.js';
 import {

@@ -20,11 +20,15 @@ const pamiecGodzin = new Map();         // data -> odpowiedź webhooka
 // a że ich linie leżą zwykle ok. 1°C od siebie, zlewały się w jedną.
 // Nieznany (nowy) czujnik dostaje kolejny kolor z zapasu — nazw nie
 // zaszywamy na sztywno.
-const KOLORY_CZUJNIKOW = { parter: '#d85a30', pietro: '#2e9e5b', zewn: '#378add' };
-const KOLORY_ZAPASOWE = ['#7f77dd', '#d4537e', '#ba7517', '#888780'];
+// Od 1.18.0 kolory biorą się z tokenów systemu projektowego (zmienne CSS
+// --czujnik-…), bo w nocy są jaśniejsze — wartość zależy od pory dnia
+// (data-pora na <html>), więc czytamy ją w chwili rysowania.
+const TOKENY_CZUJNIKOW = { parter: 'czujnik-parter', pietro: 'czujnik-pietro', zewn: 'czujnik-zewn' };
+const TOKENY_ZAPASOWE = ['czujnik-zapas-1', 'czujnik-zapas-2', 'czujnik-zapas-3', 'czujnik-zapas-4'];
 
 export function kolorCzujnika(nazwa, indeks) {
-  return KOLORY_CZUJNIKOW[nazwa] || KOLORY_ZAPASOWE[indeks % KOLORY_ZAPASOWE.length];
+  const token = TOKENY_CZUJNIKOW[nazwa] || TOKENY_ZAPASOWE[indeks % TOKENY_ZAPASOWE.length];
+  return getComputedStyle(document.documentElement).getPropertyValue(`--${token}`).trim();
 }
 
 // `tabela` — tabela temperatur, `czyAktualny` — sprawdzenie licznika generacji

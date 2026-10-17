@@ -3,6 +3,43 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.18.0 — 2026-10-17
+
+### Dodane
+- **Pory dnia — wygląd z systemu projektowego, wersja 5.** Pulpit ma cztery
+  stany: świt, dzień, zmierzch i noc. Zmienia się pejzaż w nagłówku (słońce
+  nisko po lewej o świcie i po prawej o zmierzchu, w nocy księżyc w aktualnej
+  fazie i gwiazdy) oraz tło strony; **noc to motyw ciemny** całej aplikacji
+  (kafle, karty, pola, przyciski, wykres doby, paski stanu), niezależny od
+  ustawienia telefonu. Układ i treść bez zmian, pory przełączają się skokowo.
+- **Położenie w Ustawieniach** (opcjonalne): szerokość i długość geograficzna
+  wpisane ręcznie albo przyciskiem „Użyj mojego położenia” (zaokrąglone do
+  ok. 1 km). Zostaje tylko w localStorage telefonu — nie trafia do
+  repozytorium ani do webhooka. Z położenia `js/pora.js` liczy wschód i zachód
+  słońca; świt i zmierzch to godzina przed i po. Bez położenia pulpit
+  pozostaje dzienny.
+- Nowy moduł `js/pora.js`: pora dnia (odświeżana przy starcie, po powrocie do
+  aplikacji i co minutę), faza księżyca z daty, kolor paska systemowego
+  (`<meta name="theme-color">`) per pora. Podgląd bez zmiany zegara:
+  `?pora=swit|dzien|zmierzch|noc` w adresie (oraz `&faza=0..1`).
+- Pamięć ostatniej pory w `localStorage` i krótki skrypt w `<head>`, żeby w
+  nocy przed załadowaniem modułu nie mignął dzień.
+
+### Zmienione
+- `css/styl.css`: `:root` = dzień z tokenów wersji 5 (141 zmiennych), bloki
+  `[data-pora="swit|zmierzch|noc"]` nadpisują kolory, cienie i gradienty danej
+  pory; nowe tokeny (`tekst-na-akcji`, `laka-ksiezyc`, `laka-ksiezyc-cien`,
+  `laka-gwiazda`). Tekst na zielonych przyciskach i segmencie trybu w
+  `tekst-na-akcji` (biały w dzień, ciemnozielony w nocy).
+- **Ikony interfejsu rysowane maską CSS** (`.ikona--nazwa`, kolor z
+  `currentColor`) zamiast `<img>` — kolor zmienia się z porą dnia; pliki
+  `ikony/*.svg` bez zmian. Ikona aplikacji (`ikona.svg`) nadal zwykłym plikiem.
+- Wykres doby bierze kolory czujników ze zmiennych `--czujnik-…` (jaśniejsze
+  w nocy).
+- Pola godzin cyrkulacji w Kotle mają tło `powierzchnia` (w nocy natywne pole
+  było szare); dwa ostatnie literały kolorów w CSS (`#777`, `#bbb`) zamienione
+  na tokeny.
+
 ## 1.17.0 — 2026-10-12
 
 ### Dodane

@@ -1,4 +1,4 @@
-/* system-projektowy: wersja 4 */
+/* system-projektowy: wersja 5 */
 /* Wygląd pochodzi z systemu projektowego MediaDom (Claude Design) — zasady
    synchronizacji w CLAUDE.md, sekcja „System projektowy”. Wartości poniżej
    to kopia z project/tokens.json; w dalszej części pliku nie wpisujemy
@@ -9,7 +9,9 @@
    wykresów w js/ekrany/wykres-doby.js. Kolory obwodów kotła i komunikatów
    niosą znaczenie, więc nie zależą od koloru głównego. */
 :root {
-  /* kolory */
+  color-scheme: light;
+
+  /* kolory (dzień — wartości domyślne; pory świt, zmierzch i noc nadpisują je niżej) */
   --kolor-glowny: #3d4fb0;
   --kolor-glowny-jasny: #e8ebfa;
   --tlo-strony: #eef5ee;
@@ -29,6 +31,7 @@
   --zielen-akcji: #2f5b45;
   --zielen-akcji-ciemna: #234737;
   --zielen-akcji-jasna: #dcefe3;
+  --tekst-na-akcji: #ffffff;
   --pole-nieaktywne-tlo: #eef1f4;
   --pole-nieaktywne-obrys: #e0e3e7;
   --neutralny-tlo: #ececec;
@@ -69,6 +72,9 @@
   --laka-wzgorze-dalsze: #b9dfc6;
   --laka-wzgorze-blizsze: #9ccfb0;
   --laka-ziemia: #f3dfcf;
+  --laka-ksiezyc: #f2edd4;
+  --laka-ksiezyc-cien: #22325a;
+  --laka-gwiazda: #e6ebf7;
   --laka-etykieta: #3f5248;
   --laka-podpis: #4f6359;
   --laka-linia: #d6e8dc;
@@ -159,6 +165,137 @@
   --ikona-kafla: 20px;
 }
 
+/* Pora dnia: świt — od godziny przed wschodem słońca do godziny po nim: pejzaż i tło strony.
+   Atrybut data-pora ustawia js/pora.js; brak atrybutu = dzień (:root). */
+[data-pora="swit"] {
+  --pasek-systemowy: #d6dcf2;
+  --laka-slonce: #ffd49a;
+  --laka-wzgorze-dalsze: #bcd6c6;
+  --laka-wzgorze-blizsze: #a3c8b3;
+  --laka-ziemia: #ecd8dc;
+  --gradient-naglowka: linear-gradient(170deg, #d6dcf2 0%, #f3dde4 55%, #ffe2c4 100%);
+  --gradient-strony: linear-gradient(180deg, #eeeaf5 0%, #f8eee9 46%, #f6f1e0 100%);
+}
+
+/* Pora dnia: zmierzch — od godziny przed zachodem słońca do godziny po nim: pejzaż i tło strony.
+   Atrybut data-pora ustawia js/pora.js; brak atrybutu = dzień (:root). */
+[data-pora="zmierzch"] {
+  --pasek-systemowy: #c5c3e6;
+  --laka-slonce: #ffb36b;
+  --laka-wzgorze-dalsze: #a9c6b4;
+  --laka-wzgorze-blizsze: #8db69e;
+  --laka-ziemia: #f0cfc0;
+  --gradient-naglowka: linear-gradient(170deg, #c5c3e6 0%, #edc5d0 55%, #ffcfa6 100%);
+  --gradient-strony: linear-gradient(180deg, #ede4f0 0%, #f8e9e3 46%, #fce4d4 100%);
+}
+
+/* Pora dnia: noc — motyw ciemny (zastępuje tryb ciemny telefonu).
+   Atrybut data-pora ustawia js/pora.js; brak atrybutu = dzień (:root). */
+[data-pora="noc"] {
+  color-scheme: dark;
+  --kolor-glowny: #9ba7f2;
+  --kolor-glowny-jasny: #2b3668;
+  --tlo-strony: #131d2f;
+  --powierzchnia: #1a2435;
+  --tekst: #e9edf2;
+  --tekst-drugorzedny: #aab5c2;
+  --tekst-opis: #bac3ce;
+  --tekst-tabeli: #c4ccd6;
+  --tekst-wyciszony: #97a2b0;
+  --tekst-nieaktywny: #7d8796;
+  --linia: #2c3850;
+  --linia-listy: #2a3446;
+  --linia-siatki: #2a3446;
+  --obrys-pola: #66758b;
+  --obrys-ramki: #3a4660;
+  --przycisk-drugorzedny: #1a2435;
+  --zielen-akcji: #8fd1ad;
+  --zielen-akcji-ciemna: #79c29b;
+  --zielen-akcji-jasna: #1f3a2d;
+  --tekst-na-akcji: #0f2a1d;
+  --pole-nieaktywne-tlo: #232d3d;
+  --pole-nieaktywne-obrys: #2e3848;
+  --neutralny-tlo: #2a3242;
+  --alarm-tlo: #3f1e1d;
+  --alarm: #ffa198;
+  --uwaga-tlo: #3a2d13;
+  --uwaga: #f2c46b;
+  --ok-tlo: #15301f;
+  --ok: #7fd99c;
+  --ok-ciemny: #8fe0a8;
+  --dzis-tlo: #173520;
+  --dzis: #94e2ad;
+  --kropka-ok: #3fc077;
+  --kropka-nieznany: #8d98a6;
+  --wczytywanie: #c6ced8;
+  --obwod-co: #f2804f;
+  --obwod-co-tlo: #3e2219;
+  --obwod-co-tekst: #f6b49b;
+  --obwod-cwu: #3fcf9f;
+  --obwod-cwu-tlo: #123a30;
+  --obwod-cwu-tekst: #8fe3c4;
+  --obwod-wylaczony: #343e50;
+  --kropka-zmiany: #6b7686;
+  --obrys-wylaczony: #66758b;
+  --czujnik-parter: #f2804f;
+  --czujnik-pietro: #3fc077;
+  --czujnik-zewn: #5aa2ea;
+  --czujnik-zapas-1: #9b94ee;
+  --czujnik-zapas-2: #e47099;
+  --czujnik-zapas-3: #d6953a;
+  --czujnik-zapas-4: #a3a29b;
+  --naglowek-tekst: #eef2f8;
+  --laka-ikona: #cfe5d8;
+  --przycisk-naglowka-tlo: #ffffff1f;
+  --pasek-systemowy: #0e1830;
+  --laka-wzgorze-dalsze: #1d3a37;
+  --laka-wzgorze-blizsze: #163029;
+  --laka-ziemia: #22332e;
+  --laka-etykieta: #bdd3c7;
+  --laka-podpis: #a8bdb2;
+  --laka-linia: #2e4240;
+  --gaz-etykieta: #c5ccff;
+  --gaz-tytul: #e6e9ff;
+  --gaz-kolo: #ffffff1f;
+  --prad-etykieta: #f0d27a;
+  --prad-wartosc: #fbe6a8;
+  --woda-etykieta: #9ad3ee;
+  --kociol-etykieta: #f1c4b2;
+  --kociol-podpis: #d8b4a6;
+  --kociol-linia: #4b342d;
+  --uwaga-znak-tlo: #5a4519;
+  --alarm-znak-tlo: #5c2b28;
+  --kropka-ok-poswiata: #1f4a31;
+  --temp-zewn-tekst: #8ec5f4;
+  --temp-parter-tekst: #f5a385;
+  --temp-pietro-tekst: #7dd5a0;
+  --rzadkie-tlo: #ffffff14;
+  --stopka-tekst: #b7c1cc;
+  --cien-kafel: 0 6px 16px rgba(0, 0, 0, 0.32);
+  --cien-prad: 0 6px 14px rgba(0, 0, 0, 0.32);
+  --cien-woda: 0 6px 14px rgba(0, 0, 0, 0.32);
+  --cien-kociol: 0 6px 16px rgba(0, 0, 0, 0.32);
+  --cien-alarmu: 0 4px 12px rgba(0, 0, 0, 0.30);
+  --cien-karta: 0 2px 8px rgba(0, 0, 0, 0.40);
+  --cien-maly: 0 2px 8px rgba(0, 0, 0, 0.30);
+  --cien-wskaznik: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --obrys-gaz: 0 0 0 2px #9ba7f2, 0 8px 18px rgba(0, 0, 0, 0.35);
+  --obrys-prad: 0 0 0 2px #f0d27a, 0 6px 14px rgba(0, 0, 0, 0.32);
+  --obrys-woda: 0 0 0 2px #9ad3ee, 0 6px 14px rgba(0, 0, 0, 0.32);
+  --cien-przycisku: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --obrys-po-terminie: 0 0 0 2px #e0a100, 0 6px 14px rgba(0, 0, 0, 0.32);
+  --gradient-naglowka: linear-gradient(170deg, #0e1830 0%, #15244a 55%, #1d3150 100%);
+  --gradient-strony: linear-gradient(180deg, #0f1828 0%, #131d2f 46%, #182030 100%);
+  --gradient-gaz: linear-gradient(120deg, #27315f 0%, #1f2852 100%);
+  --gradient-prad: linear-gradient(135deg, #3b3215 0%, #4a3c13 100%);
+  --gradient-woda: linear-gradient(135deg, #12303f 0%, #17394b 100%);
+  --gradient-temperatury: linear-gradient(135deg, #1b2733 0%, #1a2c2a 100%);
+  --gradient-kociol: linear-gradient(160deg, #262327 0%, #36231f 100%);
+  --gradient-zbieracz: linear-gradient(160deg, #1b2630 0%, #18302a 100%);
+  --gradient-uwagi: linear-gradient(90deg, #3a2d13 0%, #33291b 100%);
+  --gradient-przycisku: linear-gradient(160deg, #a8dfc0 0%, #8fd1ad 100%);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -206,7 +343,8 @@ body:has(#ekran-start:not(.ukryty)) .naglowek {
 }
 
 .naglowek__laka,
-.naglowek__slonce {
+.naglowek__cialo,
+.naglowek__gwiazdy {
   position: absolute;
   pointer-events: none;
 }
@@ -217,19 +355,57 @@ body:has(#ekran-start:not(.ukryty)) .naglowek {
   height: 100%;
 }
 
-.naglowek__slonce {
+/* Ciało niebieskie (68 × 68: poświata r 34, tarcza r 22) — słońce albo
+   księżyc, tylko na pulpicie. Leży POD wzgórzami (w HTML jest przed nimi),
+   więc nisko stojące słońce świtu i zmierzchu chowa się za wzgórzem.
+   Pozycje środka w układzie nagłówka 375 × 150 (opis: komponent Pejzaz
+   w systemie projektowym): dzień 312, 38; świt 78, 92; zmierzch 297, 90. */
+.naglowek__cialo {
   top: 4px;
-  right: 29px;                 /* środek słońca ok. 63 px od prawej i 38 px od góry */
+  right: 29px;
   width: 68px;
   height: 68px;
   display: none;
 }
 
-body:has(#ekran-start:not(.ukryty)) .naglowek__slonce {
+[data-pora="swit"] .naglowek__cialo--slonce {
+  top: 58px;
+  right: auto;
+  left: 44px;
+}
+
+[data-pora="zmierzch"] .naglowek__cialo--slonce {
+  top: 56px;
+  right: 44px;
+}
+
+html:not([data-pora="noc"]) body:has(#ekran-start:not(.ukryty)) .naglowek__cialo--slonce,
+[data-pora="noc"] body:has(#ekran-start:not(.ukryty)) .naglowek__cialo--ksiezyc {
+  display: block;
+}
+
+.naglowek__gwiazdy {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+[data-pora="noc"] body:has(#ekran-start:not(.ukryty)) .naglowek__gwiazdy {
   display: block;
 }
 
 .laka-slonce { fill: var(--laka-slonce); }
+.laka-slonce--tarcza { opacity: 0.9; }
+.laka-slonce--poswiata { opacity: 0.35; }
+[data-pora="swit"] .laka-slonce--tarcza,
+[data-pora="zmierzch"] .laka-slonce--tarcza { opacity: 1; }
+[data-pora="swit"] .laka-slonce--poswiata,
+[data-pora="zmierzch"] .laka-slonce--poswiata { opacity: 0.45; }
+.laka-ksiezyc { fill: var(--laka-ksiezyc); }
+.laka-ksiezyc--poswiata { opacity: 0.12; }
+.laka-ksiezyc-cien { fill: var(--laka-ksiezyc-cien); }
+.laka-gwiazda { fill: var(--laka-gwiazda); }
 .laka-wzgorze-dalsze { fill: var(--laka-wzgorze-dalsze); }
 .laka-wzgorze-blizsze { fill: var(--laka-wzgorze-blizsze); }
 
@@ -262,15 +438,44 @@ body:has(#ekran-start:not(.ukryty)) .naglowek__slonce {
   border: none;
   border-radius: var(--promien-alarm);
   background: var(--przycisk-naglowka-tlo);
+  color: var(--laka-ikona);
   line-height: 1;
   cursor: pointer;
 }
 
 .ikona-naglowka {
-  display: block;
   width: var(--ikona-naglowka);
   height: var(--ikona-naglowka);
 }
+
+/* Ikony interfejsu (od 1.18.0, system projektowy wersja 5): kształt z pliku
+   SVG jako maska, kolor z `currentColor` — czyli z koloru tekstu elementu,
+   który bierze go z tokenu danego kafla / przycisku i zmienia się razem
+   z porą dnia (w nocy etykiety są jasne). Wcześniej <img> miał kolor
+   wpisany na stałe w pliku. Pliki ikony/*.svg bez zmian (maska używa tylko
+   kształtu); ikona aplikacji (ikona.svg) nadal jest zwykłym plikiem. */
+.ikona {
+  display: block;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask: center / contain no-repeat;
+  mask: center / contain no-repeat;
+}
+
+.ikona--gaz { -webkit-mask-image: url(../ikony/gaz.svg); mask-image: url(../ikony/gaz.svg); }
+.ikona--prad { -webkit-mask-image: url(../ikony/prad.svg); mask-image: url(../ikony/prad.svg); }
+.ikona--woda { -webkit-mask-image: url(../ikony/woda.svg); mask-image: url(../ikony/woda.svg); }
+.ikona--termometr { -webkit-mask-image: url(../ikony/termometr.svg); mask-image: url(../ikony/termometr.svg); }
+.ikona--kociol { -webkit-mask-image: url(../ikony/kociol.svg); mask-image: url(../ikony/kociol.svg); }
+.ikona--zbieracz { -webkit-mask-image: url(../ikony/zbieracz.svg); mask-image: url(../ikony/zbieracz.svg); }
+.ikona--home { -webkit-mask-image: url(../ikony/home.svg); mask-image: url(../ikony/home.svg); }
+.ikona--odczyty { -webkit-mask-image: url(../ikony/odczyty.svg); mask-image: url(../ikony/odczyty.svg); }
+.ikona--faktura { -webkit-mask-image: url(../ikony/faktura.svg); mask-image: url(../ikony/faktura.svg); }
+.ikona--pomysly { -webkit-mask-image: url(../ikony/pomysly.svg); mask-image: url(../ikony/pomysly.svg); }
+.ikona--ustawienia { -webkit-mask-image: url(../ikony/ustawienia-kafel.svg); mask-image: url(../ikony/ustawienia-kafel.svg); }
+.ikona--aparat { -webkit-mask-image: url(../ikony/aparat.svg); mask-image: url(../ikony/aparat.svg); }
+.ikona--galeria { -webkit-mask-image: url(../ikony/galeria.svg); mask-image: url(../ikony/galeria.svg); }
+.ikona--recznie { -webkit-mask-image: url(../ikony/recznie.svg); mask-image: url(../ikony/recznie.svg); }
 
 main {
   position: relative;
@@ -440,6 +645,10 @@ body:has(#ekran-start:not(.ukryty)) main {
 .kafel--gaz .kafel__ikona {
   width: 24px;
   height: 24px;
+}
+
+.kafel--gaz .kafel__kolo {
+  color: var(--kolor-glowny);
 }
 
 .kafel__kolumna {
@@ -740,7 +949,7 @@ body:has(#ekran-start:not(.ukryty)) main {
   background: var(--kolor-glowny-jasny);
 }
 
-.pulpit__rzadkie img {
+.pulpit__rzadkie .ikona {
   width: var(--ikona-kafla);
   height: var(--ikona-kafla);
 }
@@ -776,6 +985,8 @@ body:has(#ekran-start:not(.ukryty)) main {
 }
 
 .przedzial-cyrkulacji input[type="time"] {
+  background: var(--powierzchnia);   /* w nocy natywne pole ma własne, szare tło */
+  color: inherit;
   flex: 1;
   padding: 0.6rem;
   font-size: 1rem;
@@ -973,7 +1184,7 @@ body:has(#ekran-start:not(.ukryty)) main {
 }
 
 .segment-tryb__opcja[aria-checked="true"] {
-  color: #fff;
+  color: var(--tekst-na-akcji);
 }
 
 .segment-tryb__opcja:disabled {
@@ -1046,7 +1257,7 @@ body:has(#ekran-start:not(.ukryty)) main {
 .przycisk-glowny {
   background: var(--gradient-przycisku);
   box-shadow: var(--cien-przycisku);
-  color: #fff;
+  color: var(--tekst-na-akcji);
 }
 
 .przycisk-glowny:active:not(:disabled) {
@@ -1181,7 +1392,7 @@ body:has(#ekran-start:not(.ukryty)) main {
 }
 
 .faktura-pozycja__uwagi {
-  color: #777;
+  color: var(--tekst-drugorzedny);
   font-style: italic;
 }
 
@@ -1272,7 +1483,7 @@ body:has(#ekran-start:not(.ukryty)) main {
   height: 0.8em;
   margin-right: 0.5em;
   vertical-align: -0.1em;
-  border: 2px solid #bbb;
+  border: 2px solid var(--obrys-pola);
   border-top-color: var(--kolor-glowny);
   border-radius: 50%;
   animation: obrot 0.8s linear infinite;

@@ -382,6 +382,19 @@ i `preview.html` do systemu.
 z systemu. Makieta nie zmienia kontraktu webhooka ani zasad z tego pliku
 (zapis po zatwierdzeniu, działanie offline, polski interfejs).
 
+**Pory dnia (od wersji 5, PWA 1.18.0).** `:root` w `styl.css` to dzień,
+a bloki `[data-pora="swit|zmierzch|noc"]` nadpisują kolory, cienie
+i gradienty danej pory — generuje je `tokens.json` (motywy w `color.themes`,
+sekcja `pory` dla gradientów); przy synchronizacji przepisuj je wszystkie,
+nie tylko `:root`. Atrybut `data-pora` na `<html>` ustawia `js/pora.js` z
+położenia zapisanego w Ustawieniach (`localStorage`, tylko na telefonie —
+**nigdy w kodzie ani w systemie projektowym**). Noc to motyw ciemny i
+przykrywa `prefers-color-scheme`. Ikony interfejsu to maski CSS
+(`.ikona--nazwa`, kolor z `currentColor`), nie `<img>`; kolory czujników
+w JS biorą się ze zmiennych `--czujnik-…`. Nowy element ekranu musi mieć
+kolory z tokenów, inaczej w nocy będzie jasną plamą. Podgląd pór bez
+ruszania zegara: `?pora=swit|dzien|zmierzch|noc&faza=0..1`.
+
 **Krok 0 (jednorazowo) — zrobiony 2026-10-11** (PWA 1.13.1; ikony wgrane
 do systemu, grupa „Ikony”, 15 plików):
 - Zamień w `styl.css` literały kolorów, odstępów, promieni i cieni na
