@@ -51,3 +51,17 @@ export function zapiszPolozenie(szerokosc, dlugosc) {
 export function czyUstawieniaZapisane() {
   return odczytajUstawienia() !== null;
 }
+
+// Kiedy ostatnio udało się zapisać kopię ustawień w arkuszu (ISO, czas lokalny)
+// albo null. Tylko informacja dla użytkownika i sygnał „kopii jeszcze nie było”
+// — po wyczyszczeniu pamięci znika razem z resztą, co jest w porządku: aplikacja
+// zrobi kopię od nowa.
+const KLUCZ_DATA_KOPII = 'odczyty_kopia_data';
+
+export function odczytajDateKopii() {
+  return localStorage.getItem(KLUCZ_DATA_KOPII);
+}
+
+export function zapiszDateKopii(iso) {
+  localStorage.setItem(KLUCZ_DATA_KOPII, iso);
+}

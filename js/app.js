@@ -7,9 +7,12 @@ import { czyUstawieniaZapisane } from './ustawienia.js';
 import { WERSJA_APLIKACJI } from './wersja.js';
 import {
   pokazEkran, ekranStart, odswiezStanStartu, czyStartWidoczny, czyKomunikatStartWidoczny,
+  pokazKomunikatStart,
 } from './nawigacja.js';
 import { aktualizujKomunikatKolejki, przetworzKolejkeOffline } from './kolejka-wysylka.js';
-import { otworzUstawienia } from './ekrany/ustawienia.js';
+import {
+  otworzUstawienia, przywrocZLinku, pokazBladLinkuJesliJest, zrobKopieJesliBrak,
+} from './ekrany/ustawienia.js';
 import { zwolnijPodgladZdjecia } from './ekrany/odczyt.js';
 import { zamknijEkranPradu } from './ekrany/prad.js';
 // Moduły bez eksportów używanych tutaj — wystarczy, że się załadują
@@ -34,11 +37,20 @@ document.getElementById('przycisk-home').addEventListener('click', () => {
 
 // Przy pierwszym uruchomieniu, bez zapisanych ustawień, od razu pokazujemy
 // ekran ustawień — bez adresu i tokenu wysyłka i tak by się nie udała.
+//
+// Link z arkusza (`#przywroc=<kod>`, kopia ustawień) przywraca ustawienia jeszcze
+// przed wyborem ekranu — po wyczyszczeniu pamięci telefonu to droga powrotu.
+const przywroconoZLinku = przywrocZLinku();
 if (czyUstawieniaZapisane()) {
   pokazEkran(ekranStart);
+  if (przywroconoZLinku) pokazKomunikatStart('Ustawienia przywrócone z kopii.');
 } else {
   otworzUstawienia();
+  pokazBladLinkuJesliJest();
 }
+// Po aktualizacji do 1.19.0 ustawienia są, a kopii w arkuszu jeszcze nie było —
+// robimy ją raz (nie dotyczy świeżo przywróconych z kopii).
+if (!przywroconoZLinku) zrobKopieJesliBrak();
 
 // Kolejka offline: pokaż, ile czeka, i spróbuj wysłać od razu przy starcie
 // (na wypadek, gdyby zasięg wrócił, zanim ktoś znów otworzył aplikację),

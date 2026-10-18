@@ -177,25 +177,60 @@ function temp(wartosc) {
   return typeof wartosc === 'number' ? `${liczbaPL(wartosc.toFixed(1)).replace('-', '−')}°` : '—';
 }
 
+// Koniec godziny ("HH:MM") dla znacznika początku godziny z webhooka (+1 h).
+function koniecGodziny(iso) {
+  const d = new Date(new Date(iso).getTime() + 3600000);
+  return `${dwie(d.getHours())}:${dwie(d.getMinutes())}`;
+}
+
 // Wiek pomiaru liczymy na telefonie od znacznika czasu (znacznik to POCZĄTEK
 // godziny, a średnia przychodzi po jej zamknięciu — stąd + godzina), żeby
 // był prawdziwy także dla odpowiedzi z bufora.
-function renderujTemperatury(t) {
+//
+// BACKLOG pkt 47:
+//  1. Zamiast samej godziny — jej ZAKRES („20:00–21:00”): średnia godzinowa to
+//     średnia z całej godziny, nie z chwili. Gdy czujniki mają różne ostatnie
+//     godziny (jeden spóźniony), pokazujemy zakres NAJSTARSZEJ z nich i napis
+//     „różne godz.”, żeby ΔT nie udawało, że pochodzi z jednej godziny.
+//  2. ΔT mówi coś o grzaniu tylko w trybie z CO (`co`, `cwu_co`) — bez CO dom
+//     nie jest ogrzewany, więc w kolumnie jest „—” (kolumna zostaje, żeby układ
+//     się nie przesuwał). Gdy trybu kotła nie znamy, liczba zostaje jak dotąd.
+//     To decyzja o wyświetlaniu, nie o metodyce — liczy dalej webhook i arkusz.
+function renderujTemperatury(t, kociol) {
   const role = ['zewn', 'parter', 'pietro'];
   role.forEach((rola) => {
     tempRole[rola].textContent = t && t[rola] ? temp(t[rola].temp) : '—';
   });
   // ΔT w stopniach, jak pozostałe temperatury (różnica w K i w °C to ta sama liczba).
-  tempDt.textContent = t && typeof t.dT === 'number' ? `${liczbaPL(t.dT.toFixed(1)).replace('-', '−')}°` : '—';
+  // Bez CO w trybie kotła — „—” z wyjaśnieniem w podpowiedzi (kolumna zostaje).
+  const obwodyKotla = kociol && kociol.ok && !kociol.brak ? obwodyTrybu(kociol.tryb) : null;
+  const dtDotyczy = !obwodyKotla || obwodyKotla.co;
+  const kolumnaDt = tempDt.closest('.temperatury__kolumna');
+  kolumnaDt.classList.toggle('temperatury__kolumna--nieaktywna', !dtDotyczy);
+  if (dtDotyczy) {
+    kolumnaDt.removeAttribute('title');
+    kolumnaDt.removeAttribute('aria-label');
+  } else {
+    kolumnaDt.title = 'ΔT ma sens tylko przy włączonym CO';
+    kolumnaDt.setAttribute('aria-label', 'ΔT nie dotyczy — CO wyłączone');
+  }
+  tempDt.textContent = dtDotyczy && t && typeof t.dT === 'number'
+    ? `${liczbaPL(t.dT.toFixed(1)).replace('-', '−')}°` : '—';
 
-  // Najnowszy pomiar spośród ról.
+  // Zakres godziny najstarszego pomiaru spośród ról (konserwatywnie: pozostałe są co najmniej tak świeże).
   const znaczniki = role.map((r) => t && t[r] && t[r].ostatni).filter(Boolean).sort();
-  const ostatni = znaczniki[znaczniki.length - 1];
-  tempCzas.textContent = godzina(ostatni);
-  const koniecGodziny = ostatni ? new Date(ostatni).getTime() + 3600000 : null;
-  tempWiek.textContent = koniecGodziny ? opiszWiek(koniecGodziny) : '';
-  const stary = koniecGodziny && Date.now() - koniecGodziny > PROG_STAROSCI_TEMP_H * 3600000;
-  tempWiek.className = stary ? 'temperatury__wiek--stary' : '';
+  const najstarszy = znaczniki[0];
+  const rozneGodziny = znaczniki.length > 1 && znaczniki[0] !== znaczniki[znaczniki.length - 1];
+  tempCzas.textContent = najstarszy ? `${godzina(najstarszy)}–${koniecGodziny(najstarszy)}` : '—';
+  const koniec = najstarszy ? new Date(najstarszy).getTime() + 3600000 : null;
+  const stary = koniec && Date.now() - koniec > PROG_STAROSCI_TEMP_H * 3600000;
+  if (rozneGodziny) {
+    tempWiek.textContent = 'różne godz.';
+    tempWiek.className = 'temperatury__wiek--rozne';
+  } else {
+    tempWiek.textContent = koniec ? opiszWiek(koniec) : '';
+    tempWiek.className = stary ? 'temperatury__wiek--stary' : '';
+  }
 }
 
 // --- Kocioł ------------------------------------------------------------------
@@ -313,7 +348,7 @@ function renderujPulpit(wynik, czasMs, zBufora) {
   daneZPulpitu.tolerancjaKotlaMin = (wynik && wynik.tolerancja_kociol_min) || null;
   const swiezy = Boolean(wynik) && String(wynik.sprawdzono || '').slice(0, 10) === dzisLokalnieIso();
   renderujOdczyty(wynik && wynik.odczyty, swiezy);
-  renderujTemperatury(wynik && wynik.temperatury);
+  renderujTemperatury(wynik && wynik.temperatury, wynik && wynik.kociol);
   renderujKociol(wynik && wynik.kociol);
   renderujZbieracz(wynik && wynik.zbieracz);
   const alarmyOk = wynik && (!zBufora || Date.now() - czasMs <= MAKS_WIEK_ALARMOW_Z_BUFORA_MS);

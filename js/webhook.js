@@ -129,3 +129,11 @@ export function pobierzOstatnieFaktury(ile = 12) {
 export function pobierzPomysly(ile = 10) {
   return wyslij({ akcja: 'lista_pomyslow', status: 'wszystkie', ile });
 }
+
+// Kopia ustawień (adres, token, położenie) w arkuszu — do odzyskania po
+// wyczyszczeniu pamięci telefonu (BACKLOG: kopia ustawień, 1.19.0). `kod` to
+// `MD1.…` z js/kopia-ustawien.js, `adresPwa` — adres tej aplikacji (z niego
+// webhook składa link przywracania). Kontrakt: ../apps-script/CLAUDE.md.
+export function zapiszKopieUstawien(kod, adresPwa) {
+  return wyslij({ akcja: 'zapisz_kopie_ustawien', kod, adres_pwa: adresPwa });
+}

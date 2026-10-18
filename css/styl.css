@@ -756,7 +756,7 @@ body:has(#ekran-start:not(.ukryty)) main {
    Wartości czujników mają ciemniejsze odcienie kolorów ich linii na wykresie. */
 .temperatury {
   display: grid;
-  grid-template-columns: 1.1fr repeat(4, minmax(0, 1fr));
+  grid-template-columns: 1.5fr repeat(4, minmax(0, 1fr));
   gap: var(--odstep-1);
   align-items: end;
   text-align: center;
@@ -798,6 +798,24 @@ body:has(#ekran-start:not(.ukryty)) main {
 .temperatury__wiek--stary {
   color: var(--alarm) !important;
   font-weight: 600;
+}
+
+/* Czujniki mają różne ostatnie godziny — zakres obok dotyczy najstarszej z nich. */
+.temperatury__wiek--rozne {
+  color: var(--uwaga) !important;
+  font-weight: 600;
+}
+
+/* ΔT przy kotle bez CO: „—”, przyciemnione (kolumna zostaje, żeby układ się nie przesuwał). */
+.temperatury__kolumna--nieaktywna b,
+.temperatury__kolumna--nieaktywna span {
+  color: var(--tekst-nieaktywny);
+}
+
+/* Zakres godziny („20:00–21:00”) jest dłuższy niż sama godzina — mniejszy krój i szersza kolumna. */
+#pulpit-temp-czas {
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 /* Wiersze „etykieta — wartość” pod tytułem kafla (nastawy kotła, baterie),
@@ -1217,6 +1235,19 @@ body:has(#ekran-start:not(.ukryty)) main {
 /* Przycisk pod komunikatem sukcesu na ekranie startowym („Odczyt gazu teraz”). */
 .przycisk-pod-komunikatem {
   margin-top: var(--odstep-3);
+}
+
+/* Kopia ustawień na dole ekranu Ustawienia (od 1.19.0): oddzielona linią od formularza. */
+.blok-kopii {
+  margin-top: var(--odstep-7);
+  padding-top: var(--odstep-5);
+  border-top: 1px solid var(--laka-linia);
+}
+
+.blok-kopii textarea {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.8rem;
+  word-break: break-all;
 }
 
 .przyciski-formularza {

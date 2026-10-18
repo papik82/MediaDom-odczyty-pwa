@@ -485,6 +485,9 @@
         Adres webhooka i token łączą aplikację z Arkuszem Google. Wpisujesz je
         raz — zostają zapisane tylko w tej przeglądarce, na tym telefonie.
       </p>
+      <p id="podpowiedz-kopii" class="opis ukryty">
+        Masz kopię ustawień w arkuszu? Stuknij link z zakładki <b>kopia_ustawien</b> albo wklej kod w sekcji „Kopia ustawień” na dole tego ekranu.
+      </p>
       <form id="formularz-ustawien">
         <label class="pole-formularza">
           Adres webhooka
@@ -514,6 +517,33 @@
         </div>
         <p id="komunikat-ustawien" class="komunikat ukryty"></p>
       </form>
+
+      <!-- Kopia ustawień (od 1.19.0): aplikacja zapisuje kod kopii w arkuszu (zakładka
+           kopia_ustawien) przy każdym zapisie ustawień. Po wyczyszczeniu pamięci telefonu
+           otwierasz arkusz, stukasz link — albo wklejasz kod tutaj. -->
+      <div class="blok-kopii">
+        <h3 class="podglad__naglowek">Kopia ustawień</h3>
+        <p class="opis">
+          Adres webhooka, token i położenie są zapisywane w Twoim arkuszu (zakładka
+          <b>kopia_ustawien</b>) przy każdym zapisie ustawień. Gdy pamięć telefonu
+          zostanie wyczyszczona, otwórz arkusz w Arkuszach Google i stuknij link
+          z komórki B2 — aplikacja przywróci ustawienia. Gdyby link się nie otworzył,
+          skopiuj kod z komórki C2 i wklej go poniżej.
+        </p>
+        <p id="status-kopii" class="opis"></p>
+        <div class="przyciski-formularza">
+          <button type="button" id="przycisk-zapisz-kopie" class="przycisk-drugorzedny">Zapisz kopię w arkuszu teraz</button>
+        </div>
+        <label class="pole-formularza">
+          Przywróć z kodu
+          <textarea id="pole-kod-kopii" rows="3" spellcheck="false" autocomplete="off" autocapitalize="off"
+                    placeholder="Wklej tu kod zaczynający się od MD1."></textarea>
+        </label>
+        <div class="przyciski-formularza">
+          <button type="button" id="przycisk-przywroc" class="przycisk-glowny">Przywróć ustawienia</button>
+        </div>
+        <p id="komunikat-kopii" class="komunikat ukryty" role="status"></p>
+      </div>
     </section>
 
   </main>

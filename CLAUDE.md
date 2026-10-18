@@ -191,6 +191,16 @@ Przy pierwszym uruchomieniu aplikacja pokazuje ekran ustawień, prosi o adres
 webhooka i token, zapisuje je w `localStorage` i więcej nie pyta. Ekran
 ustawień zostaje dostępny później do zmiany tych wartości.
 
+**Kopia ustawień (od 1.19.0)** — sekcja na dole ekranu Ustawienia. PWA zapisuje w arkuszu
+(zakładka `kopia_ustawien`, akcja `zapisz_kopie_ustawien`) kod `MD1.…` (adres, token,
+położenie + suma kontrolna; `js/kopia-ustawien.js`) i link przywracania — po każdym zapisie
+ustawień, przyciskiem „Zapisz kopię w arkuszu teraz” i raz po aktualizacji, gdy kopii jeszcze
+nie było. **Po wyczyszczeniu pamięci telefonu** otwierasz arkusz na koncie Google i stukasz
+link (adres aplikacji + `#przywroc=<kod>`; `przywrocZLinku` przy starcie usuwa fragment z paska
+adresu) albo wklejasz kod z komórki C2 w polu „Przywróć z kodu”. Na iOS link otwiera Safari, a
+zainstalowana aplikacja ma osobną pamięć — tam wklejasz kod. Kod jest tak samo wrażliwy jak token:
+w repozytorium go nie ma, a w arkuszu zakładka nie jest eksportowana do Projektu Claude.
+
 Klucz API modelu wizyjnego siedzi wyłącznie we właściwościach skryptu Apps
 Script i nigdy nie opuszcza serwerów Google.
 
@@ -261,6 +271,7 @@ odczyty-pwa/
 │   │   ├── ustawienia.js  adres i token, poUstawieniach
 │   │   └── alarmy.js      rysowanie paska alarmów (dane z pulpitu)
 │   ├── ustawienia.js      adres webhooka i token w localStorage
+│   ├── kopia-ustawien.js  kod kopii ustawień (MD1…): budowa i odczyt z sumą kontrolną
 │   ├── media.js           metadane mediów (nazwa, jednostka, zdjęcie: tak/nie,
 │   │                      OCR: tak/nie, pozycje ekranu prądu)
 │   ├── webhook.js         komunikacja z Apps Script (odczyt, OCR, kocioł, podgląd,

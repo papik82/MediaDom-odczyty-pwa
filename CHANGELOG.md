@@ -3,6 +3,34 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.19.0 — 2026-10-18
+
+### Dodane
+- **Kopia ustawień w arkuszu — odzyskanie po wyczyszczeniu pamięci telefonu.**
+  Aplikacja zapisuje w arkuszu (nowa zakładka `kopia_ustawien`, akcja
+  `zapisz_kopie_ustawien`, webhook wersja 53) kod kopii `MD1.<dane>.<suma>` z adresem
+  webhooka, tokenem i położeniem oraz gotowy **link przywracania**. Robi to po każdym
+  zapisie ustawień (wynik w komunikacie na ekranie startowym), przyciskiem „Zapisz kopię
+  w arkuszu teraz” i raz po aktualizacji, gdy kopii jeszcze nie było. Po wyczyszczeniu
+  pamięci telefonu otwierasz arkusz w Arkuszach Google i stukasz link — aplikacja
+  przywraca ustawienia (`#przywroc=<kod>`, fragment znika z paska adresu); gdyby link
+  się nie otworzył, wklejasz kod w polu „Przywróć z kodu”. Kod ma sumę kontrolną —
+  literówka albo ucięty tekst są odrzucane, zanim cokolwiek zostanie nadpisane; przy
+  różnych obecnych ustawieniach aplikacja pyta o zastąpienie; kopia bez położenia nie
+  kasuje położenia z telefonu. Nowy moduł `js/kopia-ustawien.js` (czyste funkcje,
+  sprawdzone w Node), `kopia.js` w Apps Script (walidacja formatu, jeden wiersz).
+  **W zakładce leży token** — nie udostępniać arkusza; zakładka nie jest eksportowana
+  do Projektu Claude. Na iOS link otwiera Safari (osobna pamięć niż zainstalowana
+  aplikacja) — tam wkleić kod.
+- **Kafel Temperatury na pulpicie** (BACKLOG pkt 47): zamiast samej godziny
+  **zakres godziny średniej** („20:00–21:00”); gdy czujniki mają różne ostatnie
+  godziny, zakres najstarszej z nich i żółty napis „różne godz.”, żeby ΔT nie
+  udawało pomiaru z jednej godziny. **ΔT tylko przy CO:** w trybach `cwu` i
+  `off` kolumna ΔT pokazuje przyciemnione „—” z podpowiedzią (kolumna zostaje,
+  żeby układ się nie przesuwał); gdy trybu kotła nie znamy, liczba zostaje.
+  Liczenie ΔT w webhooku i arkuszu bez zmian. Pierwsza kolumna kafla szersza,
+  krój zakresu mniejszy (mieści się w jednej linii na 375 px, także w nocy).
+
 ## 1.18.0 — 2026-10-17
 
 ### Dodane
