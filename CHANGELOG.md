@@ -3,6 +3,25 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.20.0 — 2026-10-19
+
+### Dodane
+- **Karta Zbieracz: lista luk w temperaturach z oznaczaniem ich jako „znane”**
+  (BACKLOG pkt 48). Zamiast sumy godzin na rolę — pod stanem zbieracza lista
+  wszystkich luk z okna raportu (28 dni): rola, zakres godzin, liczba godzin
+  i plakietka **otwarta** (do uzupełnienia importem), **znana** (nieuzupełnialna,
+  z powodem) albo **trwa** (sięga końca okna — jeszcze nie wolno jej oznaczać).
+  **„Oznacz jako znaną”** otwiera formularz z obowiązkowym powodem i
+  przypomnieniem zasady (decyzje.md D4: znaną oznacza się lukę, której nie ma
+  też w eksporcie z chmury — sprawdzone, nie założone); **„Przywróć”**
+  (z potwierdzeniem) cofa oznaczenie. Zapis działa od razu, bez wdrażania
+  kodu; po zmianie karta odświeża się, bufory karty i pulpitu są kasowane,
+  a pulpit pyta o świeże alarmy od razu po powrocie na start (luka znika z
+  upomnień: raport, pasek, karta). W arkuszu luka zostaje luką. Własny wiersz
+  statusu listy, bufor „stare, potem świeże”.
+- Akcje webhooka `lista_luk`, `oznacz_luke`, `przywroc_luke` (wersja 54
+  wdrożenia, poprawka 55), zakładka `luki_znane` zamiast stałej `LUKI_ZNANE` w `luki.js`.
+
 ## 1.19.0 — 2026-10-18
 
 ### Dodane

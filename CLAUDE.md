@@ -142,6 +142,7 @@ w `js/ekrany/zbieracz.js`). Wiek pulsu („37 min temu”) liczy telefon od znac
 żeby był prawdziwy także dla stanu z bufora. Od 1.4.0 pod Sonoffami bateria
 i sygnał Zigbee (`opiszStanCzujnika`; `PROG_BATERII_CZUJNIKA` = 20 — ta sama
 wartość co w `apps-script/luki.js`).
+Od 1.20.0 pod stanem **lista luk** w temperaturach (akcja `lista_luk`, osobne żądanie i status, bufor `luki_zbieracza`): otwarte, znane i trwające. „Oznacz jako znaną” (powód obowiązkowy) i „Przywróć” wołają `oznacz_luke` / `przywroc_luke` (zakładka `luki_znane`, `apps-script/luki_znane.js`); po zmianie odświeżają kartę i kasują bufory karty i pulpitu. Trwającej luki nie wolno oznaczać. Zasada: `../dokumentacja/decyzje.md` D4.
 
 **Karta „Faktura”** — od 1.13.0 na górze lista ostatnich faktur z arkusza
 (akcja `ostatnie_faktury`, do 12, przez bufor; stuknięcie rozwija szczegóły

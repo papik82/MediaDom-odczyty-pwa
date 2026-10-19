@@ -69,7 +69,7 @@ export function naZmianieDanych(funkcja) {
   hakiZmianyDanych.push(funkcja);
 }
 
-function powiadomOZmianieDanych() {
+export function powiadomOZmianieDanych() {
   hakiZmianyDanych.forEach((funkcja) => funkcja());
 }
 

@@ -137,3 +137,18 @@ export function pobierzPomysly(ile = 10) {
 export function zapiszKopieUstawien(kod, adresPwa) {
   return wyslij({ akcja: 'zapisz_kopie_ustawien', kod, adres_pwa: adresPwa });
 }
+
+// Luki w temperaturach (BACKLOG pkt 48, karta „Zbieracz”): lista otwartych i znanych
+// luk z okna raportu oraz oznaczanie luki jako znanej (nieuzupełnialnej) i cofnięcie
+// oznaczenia. `od` i `do` to klucze godzin „RRRR-MM-DDTGG” dokładnie z listy.
+export function pobierzListeLuk() {
+  return wyslij({ akcja: 'lista_luk' });
+}
+
+export function oznaczLuke(rola, od, doKlucz, powod) {
+  return wyslij({ akcja: 'oznacz_luke', rola, od, do: doKlucz, powod });
+}
+
+export function przywrocLuke(rola, od, doKlucz) {
+  return wyslij({ akcja: 'przywroc_luke', rola, od, do: doKlucz });
+}

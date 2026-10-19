@@ -1,8 +1,9 @@
 // Karta „Zbieracz” — stan zbierania temperatur na telefonie.
 
-import { pobierzStanZbieracza } from '../webhook.js';
+import { pobierzStanZbieracza, pobierzListeLuk, oznaczLuke, przywrocLuke } from '../webhook.js';
+import { wyczyscBuforKlucz } from '../bufor.js';
 import { element, liczbaPL, formatujDataGodzinePodgladu, wczytajBlokPodgladu } from '../wspolne.js';
-import { pokazEkran, ekranStart, ukryjKomunikatStart } from '../nawigacja.js';
+import { pokazEkran, ekranStart, ukryjKomunikatStart, powiadomOZmianieDanych } from '../nawigacja.js';
 import { poUstawieniach } from './ustawienia.js';
 import { kolorCzujnika } from './wykres-doby.js';
 
@@ -11,6 +12,9 @@ const przyciskZbieracz = document.getElementById('przycisk-zbieracz');
 const przyciskZamknijZbieracz = document.getElementById('przycisk-zamknij-zbieracz');
 const statusZbieracza = document.getElementById('status-zbieracza');
 const stanZbieraczaKontener = document.getElementById('stan-zbieracza');
+const naglowekLuk = document.getElementById('naglowek-luk');
+const statusLuk = document.getElementById('status-luk');
+const lukiKontener = document.getElementById('luki-zbieracza');
 
 // --- Zbieracz temperatur na telefonie (BACKLOG pkt 19, od 1.1.0) ---
 //
@@ -167,20 +171,6 @@ function renderujStanZbieracza(wynik) {
     listaCzujnikow.appendChild(wiersz);
   });
 
-  // Luki — godziny bez wiersza w oknie raportu tygodniowego.
-  const listaLuk = sekcjaZbieracza(`Luki w ostatnich ${wynik.luki_okno_dni || 28} dniach`);
-  const luki = Object.entries(wynik.luki || {});
-  if (!wynik.od) {
-    listaLuk.appendChild(element('p', 'komunikat-pusto', 'Nie liczone — brak LUKI_OD.'));
-  } else if (luki.every(([, godzin]) => !godzin)) {
-    listaLuk.appendChild(element('p', 'komunikat-pusto',
-      `Brak luk od początku zbierania (${formatujDataGodzinePodgladu(wynik.od)}).`));
-  } else {
-    luki.forEach(([rola, godzin]) => {
-      listaLuk.appendChild(wierszZbieracza(NAZWY_ROL[rola] || rola, godzin ? `${godzin} h` : 'brak'));
-    });
-  }
-
   // eWeLink — tokeny Sonoffów wygasają; datę wpisuje się ręcznie we
   // właściwości skryptu EWELINK_WYGASA po każdym odnowieniu.
   const listaEwelink = sekcjaZbieracza('eWeLink (Sonoffy)');
@@ -194,19 +184,197 @@ function renderujStanZbieracza(wynik) {
   }
 }
 
-function otworzZbieracz() {
-  ukryjKomunikatStart();
+// --- Luki w temperaturach: lista i oznaczanie (BACKLOG pkt 48) ---------------
+//
+// Lista z akcji lista_luk (liczy webhook; PWA tylko wyświetla): otwarte luki do
+// uzupełnienia importem i znane (nieuzupełnialne), które nie wchodzą już do
+// upomnień. „Oznacz jako znaną” wymaga powodu; zasada z decyzje.md D4: znaną
+// oznacza się lukę, której nie ma też w eksporcie chmurowym — sprawdzone, nie
+// założone. Luki, która jeszcze trwa, nie wolno oznaczać. W arkuszu luka zostaje
+// luką — oznaczenie wyłącza tylko upomnienia (raport, pasek, karta).
+
+const NAZWY_STATUSOW_LUKI = { otwarta: 'otwarta', znana: 'znana' };
+
+// Klucz godziny „2026-10-09T06” → Date (czas lokalny).
+function dataZKlucza(klucz) {
+  const [dzien, godz] = klucz.split('T');
+  const [r, m, d] = dzien.split('-').map(Number);
+  return new Date(r, m - 1, d, Number(godz), 0, 0);
+}
+
+const dwie = (n) => String(n).padStart(2, '0');
+
+// „09.10 06:00–15:00” albo „09.10 22:00 – 10.10 02:00” — koniec to granica
+// po ostatniej brakującej godzinie.
+function opiszZakresLuki(od, doKlucz) {
+  const poczatek = dataZKlucza(od);
+  const koniec = new Date(dataZKlucza(doKlucz).getTime() + 3600000);
+  const dzien = (d) => `${dwie(d.getDate())}.${dwie(d.getMonth() + 1)}`;
+  const godz = (d) => `${dwie(d.getHours())}:00`;
+  return dzien(poczatek) === dzien(koniec)
+    ? `${dzien(poczatek)} ${godz(poczatek)}–${godz(koniec)}`
+    : `${dzien(poczatek)} ${godz(poczatek)} – ${dzien(koniec)} ${godz(koniec)}`;
+}
+
+function odswiezPoZmianieLuk() {
+  // Zmieniły się alarm „luki”, werdykt i lista — nieaktualne bufory kasujemy,
+  // a pulpit ma odświeżyć się od razu po powrocie na ekran startowy.
+  ['luki_zbieracza', 'stan_zbieracza', 'pulpit'].forEach(wyczyscBuforKlucz);
+  powiadomOZmianieDanych();
+  wczytajKarteZbieracza();
+}
+
+// Formularz „Oznacz jako znaną” pod luką: powód obowiązkowy + przypomnienie zasady.
+function formularzOznaczenia(luka, wiersz, przycisk) {
+  const formularz = element('form', 'luka__formularz');
+  formularz.appendChild(element('p', 'luka__zasada',
+    'Oznacz tylko lukę, której nie ma też w eksporcie z chmury (BleBox, eWeLink) — '
+    + 'sprawdzone, nie założone. Luka zostaje w arkuszu; znika tylko z upomnień '
+    + '(raport, pasek, karta).'));
+  const etykieta = element('label', 'pole-formularza', 'Powód (obowiązkowy)');
+  const pole = element('input');
+  pole.type = 'text';
+  pole.maxLength = 300;
+  pole.required = true;
+  pole.placeholder = 'np. brak też w eksporcie eWeLink (sprawdzone dziś)';
+  etykieta.appendChild(pole);
+  formularz.appendChild(etykieta);
+  const blad = element('p', 'komunikat ukryty');
+  formularz.appendChild(blad);
+  const akcje = element('div', 'przyciski-formularza');
+  const zapisz = element('button', 'przycisk-glowny', 'Zapisz jako znaną');
+  zapisz.type = 'submit';
+  const anuluj = element('button', 'przycisk-drugorzedny', 'Anuluj');
+  anuluj.type = 'button';
+  akcje.append(zapisz, anuluj);
+  formularz.appendChild(akcje);
+
+  anuluj.addEventListener('click', () => {
+    formularz.remove();
+    przycisk.classList.remove('ukryty');
+  });
+  formularz.addEventListener('submit', async (zdarzenie) => {
+    zdarzenie.preventDefault();
+    const powod = pole.value.trim();
+    if (!powod) {
+      blad.textContent = 'Wpisz powód.';
+      blad.classList.remove('ukryty');
+      return;
+    }
+    zapisz.disabled = true;
+    zapisz.textContent = 'Zapisywanie…';
+    try {
+      const odpowiedz = await oznaczLuke(luka.rola, luka.od, luka.do, powod);
+      if (!odpowiedz.ok) throw new Error(odpowiedz.blad || 'webhook odrzucił oznaczenie');
+      odswiezPoZmianieLuk();
+    } catch (wyjatek) {
+      blad.textContent = wyjatek.message === 'Failed to fetch'
+        ? 'Brak połączenia — spróbuj ponownie.' : wyjatek.message;
+      blad.classList.remove('ukryty');
+      zapisz.disabled = false;
+      zapisz.textContent = 'Zapisz jako znaną';
+    }
+  });
+  wiersz.appendChild(formularz);
+  pole.focus();
+}
+
+function wierszLuki(luka, indeks) {
+  const trwa = luka.status === 'otwarta' && luka.trwa;
+  const wiersz = element('div', `luka luka--${luka.status}${trwa ? ' luka--trwa' : ''}`);
+
+  const gora = element('div', 'luka__gora');
+  const nazwa = element('span', 'luka__rola zbieracz__czujnik', NAZWY_ROL[luka.rola] || luka.rola);
+  nazwa.style.setProperty('--kolor', kolorCzujnika(luka.rola, indeks));
+  gora.appendChild(nazwa);
+  gora.appendChild(element('span', `luka__stan luka__stan--${luka.status}`,
+    trwa ? 'trwa' : NAZWY_STATUSOW_LUKI[luka.status] || luka.status));
+  wiersz.appendChild(gora);
+
+  wiersz.appendChild(element('div', 'luka__zakres',
+    `${opiszZakresLuki(luka.od, luka.do)} · ${luka.godzin} h`));
+  if (luka.status === 'znana' && luka.powod) {
+    wiersz.appendChild(element('div', 'luka__powod', luka.powod));
+  }
+
+  if (trwa) {
+    wiersz.appendChild(element('div', 'luka__zakres',
+      'Luka jeszcze trwa — oznaczyć ją można po zakończeniu.'));
+  } else if (luka.status === 'otwarta') {
+    const przycisk = element('button', 'przycisk-drugorzedny luka__przycisk', 'Oznacz jako znaną');
+    przycisk.type = 'button';
+    przycisk.addEventListener('click', () => {
+      przycisk.classList.add('ukryty');
+      formularzOznaczenia(luka, wiersz, przycisk);
+    });
+    wiersz.appendChild(przycisk);
+  } else {
+    const przycisk = element('button', 'przycisk-drugorzedny luka__przycisk', 'Przywróć');
+    przycisk.type = 'button';
+    przycisk.addEventListener('click', async () => {
+      if (!window.confirm('Przywrócić tę lukę jako otwartą? Wróci do upomnień (raport, pasek, karta).')) return;
+      przycisk.disabled = true;
+      try {
+        const odpowiedz = await przywrocLuke(luka.rola, luka.od, luka.do);
+        if (!odpowiedz.ok) throw new Error(odpowiedz.blad || 'webhook odrzucił przywrócenie');
+        odswiezPoZmianieLuk();
+      } catch (wyjatek) {
+        przycisk.disabled = false;
+        statusLuk.textContent = wyjatek.message === 'Failed to fetch' ? 'Brak połączenia — spróbuj ponownie.' : wyjatek.message;
+        statusLuk.className = 'status-bloku status-bloku--blad';
+      }
+    });
+    wiersz.appendChild(przycisk);
+  }
+  return wiersz;
+}
+
+function renderujLuki(wynik) {
+  lukiKontener.innerHTML = '';
+  naglowekLuk.textContent = `Luki w ostatnich ${wynik.okno_dni || 28} dniach`;
+  if (!wynik.od) {
+    lukiKontener.appendChild(element('p', 'komunikat-pusto', 'Nie liczone — brak LUKI_OD.'));
+    return;
+  }
+  const luki = wynik.luki || [];
+  if (luki.length === 0) {
+    lukiKontener.appendChild(element('p', 'komunikat-pusto',
+      `Brak luk od początku zbierania (${formatujDataGodzinePodgladu(wynik.od)}).`));
+    return;
+  }
+  const lista = element('div', 'lista-odczytow');
+  luki.forEach((luka, indeks) => lista.appendChild(wierszLuki(luka, indeks)));
+  lukiKontener.appendChild(lista);
+}
+
+// Karta ładuje dwa niezależne bloki: stan zbieracza (stan_zbieracza) i listę luk
+// (lista_luk). Po oznaczeniu / przywróceniu luki odświeżamy oba — zmienia się
+// też alarm „luki” i werdykt.
+function wczytajKarteZbieracza() {
   generacjaZbieracza++;
   const generacja = generacjaZbieracza;
-  stanZbieraczaKontener.innerHTML = '';
-  pokazEkran(ekranZbieracz);
+  const aktualna = () => generacja === generacjaZbieracza;
 
-  wczytajBlokPodgladu(() => generacja === generacjaZbieracza, {
+  wczytajBlokPodgladu(aktualna, {
     status: statusZbieracza,
     klucz: 'stan_zbieracza',
     pobierz: pobierzStanZbieracza,
     renderuj: renderujStanZbieracza,
   });
+  wczytajBlokPodgladu(aktualna, {
+    status: statusLuk,
+    klucz: 'luki_zbieracza',
+    pobierz: pobierzListeLuk,
+    renderuj: renderujLuki,
+  });
+}
+
+function otworzZbieracz() {
+  ukryjKomunikatStart();
+  stanZbieraczaKontener.innerHTML = '';
+  lukiKontener.innerHTML = '';
+  pokazEkran(ekranZbieracz);
+  wczytajKarteZbieracza();
 }
 
 przyciskZbieracz.addEventListener('click', poUstawieniach(otworzZbieracz));

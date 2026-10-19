@@ -1820,6 +1820,82 @@ body:has(#ekran-start:not(.ukryty)) main {
 
 /* Bateria i sygnał czujnika na karcie Zbieracz (od 1.4.0): wiersz czujnika
    zawija się, a linia stanu zajmuje całą szerokość pod spodem. */
+/* Lista luk na karcie Zbieracz (pkt 48): wiersz z rolą, plakietką stanu, zakresem godzin,
+   powodem (znane) i przyciskiem. Plakietki: otwarta = uwaga, znana = wyciszona, trwa = informacja. */
+.luka {
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--linia-listy);
+}
+
+.luka:last-child {
+  border-bottom: none;
+}
+
+.luka__gora {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--odstep-3);
+}
+
+.luka__rola {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.luka__stan {
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.luka__stan--otwarta {
+  background: var(--uwaga-tlo);
+  color: var(--uwaga);
+}
+
+.luka__stan--znana {
+  background: var(--linia-listy);
+  color: var(--tekst-drugorzedny);
+}
+
+.luka--trwa .luka__stan {
+  background: var(--linia-listy);
+  color: var(--tekst-drugorzedny);
+}
+
+.luka__zakres {
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  color: var(--tekst-drugorzedny);
+  font-variant-numeric: tabular-nums;
+}
+
+.luka__powod {
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--tekst-opis);
+}
+
+/* Kompaktowy przycisk w wierszu luki — pełnowymiarowy rozciągałby listę. */
+.luka__przycisk {
+  margin-top: var(--odstep-3);
+  min-height: 0;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+.luka__formularz {
+  margin-top: var(--odstep-3);
+}
+
+.luka__zasada {
+  margin: 0 0 var(--odstep-3);
+  font-size: 0.78rem;
+  color: var(--tekst-opis);
+}
+
 .zbieracz__wiersz-czujnika {
   flex-wrap: wrap;
 }
