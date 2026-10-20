@@ -63,6 +63,7 @@ const WERDYKTY = {
   ok: 'działa', uwaga: 'uwagi', problem: 'problem', nieznany: 'nieznany',
 };
 const ETYKIETY_CZUJNIKOW = { zewn: 'zewn.', parter: 'parter', pietro: 'piętro' };
+const SKROTY_TRYBU_LADOWARKI = { auto: 'auto', harmonogram: 'harm.', reczny: 'ręcznie' };
 
 // --- Pomocnicze ------------------------------------------------------------
 
@@ -327,6 +328,17 @@ function renderujZbieracz(z) {
     }
   } else {
     zbWiersze.appendChild(wiersz('telefon', 'brak pulsu', 'kafel__wartosc--uwaga'));
+  }
+
+  // Ładowarka telefonu (od 1.21.0): stan przełącznika i tryb sterowania; szczegóły
+  // i zmiany na ekranie Ładowarka (karta Zbieracz). Bez sterowania — „log”.
+  const lad = t && t.ladowarka;
+  if (lad) {
+    const stan = lad.online === false ? 'offline'
+      : lad.przelacznik === 'on' ? 'ładuje' : lad.przelacznik === 'off' ? 'nie ładuje' : '—';
+    const tryb = lad.aktywne ? (SKROTY_TRYBU_LADOWARKI[lad.tryb] || lad.tryb || '') : 'log';
+    zbWiersze.appendChild(wiersz('ładow.', tryb ? `${stan} · ${tryb}` : stan,
+      lad.online === false ? 'kafel__wartosc--uwaga' : ''));
   }
 
   // Bateria Sonoffów (BleBox jej nie raportuje, więc bez wiersza).

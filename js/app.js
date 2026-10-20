@@ -21,6 +21,7 @@ import './ekrany/pulpit.js';
 import './ekrany/kociol.js';
 import './ekrany/podglad.js';
 import './ekrany/zbieracz.js';
+import './ekrany/ladowarka.js';
 import './ekrany/pomysly.js';
 import './ekrany/faktura.js';
 

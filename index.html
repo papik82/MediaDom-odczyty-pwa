@@ -370,7 +370,88 @@
       <div id="luki-zbieracza"></div>
 
       <div class="przyciski-formularza">
+        <button type="button" id="przycisk-ladowarka" class="przycisk-glowny">Ładowarka telefonu</button>
         <button type="button" id="przycisk-zamknij-zbieracz" class="przycisk-drugorzedny">Zamknij</button>
+      </div>
+    </section>
+
+    <!-- Ekran ładowarki — sterowanie ładowaniem baterii telefonu zbieracza (BACKLOG pkt 49).
+         Konfiguracja leży w webhooku, telefon pobiera ją co ok. 5 minut. Logika: js/ekrany/ladowarka.js. -->
+    <section id="ekran-ladowarka" class="ekran ukryty">
+      <h2>Ładowarka</h2>
+      <p class="opis-ekranu">Ładowanie baterii telefonu zbieracza. Zmiany dochodzą do telefonu
+        w ciągu ok. 5 minut.</p>
+      <p id="status-ladowarki" class="status-bloku ukryty" role="status"></p>
+      <div id="stan-ladowarki"></div>
+      <p id="komunikat-ladowarki" class="komunikat ukryty" role="status"></p>
+
+      <h3 class="podglad__naglowek">Sterowanie</h3>
+      <div class="pole-formularza">
+        Sterowanie przez zbieracz
+        <div class="segment-tryb" id="segment-aktywne-ladowarki" role="radiogroup" aria-label="Sterowanie ładowarką">
+          <span class="segment-tryb__wskaznik" aria-hidden="true"></span>
+          <button type="button" class="segment-tryb__opcja" data-wartosc="nie" role="radio" aria-checked="true">Wyłączone (tylko log)</button>
+          <button type="button" class="segment-tryb__opcja" data-wartosc="tak" role="radio" aria-checked="false">Włączone</button>
+        </div>
+      </div>
+      <div class="pole-formularza">
+        Tryb
+        <div class="segment-tryb" id="segment-tryb-ladowarki" role="radiogroup" aria-label="Tryb ładowania">
+          <span class="segment-tryb__wskaznik" aria-hidden="true"></span>
+          <button type="button" class="segment-tryb__opcja" data-wartosc="auto" role="radio" aria-checked="true">Auto</button>
+          <button type="button" class="segment-tryb__opcja" data-wartosc="harmonogram" role="radio" aria-checked="false">Harmonogram</button>
+          <button type="button" class="segment-tryb__opcja" data-wartosc="reczny" role="radio" aria-checked="false">Ręczny</button>
+        </div>
+      </div>
+      <p id="opis-trybu-ladowarki" class="opis-ekranu"></p>
+
+      <section id="sekcja-progow-ladowarki" class="ladowarka__sekcja">
+        <h3 class="podglad__naglowek">Progi (tryb Auto)</h3>
+        <form id="formularz-progow-ladowarki">
+          <label class="pole-formularza">
+            Włącz ładowanie, gdy bateria ≤ (%)
+            <input type="number" id="pole-dolny-ladowarki" inputmode="numeric" step="1" min="20" max="80" required>
+          </label>
+          <label class="pole-formularza">
+            Wyłącz ładowanie, gdy bateria ≥ (%)
+            <input type="number" id="pole-gorny-ladowarki" inputmode="numeric" step="1" min="35" max="95" required>
+          </label>
+          <p class="opis-ekranu">Dolny próg od 20 %, górny do 95 %, różnica co najmniej 15 punktów.
+            Niezależnie od trybu: gdy bateria spadnie do 25 % lub niżej, ładowanie włącza się zawsze.</p>
+          <div class="przyciski-formularza">
+            <button type="submit" class="przycisk-glowny">Zapisz progi</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="sekcja-harmonogramu-ladowarki" class="ladowarka__sekcja">
+        <h3 class="podglad__naglowek">Harmonogram (tryb Harmonogram)</h3>
+        <form id="formularz-harmonogramu-ladowarki">
+          <p class="etykieta-cyrkulacji">Okna ładowania — od / do</p>
+          <div id="lista-okien-ladowarki"></div>
+          <button type="button" id="przycisk-dodaj-okno-ladowarki" class="przycisk-drugorzedny">+ Dodaj okno</button>
+          <p class="opis-ekranu">Okno może przechodzić przez północ (np. 23:00–01:00). Najwyżej 6 okien.
+            Poza oknami telefon wyłącza ładowanie.</p>
+          <div class="przyciski-formularza">
+            <button type="submit" class="przycisk-glowny">Zapisz harmonogram</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="sekcja-recznego-ladowarki" class="ladowarka__sekcja">
+        <h3 class="podglad__naglowek">Ręcznie (tryb Ręczny)</h3>
+        <div class="przyciski-formularza">
+          <button type="button" id="przycisk-wlacz-ladowarke" class="przycisk-glowny" disabled>Włącz ładowanie</button>
+          <button type="button" id="przycisk-wylacz-ladowarke" class="przycisk-drugorzedny" disabled>Wyłącz ładowanie</button>
+        </div>
+        <p id="opis-polecenia-ladowarki" class="opis-ekranu"></p>
+      </section>
+
+      <h3 class="podglad__naglowek">Ostatnie ładowania</h3>
+      <div id="lista-ladowan"></div>
+
+      <div class="przyciski-formularza">
+        <button type="button" id="przycisk-zamknij-ladowarke" class="przycisk-drugorzedny">Zamknij</button>
       </div>
     </section>
 

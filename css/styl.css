@@ -2156,3 +2156,27 @@ body:has(#ekran-start:not(.ukryty)) .stopka__laka {
   font-size: 0.78rem;
   color: var(--tekst-wyciszony);
 }
+
+/* Ekran „Ładowarka” (od 1.21.0). Sekcje trybów, które teraz nie obowiązują, są przygaszone —
+   nadal można w nich zmieniać ustawienia (wejdą w życie po przełączeniu trybu). */
+.ladowarka__sekcja--nieaktywna {
+  opacity: 0.55;
+}
+
+.ladowarka__przedzial {
+  font-variant-numeric: tabular-nums;
+}
+
+.ladowarka__trwa {
+  background: var(--ok-tlo);
+  border-radius: var(--promien-pole);
+}
+
+#stan-ladowarki .wiersz-odczytu__stan,
+#lista-ladowan .wiersz-odczytu__stan {
+  text-align: right;
+}
+
+#stan-ladowarki .pasek-alarmow {
+  margin-top: 0;
+}

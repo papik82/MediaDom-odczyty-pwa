@@ -144,6 +144,23 @@ i sygnał Zigbee (`opiszStanCzujnika`; `PROG_BATERII_CZUJNIKA` = 20 — ta sama
 wartość co w `apps-script/luki.js`).
 Od 1.20.0 pod stanem **lista luk** w temperaturach (akcja `lista_luk`, osobne żądanie i status, bufor `luki_zbieracza`): otwarte, znane i trwające. „Oznacz jako znaną” (powód obowiązkowy) i „Przywróć” wołają `oznacz_luke` / `przywroc_luke` (zakładka `luki_znane`, `apps-script/luki_znane.js`); po zmianie odświeżają kartę i kasują bufory karty i pulpitu. Trwającej luki nie wolno oznaczać. Zasada: `../dokumentacja/decyzje.md` D4.
 
+**Ekran „Ładowarka”** (od 1.21.0, przycisk „Ładowarka telefonu” na karcie Zbieracz;
+`js/ekrany/ladowarka.js`, akcje `ladowarka_stan` i `zapisz_konfiguracje_ladowarki`,
+BACKLOG pkt 49) — sterowanie ładowaniem baterii telefonu zbieracza. Góra: plakietka stanu
+(ładuje się / nie ładuje / przełącznik offline / brak danych) z baterią i wiekiem zgłoszenia,
+ostrzeżenia z telefonu, wiersze (przełącznik, bateria, trwające ładowanie, wersja ustawień
+na telefonie — „czeka na telefon” do 5 min). Niżej: przełącznik **Sterowanie** (tylko log /
+włączone, włączenie z potwierdzeniem), przełącznik **Tryb** (auto / harmonogram / ręczny),
+sekcje: progi histerezy, harmonogram (okna `od`–`do`, do 6, także przez północ) i przyciski
+Włącz / Wyłącz (aktywne tylko w trybie ręcznym przy włączonym sterowaniu); sekcje trybów
+nieobowiązujących są przygaszone, ale edytowalne. Na końcu 10 ostatnich ładowań (ze źródłem:
+auto, harmonogram, ręcznie, awaryjnie, poza zbieraczem) i trwające na górze. Konfiguracja
+leży w webhooku — **zmiany idą bez kolejki offline** (bez połączenia nie zapisują się i ekran to
+mówi), a walidacja jest podwójna (ekran + serwer, te same granice). Zmiany dochodzą do
+telefonu w ciągu ok. 5 min; ekran sam się odświeża raz na minutę, a pola, które właśnie
+edytujesz, odświeżenie nie nadpisuje. Bufor `ladowarka` (stare, potem świeże). Na pulpicie
+w kaflu Zbieracz wiersz „ładow.” (`telefon.ladowarka` z akcji `pulpit`): stan i tryb albo „log”.
+
 **Karta „Faktura”** — od 1.13.0 na górze lista ostatnich faktur z arkusza
 (akcja `ostatnie_faktury`, do 12, przez bufor; stuknięcie rozwija szczegóły
 okresów, tylko podgląd; lista chowa się przy otwartym formularzu, a po zapisie
@@ -266,6 +283,7 @@ odczyty-pwa/
 │   │   ├── podglad.js     karty Odczyty i Temperatury
 │   │   ├── wykres-doby.js wykres godzinowy doby (SVG)
 │   │   ├── zbieracz.js    karta Zbieracz
+│   │   ├── ladowarka.js   ekran Ładowarka (tryby, progi, harmonogram, log ładowań)
 │   │   ├── pulpit.js      pulpit ekranu startowego (akcja `pulpit`, bufor)
 │   │   ├── pomysly.js     notatnik pomysłów
 │   │   ├── faktura.js     import faktury z PDF

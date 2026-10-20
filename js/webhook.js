@@ -152,3 +152,16 @@ export function oznaczLuke(rola, od, doKlucz, powod) {
 export function przywrocLuke(rola, od, doKlucz) {
   return wyslij({ akcja: 'przywroc_luke', rola, od, do: doKlucz });
 }
+
+// Ładowarka telefonu zbieracza (BACKLOG pkt 49, ekran „Ładowarka”). `ladowarka_stan` —
+// tylko do odczytu: konfiguracja, stan zgłoszony przez telefon i ostatnie ładowania.
+// `zapisz_konfiguracje_ladowarki` — zmiana ustawień; `zmiany` zawiera tylko to, co się
+// zmienia (aktywne, tryb, dolny + gorny, harmonogram, polecenie: 'on' | 'off'), a walidację
+// robi serwer. Telefon pobiera konfigurację co ok. 5 minut. Kontrakt: ../apps-script/CLAUDE.md.
+export function pobierzStanLadowarki() {
+  return wyslij({ akcja: 'ladowarka_stan' });
+}
+
+export function zapiszKonfiguracjeLadowarki(zmiany) {
+  return wyslij({ akcja: 'zapisz_konfiguracje_ladowarki', zmiany });
+}

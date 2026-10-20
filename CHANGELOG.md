@@ -3,6 +3,24 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.21.0 — 2026-10-20
+
+### Dodane
+- **Ekran „Ładowarka” — zarządzanie ładowaniem baterii telefonu zbieracza** (BACKLOG
+  pkt 49), przycisk na karcie Zbieracz. Stan (ładuje się / nie, bateria, od kiedy trwa
+  ładowanie, przełącznik offline, ostrzeżenia z telefonu), przełącznik **Sterowanie**
+  (tylko log / włączone, z potwierdzeniem), przełącznik **Tryb** (auto / harmonogram /
+  ręczny), **progi histerezy** (włącz ≤ / wyłącz ≥, z kontrolą granic: dolny ≥ 20 %, górny
+  ≤ 95 %, różnica ≥ 15 pp), **harmonogram** (do 6 okien, także przez północ), przyciski
+  **Włącz / Wyłącz** w trybie ręcznym i **10 ostatnich ładowań** (czas, bateria start → koniec,
+  czas trwania, źródło: auto / harmonogram / ręcznie / awaryjnie / poza zbieraczem).
+  Zmiany idą do webhooka (bez kolejki offline) i dochodzą do telefonu w ciągu ok. 5 min;
+  ekran odświeża się sam raz na minutę, nie nadpisując edytowanych pól.
+- Pulpit: wiersz **„ładow.”** w kaflu Zbieracz — stan przełącznika i tryb (albo „log”,
+  gdy sterowanie wyłączone); przy przełączniku offline wyróżniony.
+- Akcje webhooka `ladowarka_stan`, `zapisz_konfiguracje_ladowarki`, `ladowarka_synchronizuj`
+  (telefon), zakładka `ladowania`, zbieracz 1.6.
+
 ## 1.20.0 — 2026-10-19
 
 ### Dodane
