@@ -3,6 +3,25 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.22.0 — 2026-10-23
+
+### Zmienione
+- **Karta Faktura: każda faktura w osobnej ramce, z pełnymi danymi** (BACKLOG pkt 50).
+  Zwinięta faktura to pasek (numer, daty, kwota brutto); rozwinięta — ramka w zieleni akcji
+  z nagłówkiem (numer, daty, plakietki „N okresów” i „✓ zgodna z sumą okresów”, zielony blok
+  z wartością brutto faktury), strefą „Dane z faktury · kwoty brutto” i panelem „Analiza faktury”.
+  Każdy okres to osobny blok: pionowa belka „Okres 1 z 2” z lewej, oś z datami i odczytami
+  licznika na końcach i pigułką przyrostu („+419 m³ · 50 dni”), współczynnik konwersji oraz
+  ceny i opłaty brutto (paliwo, dystrybucja zmienna, abonament, dystrybucyjna stała; VAT małą
+  linijką). Analiza liczy się dla CAŁEJ faktury (dni, zużycie, energia, zużycie na dobę,
+  koszt na dobę / za m³ / za kWh, udział opłat stałych) — także dla faktur jednookresowych.
+  Telefon: kolumna, analiza pod okresami, cztery paski na start i „Pokaż starsze faktury”;
+  komputer (od 900 px): okresy po lewej, analiza po prawej, wszystkie faktury od razu.
+  Najnowsza faktura jest rozwinięta, stuknięcie nagłówka zwija ramkę. Uwagi z arkusza nie są
+  pokazywane. Bufor `faktury_pelne`.
+- Webhook (wersja 57): `ostatnie_faktury` zwraca pola okresów G–M, kwoty brutto, `analiza`
+  i `kontrola`; limit `ile` do 100.
+
 ## 1.21.0 — 2026-10-20
 
 ### Dodane

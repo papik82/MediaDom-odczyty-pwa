@@ -161,10 +161,15 @@ telefonu w ciągu ok. 5 min; ekran sam się odświeża raz na minutę, a pola, k
 edytujesz, odświeżenie nie nadpisuje. Bufor `ladowarka` (stare, potem świeże). Na pulpicie
 w kaflu Zbieracz wiersz „ładow.” (`telefon.ladowarka` z akcji `pulpit`): stan i tryb albo „log”.
 
-**Karta „Faktura”** — od 1.13.0 na górze lista ostatnich faktur z arkusza
-(akcja `ostatnie_faktury`, do 12, przez bufor; stuknięcie rozwija szczegóły
-okresów, tylko podgląd; lista chowa się przy otwartym formularzu, a po zapisie
-nowej faktury bufor jest unieważniany). Poniżej import (od 1.3.0) — import faktury za gaz z PDF: plik
+**Karta „Faktura”** — od 1.22.0 na górze lista faktur z arkusza, **każda w ramce**
+(`js/ekrany/faktura-lista.js`, akcja `ostatnie_faktury` z `ile` 100, bufor `faktury_pelne`):
+zwinięty pasek albo rozwinięta ramka z nagłówkiem (numer, daty, plakietki, zielony blok
+z brutto faktury), blokami okresów (belka „Okres i z n”, oś z datami i odczytami, współczynnik,
+kwoty brutto z VAT małą linijką) i panelem „Analiza faktury” liczonym przez webhook dla
+CAŁEJ faktury. Telefon: kolumna, analiza pod okresami, cztery paski i „Pokaż starsze
+faktury”; komputer (od 900 px): okresy po lewej, analiza po prawej, wszystkie faktury;
+lista chowa się przy otwartym formularzu, a po zapisie nowej faktury bufor jest unieważniany.
+Makiety (Claude Design): artefakt „Widok faktury (komputer)”. Poniżej import (od 1.3.0) — import faktury za gaz z PDF: plik
 (base64) → `odczytaj_fakture` (Gemini proponuje, nic nie zapisuje) →
 formularz → `zapisz_fakture`. Zasada jak przy zdjęciu licznika: **model
 podpowiada, zapis tylko po zatwierdzeniu**. Kontrole na ekranie
@@ -287,6 +292,7 @@ odczyty-pwa/
 │   │   ├── pulpit.js      pulpit ekranu startowego (akcja `pulpit`, bufor)
 │   │   ├── pomysly.js     notatnik pomysłów
 │   │   ├── faktura.js     import faktury z PDF
+│   │   ├── faktura-lista.js lista faktur w ramkach (okresy, analiza całej faktury)
 │   │   ├── ustawienia.js  adres i token, poUstawieniach
 │   │   └── alarmy.js      rysowanie paska alarmów (dane z pulpitu)
 │   ├── ustawienia.js      adres webhooka i token w localStorage

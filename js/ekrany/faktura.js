@@ -1,11 +1,12 @@
 // Karta „Faktura” — lista ostatnich faktur z arkusza (tylko do odczytu) oraz import
 // faktury za gaz z PDF (Gemini podpowiada, zapis po zatwierdzeniu).
 
-import { odczytajFakture, zapiszFakture, pobierzOstatnieFaktury } from '../webhook.js';
+import { odczytajFakture, zapiszFakture } from '../webhook.js';
 import { wyczyscBuforKlucz } from '../bufor.js';
-import { element, liczbaPL, ustawStatusBloku, wczytajBlokPodgladu } from '../wspolne.js';
+import { element, ustawStatusBloku } from '../wspolne.js';
 import { pokazEkran, ekranStart, pokazKomunikatStart, ukryjKomunikatStart } from '../nawigacja.js';
 import { poUstawieniach } from './ustawienia.js';
+import { wczytajListeFaktur } from './faktura-lista.js';
 
 const ekranFaktura = document.getElementById('ekran-faktura');
 const przyciskFaktura = document.getElementById('przycisk-faktura');
@@ -25,113 +26,10 @@ const komunikatFaktury = document.getElementById('komunikat-faktury');
 const przyciskZamknijFakture = document.getElementById('przycisk-zamknij-fakture');
 const szablonOkresuFaktury = document.getElementById('szablon-okresu-faktury');
 const blokListyFaktur = document.getElementById('blok-listy-faktur');
-const statusListyFaktur = document.getElementById('status-listy-faktur');
 const listaFaktur = document.getElementById('lista-faktur');
 
-// --- Lista ostatnich faktur (od 1.13.0) ---
-//
-// Akcja ostatnie_faktury: jedna pozycja na fakturę (okresy jednej faktury są
-// zsumowane przez webhook). Przez bufor „stare, potem świeże” jak Odczyty;
-// po zapisaniu nowej faktury bufor jest unieważniany, żeby była od razu na liście.
-// Pozycja po stuknięciu pokazuje numer faktury i szczegóły okresów — tylko podgląd.
-
-const ILE_FAKTUR_NA_LISCIE = 12;   // ok. dwa lata rozliczeń
-let generacjaListyFaktur = 0;
-
-// "2026-07-23" → "23.07.2026"
-function dataPL(iso) {
-  if (!iso) return '—';
-  const [r, m, d] = iso.split('-');
-  return `${d}.${m}.${r}`;
-}
-
-// Okres faktury: „23.07–30.09.2026” (ten sam rok) albo z oboma rokami.
-function opiszOkres(od, doo) {
-  if (!od || !doo) return dataPL(od || doo);
-  const [rOd] = od.split('-');
-  const [rDo] = doo.split('-');
-  return rOd === rDo ? `${dataPL(od).slice(0, 5)}–${dataPL(doo)}` : `${dataPL(od)}–${dataPL(doo)}`;
-}
-
-// Liczby po polsku: twarda spacja jako separator tysięcy i przecinek dziesiętny
-// („1 134”, „468,88”). Własny zapis zamiast toLocaleString('pl-PL'), bo ten nie
-// grupuje liczb czterocyfrowych („1134” obok „13 910”).
-function liczbaZSpacja(x, maks = 0, min = 0) {
-  if (typeof x !== 'number') return '—';
-  const [calosc, ulamek = ''] = x.toFixed(maks).split('.');
-  const znak = calosc.startsWith('-') ? '−' : '';
-  const grupy = calosc.replace('-', '').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  // Zbędne zera po przecinku obcinamy do `min` miejsc (m³: 97 zamiast 97,000).
-  const ucieta = ulamek.replace(/0+$/, '').padEnd(min, '0');
-  return `${znak}${grupy}${ucieta ? `,${ucieta}` : ''}`;
-}
-
-function kwota(x) {
-  return typeof x === 'number' ? `${liczbaZSpacja(x, 2, 2)} zł` : '—';
-}
-
-function wierszFaktury(f) {
-  const pozycja = element('div', 'faktura-pozycja');
-  const naglowek = element('button', 'faktura-pozycja__glowa');
-  naglowek.type = 'button';
-  naglowek.setAttribute('aria-expanded', 'false');
-
-  const gora = element('span', 'faktura-pozycja__gora');
-  gora.appendChild(element('span', 'faktura-pozycja__okres', opiszOkres(f.okres_od, f.okres_do)));
-  const brutto = element('span', 'faktura-pozycja__kwota', kwota(f.brutto));
-  // Brutto wyliczone z okresów (a nie z faktury) oznaczamy gwiazdką z opisem.
-  if (f.brutto_zrodlo === 'wyliczone') {
-    brutto.textContent += ' *';
-    brutto.title = 'wyliczone z okresów — brak kwoty brutto z faktury';
-  }
-  gora.appendChild(brutto);
-  naglowek.appendChild(gora);
-  naglowek.appendChild(element('span', 'faktura-pozycja__dol',
-    `${liczbaZSpacja(f.m3, 3)} m³ · ${liczbaZSpacja(f.kwh)} kWh · ${typeof f.dni === 'number' ? `${f.dni} dni` : '—'}`));
-  pozycja.appendChild(naglowek);
-
-  // Szczegóły: numer faktury i okresy (tylko do odczytu).
-  const szczegoly = element('div', 'faktura-pozycja__szczegoly ukryty');
-  szczegoly.appendChild(element('p', 'faktura-pozycja__numer', `Faktura ${f.nr_faktury}`));
-  (f.okresy || []).forEach((o) => {
-    const wiersz = element('p', 'faktura-pozycja__okres-wiersz');
-    const opis = `${opiszOkres(o.okres_od, o.okres_do)} · ${liczbaZSpacja(o.m3, 3)} m³ · ${liczbaZSpacja(o.kwh)} kWh`
-      + (typeof o.wsp_konwersji === 'number' ? ` · ${liczbaPL(o.wsp_konwersji)} kWh/m³` : '')
-      + (typeof o.brutto === 'number' ? ` · ${kwota(o.brutto)}` : '');
-    wiersz.textContent = opis;
-    szczegoly.appendChild(wiersz);
-    if (o.uwagi) szczegoly.appendChild(element('p', 'faktura-pozycja__uwagi', o.uwagi));
-  });
-  pozycja.appendChild(szczegoly);
-
-  naglowek.addEventListener('click', () => {
-    const otwarte = naglowek.getAttribute('aria-expanded') === 'true';
-    naglowek.setAttribute('aria-expanded', String(!otwarte));
-    szczegoly.classList.toggle('ukryty', otwarte);
-  });
-  return pozycja;
-}
-
-function renderujListeFaktur(wynik) {
-  listaFaktur.innerHTML = '';
-  const faktury = (wynik && wynik.faktury) || [];
-  if (faktury.length === 0) {
-    listaFaktur.appendChild(element('p', 'komunikat-pusto', 'Brak zapisanych faktur.'));
-    return;
-  }
-  faktury.forEach((f) => listaFaktur.appendChild(wierszFaktury(f)));
-}
-
-function wczytajListeFaktur() {
-  generacjaListyFaktur++;
-  const generacja = generacjaListyFaktur;
-  wczytajBlokPodgladu(() => generacja === generacjaListyFaktur, {
-    status: statusListyFaktur,
-    klucz: 'ostatnie_faktury',
-    pobierz: () => pobierzOstatnieFaktury(ILE_FAKTUR_NA_LISCIE),
-    renderuj: renderujListeFaktur,
-  });
-}
+// Lista faktur w ramkach (od 1.22.0) — js/ekrany/faktura-lista.js. Tu tylko ją wczytujemy
+// przy otwarciu ekranu, a po zapisie nowej faktury unieważniamy jej bufor.
 
 // --- Faktura za gaz z PDF (od 1.3.0) ---
 //
@@ -389,7 +287,7 @@ formularzFaktury.addEventListener('submit', async (zdarzenie) => {
     }
     // Nowa faktura zmienia listę — wyrzucamy ją z bufora, żeby po powrocie na
     // kartę była od razu (lista wczyta się świeża).
-    wyczyscBuforKlucz('ostatnie_faktury');
+    wyczyscBuforKlucz('faktury_pelne');
     pokazKomunikatStart(wynik.duplikat
       ? `Faktura ${faktura.nr_faktury} już jest w arkuszu — nic nie zapisano.`
       : `Zapisano fakturę ${faktura.nr_faktury} (${faktura.okresy.length === 1 ? 'wiersz' : 'wiersze'} ` +

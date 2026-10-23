@@ -1351,80 +1351,562 @@ body:has(#ekran-start:not(.ukryty)) main {
   overflow: hidden;
 }
 
+/* Lista faktur w ramkach (od 1.22.0, js/ekrany/faktura-lista.js). Telefon: kolumna, analiza pod
+   okresami. Komputer (od 900 px): okresy po lewej, analiza po prawej, wszystkie faktury od razu.
+   Wszystkie kolory z tokenów — w nocy zmieniają się razem z resztą aplikacji. */
 .lista-faktur {
   margin-top: var(--odstep-2);
-  background: var(--powierzchnia);
-  border-radius: var(--promien-karta);
-  box-shadow: var(--cien-karta);
-  overflow: hidden;
-}
-
-/* Ostatnie faktury na karcie Faktura: nagłówek pozycji (okres i kwota brutto,
-   pod spodem m³ · kWh · dni) jest przyciskiem rozwijającym szczegóły okresów. */
-.faktura-pozycja {
-  border-bottom: 1px solid var(--linia-listy);
-}
-
-.faktura-pozycja:last-child {
-  border-bottom: none;
-}
-
-.faktura-pozycja__glowa {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: var(--odstep-3);
+}
+
+.faktura-karta {
+  display: block;
+}
+
+/* Zwinięta faktura: biały pasek z cienką ramką; cel dotyku wyższy niż 44 px. */
+.faktura-pasek {
+  display: flex;
+  align-items: center;
+  gap: var(--odstep-3);
   width: 100%;
-  padding: var(--odstep-3) 0.9rem;
-  border: none;
-  background: none;
+  min-height: 3.5rem;
+  box-sizing: border-box;
+  padding: var(--odstep-2) var(--odstep-5);
+  background: var(--powierzchnia);
+  border: 1.5px solid var(--obrys-ramki);
+  border-radius: var(--promien-kafel);
+  box-shadow: var(--cien-karta);
+  color: var(--tekst);
   font: inherit;
   text-align: left;
   cursor: pointer;
 }
 
-.faktura-pozycja__glowa:active {
+.faktura-pasek:active {
   background: var(--kolor-glowny-jasny);
 }
 
-.faktura-pozycja__gora {
+.faktura-pasek__opis {
+  flex: 1;
+  min-width: 0;
   display: flex;
-  justify-content: space-between;
-  gap: var(--odstep-4);
+  flex-direction: column;
 }
 
-.faktura-pozycja__okres {
-  font-weight: 600;
+.faktura-pasek__numer {
   font-size: 0.95rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
-.faktura-pozycja__kwota {
+.faktura-pasek__daty {
+  font-size: 0.75rem;
+  color: var(--tekst-opis);
   font-variant-numeric: tabular-nums;
-  font-weight: 600;
+}
+
+.faktura-pasek__kwota {
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-.faktura-pozycja__dol {
+.faktura-pasek__strzalka {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--zielen-akcji);
+}
+
+.faktura-tylko-komputer {
+  display: none;
+}
+
+/* Rozwinięta faktura: ramka w zieleni akcji. */
+.faktura-ramka {
+  background: var(--powierzchnia);
+  border: 2px solid var(--zielen-akcji);
+  border-radius: var(--promien-kafel);
+  box-shadow: var(--cien-kafel);
+  overflow: hidden;
+}
+
+.faktura-ramka__glowa {
+  display: flex;
+  flex-direction: column;
+  gap: var(--odstep-4);
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--odstep-4) var(--odstep-4);
+  background: var(--gradient-zbieracz);
+  border: none;
+  border-bottom: 1px solid var(--laka-linia);
+  color: var(--tekst);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.faktura-ramka__opis {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.faktura-ramka__numer {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--naglowek-tekst);
+  font-variant-numeric: tabular-nums;
+}
+
+.faktura-ramka__daty {
   font-size: 0.8rem;
+  color: var(--tekst-opis);
+  font-variant-numeric: tabular-nums;
+}
+
+.faktura-ramka__plakietki {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.faktura-plakietka {
+  display: inline-block;
+  padding: 0.1rem 0.65rem;
+  border-radius: var(--promien-pigulka);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--zielen-akcji-jasna);
+  color: var(--zielen-akcji);
+}
+
+.faktura-plakietka--ok {
+  background: var(--ok-tlo);
+  color: var(--ok-ciemny);
+}
+
+.faktura-plakietka--uwaga {
+  background: var(--uwaga-tlo);
+  color: var(--uwaga);
+}
+
+/* Suma brutto faktury — najmocniejszy akcent ekranu. */
+.faktura-suma {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--odstep-4);
+  padding: var(--odstep-3) var(--odstep-5);
+  border-radius: var(--promien-kafel);
+  background: var(--gradient-przycisku);
+  box-shadow: var(--cien-przycisku);
+  color: var(--tekst-na-akcji);
+}
+
+.faktura-suma__etykieta {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+  max-width: 6.5rem;
+}
+
+.faktura-suma__wartosc {
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.faktura-ramka__tresc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--odstep-4);
+  padding: var(--odstep-4);
+}
+
+.faktura-dane,
+.faktura-analiza {
+  display: flex;
+  flex-direction: column;
+  gap: var(--odstep-3);
+  min-width: 0;
+}
+
+.faktura-sekcja {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--laka-etykieta);
+}
+
+.faktura-etykieta {
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--laka-podpis);
+}
+
+.faktura-wartosc {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+
+.faktura-jednostka {
+  font-size: 0.7rem;
+  font-weight: 400;
   color: var(--tekst-drugorzedny);
 }
 
-.faktura-pozycja__szczegoly {
-  padding: 0 0.9rem var(--odstep-3);
+.faktura-vat {
+  margin-top: 1px;
+  font-size: 0.7rem;
+  color: var(--tekst-drugorzedny);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Blok okresu: pionowa belka z numerem po lewej, oś dat i odczytów, pola z kwotami brutto. */
+.faktura-okres {
+  display: flex;
+  align-items: stretch;
+  background: var(--powierzchnia);
+  border: 1px solid var(--linia-listy);
+  border-radius: var(--promien-karta);
+  overflow: hidden;
+}
+
+.faktura-okres__belka {
+  flex: 0 0 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--zielen-akcji);
+  color: var(--tekst-na-akcji);
+  writing-mode: vertical-rl;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.faktura-okres__tresc {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--odstep-4);
+  padding: var(--odstep-4) var(--odstep-4) var(--odstep-4) var(--odstep-3);
+}
+
+.faktura-os {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.faktura-os__koniec {
+  flex: 0 0 4.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.faktura-os__koniec--prawy {
+  text-align: right;
+}
+
+.faktura-os__data {
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.faktura-os__odczyt {
+  font-size: 0.75rem;
+  color: var(--tekst-opis);
+  font-variant-numeric: tabular-nums;
+}
+
+.faktura-os__linia {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.faktura-os__linia i {
+  flex: 1;
+  min-width: 2px;
+  height: 2px;
+  background: var(--laka-linia);
+}
+
+.faktura-os__linia u {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--zielen-akcji);
+  text-decoration: none;
+}
+
+.faktura-os__linia b {
+  margin: 0 4px;
+  padding: 2px 8px;
+  border-radius: var(--promien-pigulka);
+  background: var(--zielen-akcji-jasna);
+  color: var(--zielen-akcji);
   font-size: 0.8rem;
-  color: var(--tekst-tabeli);
+  line-height: 1.2;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
 }
 
-.faktura-pozycja__szczegoly p {
-  margin: 0.2rem 0;
-}
-
-.faktura-pozycja__numer {
+.faktura-os__linia small {
+  display: block;
+  font-size: 0.7rem;
   font-weight: 600;
 }
 
-.faktura-pozycja__uwagi {
-  color: var(--tekst-drugorzedny);
-  font-style: italic;
+.faktura-pola {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--odstep-4);
+  row-gap: var(--odstep-4);
+  align-items: start;
+}
+
+.faktura-wsp {
+  grid-column: 1 / -1;
+  padding-bottom: var(--odstep-3);
+  border-bottom: 1px solid var(--laka-linia);
+}
+
+/* Analiza całej faktury. */
+.faktura-analiza__panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--odstep-4);
+  padding: var(--odstep-4) var(--odstep-5);
+  border-radius: var(--promien-karta);
+  background: var(--gradient-zbieracz);
+  border: 1px solid var(--laka-linia);
+}
+
+.faktura-analiza__duze {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--odstep-2);
+}
+
+.faktura-wskaznik {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.faktura-wskaznik b {
+  font-size: 1.35rem;
+  color: var(--naglowek-tekst);
+  font-variant-numeric: tabular-nums;
+}
+
+.faktura-analiza__linia {
+  height: 1px;
+  background: var(--laka-linia);
+}
+
+.faktura-analiza__lista {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: 0.4rem;
+  column-gap: var(--odstep-4);
+  align-items: baseline;
+  font-size: 0.8rem;
+}
+
+.faktura-analiza__nazwa {
+  color: var(--laka-etykieta);
+}
+
+.faktura-wiecej {
+  width: 100%;
+  margin-top: var(--odstep-2);
+}
+
+@media (min-width: 900px) {
+  /* Karta Faktura na komputerze jest szeroka; przyciski importu nie rozciągają się na całość. */
+  body:has(#ekran-faktura:not(.ukryty)) main {
+    max-width: 1240px;
+  }
+
+  #ekran-faktura .przyciski-formularza {
+    max-width: var(--szerokosc-tresci);
+  }
+
+  .faktura-pasek {
+    padding: var(--odstep-3) 1.4rem;
+    gap: var(--odstep-5);
+  }
+
+  .faktura-pasek__numer {
+    flex: 0 0 13rem;
+    font-size: 1rem;
+  }
+
+  .faktura-pasek__opis {
+    flex-direction: row;
+    align-items: baseline;
+  }
+
+  .faktura-pasek__daty {
+    font-size: 0.9rem;
+  }
+
+  .faktura-pasek__kwota {
+    font-size: 1rem;
+  }
+
+  .faktura-tylko-telefon {
+    display: none;
+  }
+
+  .faktura-tylko-komputer {
+    display: inline;
+  }
+
+  .faktura-ramka__glowa {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--odstep-7);
+    padding: var(--odstep-5) var(--odstep-7);
+  }
+
+  .faktura-ramka__numer {
+    font-size: 1.6rem;
+    margin-right: var(--odstep-4);
+  }
+
+  .faktura-ramka__daty {
+    font-size: 0.95rem;
+  }
+
+  .faktura-ramka__opis {
+    flex-direction: column;
+  }
+
+  .faktura-suma {
+    flex: 0 0 auto;
+    gap: var(--odstep-5);
+    padding: var(--odstep-3) 1.4rem;
+  }
+
+  .faktura-suma__wartosc {
+    font-size: 2.25rem;
+  }
+
+  .faktura-ramka__tresc {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding: 1.1rem var(--odstep-7) 1.4rem;
+  }
+
+  .faktura-dane {
+    flex: 1.9 1 0;
+  }
+
+  .faktura-analiza {
+    flex: 1 1 0;
+  }
+
+  .faktura-okres__belka {
+    flex-basis: 2.1rem;
+    font-size: 0.8rem;
+  }
+
+  .faktura-okres__tresc {
+    gap: var(--odstep-5);
+    padding: var(--odstep-5) var(--odstep-6) var(--odstep-5) var(--odstep-6);
+  }
+
+  .faktura-os {
+    gap: var(--odstep-4);
+  }
+
+  .faktura-os__koniec {
+    flex-basis: 8.25rem;
+  }
+
+  .faktura-os__data {
+    font-size: 0.95rem;
+  }
+
+  .faktura-os__odczyt {
+    font-size: 0.8rem;
+  }
+
+  .faktura-os__linia u {
+    width: 10px;
+    height: 10px;
+  }
+
+  .faktura-os__linia b {
+    margin: 0 var(--odstep-2);
+    padding: 2px 0.7rem;
+    font-size: 0.875rem;
+  }
+
+  .faktura-os__linia small {
+    display: inline;
+  }
+
+  .faktura-os__linia small::before {
+    content: ' · ';
+  }
+
+  .faktura-pola {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    column-gap: 0.9rem;
+  }
+
+  .faktura-wsp {
+    grid-column: auto;
+    padding: 0 var(--odstep-6) 0 0;
+    margin-right: var(--odstep-1);
+    border-bottom: none;
+    border-right: 1px solid var(--laka-linia);
+  }
+
+  .faktura-analiza__panel {
+    padding: 1rem 1.15rem;
+    gap: var(--odstep-5);
+  }
+
+  .faktura-wskaznik b {
+    font-size: 1.6rem;
+  }
+
+  .faktura-analiza__lista {
+    font-size: 0.875rem;
+    row-gap: 0.55rem;
+  }
+
+  .faktura-wiecej {
+    display: none;
+  }
 }
 
 .wiersz-odczytu {
