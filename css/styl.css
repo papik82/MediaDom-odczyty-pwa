@@ -2645,6 +2645,16 @@ body:has(#ekran-start:not(.ukryty)) .stopka__laka {
   opacity: 0.55;
 }
 
+/* Sterowanie wyłączone: przełącznik trybu przygaszony (nadal klikalny), linijka pod nim tłumaczy dlaczego. */
+.segment-tryb--przygaszony {
+  opacity: 0.55;
+}
+
+.ladowarka__wskazowka {
+  color: var(--uwaga);
+  font-weight: 600;
+}
+
 .ladowarka__przedzial {
   font-variant-numeric: tabular-nums;
 }

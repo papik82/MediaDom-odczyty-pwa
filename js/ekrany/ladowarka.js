@@ -28,6 +28,7 @@ const komunikat = document.getElementById('komunikat-ladowarki');
 const segmentAktywne = document.getElementById('segment-aktywne-ladowarki');
 const segmentTryb = document.getElementById('segment-tryb-ladowarki');
 const opisTrybu = document.getElementById('opis-trybu-ladowarki');
+const wskazowkaTrybu = document.getElementById('wskazowka-trybu-ladowarki');
 
 const sekcjaProgow = document.getElementById('sekcja-progow-ladowarki');
 const formularzProgow = document.getElementById('formularz-progow-ladowarki');
@@ -255,7 +256,11 @@ function odczytajOkna() {
 function uzupelnijKontrolki(k, t) {
   ustawSegment(segmentAktywne, k.aktywne ? 'tak' : 'nie');
   ustawSegment(segmentTryb, k.tryb);
-  opisTrybu.textContent = `${OPISY_TRYBOW[k.tryb] || ''}${k.aktywne ? '' : ' Sterowanie jest wyłączone — telefon tylko zapisuje ładowania w logu.'}`;
+  opisTrybu.textContent = OPISY_TRYBOW[k.tryb] || '';
+  // Sterowanie wyłączone: tryb można wybrać z wyprzedzeniem (zadziała po włączeniu), ale pasek
+  // jest przygaszony i linijka mówi wprost, że teraz niczego nie zmienia.
+  segmentTryb.classList.toggle('segment-tryb--przygaszony', !k.aktywne);
+  wskazowkaTrybu.classList.toggle('ukryty', k.aktywne);
 
   sekcjaProgow.classList.toggle('ladowarka__sekcja--nieaktywna', k.tryb !== 'auto');
   sekcjaHarmonogramu.classList.toggle('ladowarka__sekcja--nieaktywna', k.tryb !== 'harmonogram');
@@ -336,7 +341,7 @@ segmentAktywne.querySelectorAll('.segment-tryb__opcja').forEach((opcja) => opcja
     const k = ostatniWynik.konfiguracja;
     const co = k.tryb === 'auto' ? `progi ${k.dolny} % / ${k.gorny} %`
       : k.tryb === 'harmonogram' ? 'okna z harmonogramu' : 'tylko polecenia ręczne';
-    if (!window.confirm(`Włączyć sterowanie? Telefon zacznie sam włączać i wyłączać ładowarkę (tryb: ${k.tryb}, ${co}).`)) return;
+    if (!window.confirm(`Tryb: ${k.tryb} (${co}). Włączyć sterowanie? Telefon zacznie sam włączać i wyłączać ładowarkę.`)) return;
   }
   await zapisz({ aktywne: wlacz }, wlacz ? 'Sterowanie włączone.' : 'Sterowanie wyłączone — telefon tylko zapisuje ładowania.');
 }));

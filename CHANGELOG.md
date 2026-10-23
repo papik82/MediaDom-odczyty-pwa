@@ -3,6 +3,13 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.22.1 — 2026-10-23
+
+### Zmienione
+- **Ekran Ładowarka: przy wyłączonym sterowaniu przełącznik trybu jest przygaszony** i pod nim
+  pojawia się linijka „Sterowanie wyłączone — tryb zadziała po jego włączeniu”. Tryb nadal
+  można wybrać z wyprzedzeniem; okno potwierdzenia włączenia sterowania zaczyna się od trybu.
+
 ## 1.22.0 — 2026-10-23
 
 ### Zmienione
