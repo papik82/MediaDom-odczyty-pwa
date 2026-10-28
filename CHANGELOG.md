@@ -3,6 +3,14 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.23.1 — 2026-10-28
+
+### Zmienione
+- **Karta Faktura na komputerze (od 900 px): sekcja dodawania faktury wyśrodkowana.** Tytuł,
+  opis, przyciski „Wybierz PDF faktury” i „Wpisz ręcznie”, status, formularz ręcznego wpisu,
+  komunikat po zapisie i przycisk „Zamknij” tworzą jedną kolumnę 480 px na środku ekranu.
+  Lista „Ostatnie faktury” poniżej zostaje na pełną szerokość. Telefon bez zmian.
+
 ## 1.23.0 — 2026-10-28
 
 ### Zmienione

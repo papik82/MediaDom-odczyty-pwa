@@ -1752,8 +1752,16 @@ body:has(#ekran-start:not(.ukryty)) main {
     max-width: 1240px;
   }
 
-  #ekran-faktura .przyciski-formularza {
+  /* Sekcja dodawania faktury (tytuł, opis, przyciski, status, formularz, komunikat, „Zamknij”) to wąska kolumna
+     na środku; lista ostatnich faktur poniżej zostaje na całą szerokość. */
+  #ekran-faktura > h2,
+  #ekran-faktura > .opis-ekranu,
+  #ekran-faktura > .przyciski-formularza,
+  #ekran-faktura > #status-faktury,
+  #ekran-faktura > #komunikat-faktury,
+  #ekran-faktura > #formularz-faktury {
     max-width: var(--szerokosc-tresci);
+    margin-inline: auto;
   }
 
   .faktura-pasek {
