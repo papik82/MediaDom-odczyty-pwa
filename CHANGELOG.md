@@ -3,6 +3,14 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.22.2 — 2026-10-28
+
+### Zmienione
+- **Karta Faktura: komunikat o braku wolnych wierszy z formułami wskazuje kolumny P–AG**
+  (było P–AE). W arkuszu `faktury` wskaźniki AA–AG mają od 2026-10-27 nowy układ
+  (m³ i kWh na dobę, zł na dobę, zł za m³ i za kWh osobno bez i ze stałymi opłatami); webhook
+  bez zmian funkcjonalnych (wdrożenie 58).
+
 ## 1.22.1 — 2026-10-23
 
 ### Zmienione

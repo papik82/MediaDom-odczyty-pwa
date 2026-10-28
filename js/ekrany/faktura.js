@@ -157,7 +157,7 @@ function przeliczKontroleFaktury() {
     }
   }
   if (stanArkuszaFaktur && stanArkuszaFaktur.wolnych_wierszy < okresy.length) {
-    uwagi.push(`W zakładce faktury jest ${stanArkuszaFaktur.wolnych_wierszy} wolnych wierszy z formułami, a faktura potrzebuje ${okresy.length} — przeciągnij formuły (kolumny P–AE) w dół przed zapisem.`);
+    uwagi.push(`W zakładce faktury jest ${stanArkuszaFaktur.wolnych_wierszy} wolnych wierszy z formułami, a faktura potrzebuje ${okresy.length} — przeciągnij formuły (kolumny P–AG) w dół przed zapisem.`);
   }
 
   ciagloscFaktury.innerHTML = '';
