@@ -3,6 +3,17 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.23.0 — 2026-10-28
+
+### Zmienione
+- **Karta Faktura: panel „Analiza faktury” w siatce 2×2** zamiast pięciu wierszy. Pokazuje:
+  zużycie na dobę (m³), energię na dobę (kWh), koszt na dobę (zł) i koszt za m³ **bez opłat
+  stałych**. Zniknęły koszt za m³ ze stałymi, koszt za kWh (obie wersje) i udział opłat stałych.
+  Wskaźniki zgadzają się z nowym układem kolumn AA–AG arkusza `faktury` (od 2026-10-27), tu
+  liczone na całą fakturę. Webhook (wdrożenie 59) zwraca w `analiza` komplet nowych pól
+  (`kwh_na_dobe`, `zl_za_m3_bez_stalych` / `_ze_stalymi`, `zl_za_kwh_bez_stalych` /
+  `_ze_stalymi`); stare `zl_za_m3`, `zl_za_kwh`, `udzial_stalych` zostają.
+
 ## 1.22.2 — 2026-10-28
 
 ### Zmienione

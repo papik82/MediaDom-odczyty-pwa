@@ -1729,15 +1729,16 @@ body:has(#ekran-start:not(.ukryty)) main {
 
 .faktura-analiza__lista {
   display: grid;
-  grid-template-columns: 1fr auto;
-  row-gap: 0.4rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  row-gap: var(--odstep-3);
   column-gap: var(--odstep-4);
-  align-items: baseline;
-  font-size: 0.8rem;
+  align-items: start;
 }
 
-.faktura-analiza__nazwa {
-  color: var(--laka-etykieta);
+.faktura-analiza__komorka {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
 .faktura-wiecej {
@@ -1897,11 +1898,6 @@ body:has(#ekran-start:not(.ukryty)) main {
 
   .faktura-wskaznik b {
     font-size: 1.6rem;
-  }
-
-  .faktura-analiza__lista {
-    font-size: 0.875rem;
-    row-gap: 0.55rem;
   }
 
   .faktura-wiecej {

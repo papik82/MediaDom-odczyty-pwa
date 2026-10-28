@@ -134,16 +134,21 @@ function panelAnalizy(f) {
   panel.appendChild(element('div', 'faktura-analiza__linia'));
 
   const lista = element('div', 'faktura-analiza__lista');
+  // Wybór wskaźników z kolumn AA–AG arkusza `faktury` (od 2026-10-27), tu liczonych na całą
+  // fakturę. Koszt za m³ „bez stałych” = bez abonamentu i stałej opłaty dystrybucyjnej; pozostałe
+  // warianty (ze stałymi, za kWh, udział stałych) webhook nadal zwraca, ale panel ich nie pokazuje.
   [['Zużycie na dobę', liczba(a.m3_na_dobe, 3, 3), 'm³/d'],
+    ['Energia na dobę', liczba(a.kwh_na_dobe, 1, 1), 'kWh/d'],
     ['Koszt na dobę', liczba(a.zl_na_dobe, 2, 2), 'zł/d'],
-    ['Koszt za m³', liczba(a.zl_za_m3, 2, 2), 'zł/m³'],
-    ['Koszt za kWh', liczba(a.zl_za_kwh, 3, 3), 'zł/kWh'],
-    ['Udział opłat stałych', typeof a.udzial_stalych === 'number' ? liczba(a.udzial_stalych * 100, 1, 1) : '—', '%']]
+    ['Koszt za m³, bez stałych', liczba(a.zl_za_m3_bez_stalych, 2, 2), 'zł/m³']]
     .forEach(([etykieta, wartosc, jednostka]) => {
-      lista.appendChild(element('span', 'faktura-analiza__nazwa', etykieta));
+      // komórka siatki 2×2: etykieta nad wartością (oszczędza miejsce w pionie)
+      const komorka = element('div', 'faktura-analiza__komorka');
+      komorka.appendChild(element('span', 'faktura-etykieta', etykieta));
       const w = element('span', 'faktura-wartosc', wartosc);
       if (wartosc !== '—') w.appendChild(element('span', 'faktura-jednostka', ` ${jednostka}`));
-      lista.appendChild(w);
+      komorka.appendChild(w);
+      lista.appendChild(komorka);
     });
   panel.appendChild(lista);
   strefa.appendChild(panel);

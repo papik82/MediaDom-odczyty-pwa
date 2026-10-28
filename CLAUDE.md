@@ -166,7 +166,8 @@ w kaflu Zbieracz wiersz „ładow.” (`telefon.ladowarka` z akcji `pulpit`): st
 zwinięty pasek albo rozwinięta ramka z nagłówkiem (numer, daty, plakietki, zielony blok
 z brutto faktury), blokami okresów (belka „Okres i z n”, oś z datami i odczytami, współczynnik,
 kwoty brutto z VAT małą linijką) i panelem „Analiza faktury” liczonym przez webhook dla
-CAŁEJ faktury. Telefon: kolumna, analiza pod okresami, cztery paski i „Pokaż starsze
+CAŁEJ faktury (od 1.23.0: dni, zużycie, energia i siatka 2×2 — m³ na dobę, kWh na dobę,
+zł na dobę, zł za m³ bez opłat stałych). Telefon: kolumna, analiza pod okresami, cztery paski i „Pokaż starsze
 faktury”; komputer (od 900 px): okresy po lewej, analiza po prawej, wszystkie faktury;
 lista chowa się przy otwartym formularzu, a po zapisie nowej faktury bufor jest unieważniany.
 Makiety (Claude Design): artefakt „Widok faktury (komputer)”. Poniżej import (od 1.3.0) — import faktury za gaz z PDF: plik
