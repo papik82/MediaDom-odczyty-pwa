@@ -3,6 +3,27 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.24.0 — 2026-11-02
+
+### Dodane
+- **Wykres historii faktur na ekranie Faktury** (`js/ekrany/faktura-wykres.js`). Jeden panel
+  nad listą faktur z dwiema osiami: kolumny to kwota brutto każdej faktury (lewa oś, zł; kolumna
+  jest tak szeroka jak okres rozliczeniowy), linie schodkowe to koszt za m³ (prawa oś, zł/m³) —
+  bez opłat stałych (ciągła) i ze stałymi (przerywana). Obie osie mają tyle samo przedziałów,
+  więc kreski się pokrywają. Koszt za m³ jest liczony na całą fakturę (pole `analiza` webhooka),
+  a nie na wiersz arkusza — krótkie wiersze rozbitych faktur zawyżały koszt ze stałymi.
+  Stuknięcie, najechanie albo strzałki wybierają fakturę; pod wykresem jej numer, daty, brutto
+  i koszty za m³, a „Pokaż na liście ›” rozwija ją na liście i przewija do niej (także starszą,
+  ukrytą za „Pokaż starsze faktury”). Wysokość panelu 120 / 148 / 175 px zależnie od szerokości.
+
+### Zmienione
+- **Karta Faktura podzielona na dwa ekrany.** „Faktury” (`ekran-faktura`): nagłówek z przyciskiem
+  „Dodaj fakturę”, wykres i lista. „Dodaj fakturę” (`ekran-faktura-dodaj`): import z PDF, wpis
+  ręczny i formularz w wąskiej kolumnie, przycisk „Wróć do faktur”. Po zapisie wracamy na ekran
+  Faktury z zielonym komunikatem (nie na ekran startowy), a lista i wykres wczytują się świeże.
+  Zniknęło chowanie listy przy otwartym formularzu i wyśrodkowanie z 1.23.1 — ekran dodawania
+  jest po prostu wąski.
+
 ## 1.23.1 — 2026-10-28
 
 ### Zmienione

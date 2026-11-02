@@ -1,15 +1,22 @@
-// Karta „Faktura” — lista ostatnich faktur z arkusza (tylko do odczytu) oraz import
-// faktury za gaz z PDF (Gemini podpowiada, zapis po zatwierdzeniu).
+// Karta „Faktura” — dwa ekrany (od 1.24.0):
+//  - Faktury (`ekran-faktura`): wykres i lista faktur z arkusza, tylko do odczytu
+//    (faktura-wykres.js, faktura-lista.js), plus przycisk „Dodaj fakturę”;
+//  - Dodaj fakturę (`ekran-faktura-dodaj`): import faktury za gaz z PDF (Gemini
+//    podpowiada, zapis po zatwierdzeniu) albo wpis ręczny. Po zapisie wracamy na Faktury.
 
 import { odczytajFakture, zapiszFakture } from '../webhook.js';
 import { wyczyscBuforKlucz } from '../bufor.js';
 import { element, ustawStatusBloku } from '../wspolne.js';
-import { pokazEkran, ekranStart, pokazKomunikatStart, ukryjKomunikatStart } from '../nawigacja.js';
+import { pokazEkran, ekranStart, powiadomOZmianieDanych, ukryjKomunikatStart } from '../nawigacja.js';
 import { poUstawieniach } from './ustawienia.js';
 import { wczytajListeFaktur } from './faktura-lista.js';
 
 const ekranFaktura = document.getElementById('ekran-faktura');
+const ekranFakturaDodaj = document.getElementById('ekran-faktura-dodaj');
 const przyciskFaktura = document.getElementById('przycisk-faktura');
+const przyciskDodajFakture = document.getElementById('przycisk-dodaj-fakture');
+const komunikatZapisuFaktury = document.getElementById('komunikat-zapisu-faktury');
+const przyciskWrocDoFaktur = document.getElementById('przycisk-wroc-do-faktur');
 const przyciskPdfFaktury = document.getElementById('przycisk-pdf-faktury');
 const przyciskFakturaRecznie = document.getElementById('przycisk-faktura-recznie');
 const plikFaktury = document.getElementById('plik-faktury');
@@ -25,7 +32,6 @@ const przyciskZapiszFakture = document.getElementById('przycisk-zapisz-fakture')
 const komunikatFaktury = document.getElementById('komunikat-faktury');
 const przyciskZamknijFakture = document.getElementById('przycisk-zamknij-fakture');
 const szablonOkresuFaktury = document.getElementById('szablon-okresu-faktury');
-const blokListyFaktur = document.getElementById('blok-listy-faktur');
 const listaFaktur = document.getElementById('lista-faktur');
 
 // Lista faktur w ramkach (od 1.22.0) — js/ekrany/faktura-lista.js. Tu tylko ją wczytujemy
@@ -185,7 +191,6 @@ function przeliczKontroleFaktury() {
 }
 
 function pokazFormularzFaktury(dane = {}) {
-  blokListyFaktur.classList.add('ukryty');   // lista wraca po zamknięciu ekranu
   poleNrFaktury.value = dane.nr_faktury || '';
   poleBruttoFaktury.value = dane.faktura_brutto ?? '';
   okresyFaktury.innerHTML = '';
@@ -195,18 +200,26 @@ function pokazFormularzFaktury(dane = {}) {
   przeliczKontroleFaktury();
 }
 
-function otworzFakture() {
+// Ekran Faktury (historia). `komunikat` — np. potwierdzenie zapisu nowej faktury.
+function otworzFakture(komunikat = '') {
   ukryjKomunikatStart();
+  generacjaFaktury++;            // spóźniona odpowiedź rozpoznawania nie ma już gdzie się pokazać
+  komunikatZapisuFaktury.textContent = komunikat;
+  komunikatZapisuFaktury.classList.toggle('ukryty', !komunikat);
+  listaFaktur.innerHTML = '';
+  pokazEkran(ekranFaktura);
+  wczytajListeFaktur();
+}
+
+// Ekran „Dodaj fakturę”: zawsze od czystego stanu.
+function otworzDodawanieFaktury() {
   generacjaFaktury++;
   stanArkuszaFaktur = null;
   formularzFaktury.classList.add('ukryty');
   komunikatFaktury.classList.add('ukryty');
   ustawStatusBloku(statusFaktury, '', 'info');
   plikFaktury.value = '';
-  listaFaktur.innerHTML = '';
-  blokListyFaktur.classList.remove('ukryty');
-  pokazEkran(ekranFaktura);
-  wczytajListeFaktur();
+  pokazEkran(ekranFakturaDodaj);
 }
 
 przyciskPdfFaktury.addEventListener('click', () => plikFaktury.click());
@@ -285,14 +298,14 @@ formularzFaktury.addEventListener('submit', async (zdarzenie) => {
       komunikatFaktury.textContent = wynik.blad || 'Webhook odrzucił fakturę.';
       return;
     }
-    // Nowa faktura zmienia listę — wyrzucamy ją z bufora, żeby po powrocie na
-    // kartę była od razu (lista wczyta się świeża).
+    // Nowa faktura zmienia listę i wykres — wyrzucamy je z bufora, żeby po powrocie
+    // na ekran Faktury były od razu świeże, i dajemy znać pulpitowi (jak po każdym zapisie).
     wyczyscBuforKlucz('faktury_pelne');
-    pokazKomunikatStart(wynik.duplikat
+    powiadomOZmianieDanych();
+    otworzFakture(wynik.duplikat
       ? `Faktura ${faktura.nr_faktury} już jest w arkuszu — nic nie zapisano.`
       : `Zapisano fakturę ${faktura.nr_faktury} (${faktura.okresy.length === 1 ? 'wiersz' : 'wiersze'} ` +
         `${wynik.wiersz_od}${wynik.wiersz_do !== wynik.wiersz_od ? `–${wynik.wiersz_do}` : ''} zakładki faktury).`);
-    pokazEkran(ekranStart);
   } catch (blad) {
     console.error('Nie udało się zapisać faktury:', blad);
     komunikatFaktury.className = 'komunikat';
@@ -304,5 +317,7 @@ formularzFaktury.addEventListener('submit', async (zdarzenie) => {
   }
 });
 
-przyciskFaktura.addEventListener('click', poUstawieniach(otworzFakture));
+przyciskFaktura.addEventListener('click', poUstawieniach(() => otworzFakture()));
+przyciskDodajFakture.addEventListener('click', otworzDodawanieFaktury);
+przyciskWrocDoFaktur.addEventListener('click', () => otworzFakture());
 przyciskZamknijFakture.addEventListener('click', () => pokazEkran(ekranStart));

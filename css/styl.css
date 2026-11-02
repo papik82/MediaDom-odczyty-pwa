@@ -1693,6 +1693,136 @@ body:has(#ekran-start:not(.ukryty)) main {
 }
 
 /* Analiza całej faktury. */
+/* Ekran Faktury (od 1.24.0): nagłówek z przyciskiem „Dodaj fakturę” w jednym wierszu. */
+.faktura-naglowek {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--odstep-4);
+}
+
+.faktura-naglowek h2 {
+  margin: 0;
+}
+
+.faktura-naglowek .przycisk-glowny {
+  flex: 0 0 auto;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+}
+
+/* Wykres historii faktur (faktura-wykres.js): dwa panele na wspólnej osi czasu. */
+.faktura-wykres {
+  margin-top: var(--odstep-5);
+  padding: var(--odstep-4) var(--odstep-4) var(--odstep-3);
+  background: var(--powierzchnia);
+  border: 1px solid var(--laka-linia);
+  border-radius: var(--promien-karta);
+  min-width: 0;
+}
+
+.faktura-wykres__naglowek {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--odstep-2);
+  margin-bottom: var(--odstep-2);
+}
+
+.faktura-wykres__zakres {
+  font-size: 0.75rem;
+  color: var(--laka-podpis);
+}
+
+.faktura-wykres__plot svg {
+  display: block;
+  max-width: 100%;
+  touch-action: pan-y;          /* pionowe przewijanie strony działa także na wykresie */
+  cursor: crosshair;
+}
+
+.faktura-wykres__plot svg:focus-visible {
+  outline: 2px solid var(--zielen-akcji);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.wf-siatka { stroke: var(--laka-linia); stroke-width: 1; }
+.wf-os { stroke: var(--laka-podpis); stroke-width: 1; }
+.wf-tekst { fill: var(--laka-podpis); font-size: 11px; font-variant-numeric: tabular-nums; }
+.wf-kolumna { fill: var(--zielen-akcji); fill-opacity: 0.5; }
+.wf-kolumna--wybrana { fill-opacity: 1; }
+.wf-linia { fill: none; stroke: var(--kolor-glowny); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.wf-linia--ze-stalymi { stroke-width: 2; stroke-dasharray: 5 3; }
+/* jasna obwódka pod linią — czytelność na kolumnach */
+.wf-linia-tlo { fill: none; stroke: var(--powierzchnia); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; stroke-opacity: 0.85; }
+.wf-celownik { stroke: var(--laka-podpis); stroke-width: 1; stroke-dasharray: 2 3; }
+.wf-znacznik { fill: var(--kolor-glowny); stroke: var(--powierzchnia); stroke-width: 2; }
+
+.faktura-wykres__legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--odstep-2) var(--odstep-5);
+  margin-top: var(--odstep-2);
+  font-size: 0.75rem;
+  color: var(--laka-etykieta);
+}
+
+.faktura-wykres__pozycja {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.faktura-wykres__kwadrat {
+  width: 12px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--zielen-akcji);
+}
+
+.faktura-wykres__szczegoly {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--odstep-3) var(--odstep-5);
+  margin-top: var(--odstep-3);
+  padding-top: var(--odstep-3);
+  border-top: 1px solid var(--laka-linia);
+}
+
+.faktura-wykres__opis {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1 1 100%;               /* telefon: numer i daty w osobnym wierszu nad wartościami */
+  min-width: 0;
+}
+
+.faktura-wykres__numer {
+  font-weight: 600;
+  color: var(--naglowek-tekst);
+  overflow-wrap: anywhere;
+}
+
+.faktura-wykres__daty {
+  font-size: 0.8rem;
+  color: var(--laka-podpis);
+}
+
+.faktura-wykres__lista {
+  margin-left: auto;
+  padding: 0.35rem 0;
+  border: none;
+  background: none;
+  color: var(--zielen-akcji);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .faktura-analiza__panel {
   flex: 1;
   display: flex;
@@ -1752,14 +1882,13 @@ body:has(#ekran-start:not(.ukryty)) main {
     max-width: 1240px;
   }
 
-  /* Sekcja dodawania faktury (tytuł, opis, przyciski, status, formularz, komunikat, „Zamknij”) to wąska kolumna
-     na środku; lista ostatnich faktur poniżej zostaje na całą szerokość. */
-  #ekran-faktura > h2,
-  #ekran-faktura > .opis-ekranu,
-  #ekran-faktura > .przyciski-formularza,
-  #ekran-faktura > #status-faktury,
-  #ekran-faktura > #komunikat-faktury,
-  #ekran-faktura > #formularz-faktury {
+  /* Ekran Faktury (historia) jest szeroki, więc „Zamknij” na dole zostaje wąskim przyciskiem
+     na środku. Ekran „Dodaj fakturę” ma zwykły, wąski main. */
+  .faktura-wykres__opis {
+    flex-basis: 14rem;
+  }
+
+  #ekran-faktura .faktura-zamknij {
     max-width: var(--szerokosc-tresci);
     margin-inline: auto;
   }

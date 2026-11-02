@@ -161,7 +161,11 @@ telefonu w ciągu ok. 5 min; ekran sam się odświeża raz na minutę, a pola, k
 edytujesz, odświeżenie nie nadpisuje. Bufor `ladowarka` (stare, potem świeże). Na pulpicie
 w kaflu Zbieracz wiersz „ładow.” (`telefon.ladowarka` z akcji `pulpit`): stan i tryb albo „log”.
 
-**Karta „Faktura”** — od 1.22.0 na górze lista faktur z arkusza, **każda w ramce**
+**Karta „Faktura”** — od 1.24.0 dwa ekrany: **Faktury** (`ekran-faktura`: nagłówek z przyciskiem
+„Dodaj fakturę”, wykres historii `js/ekrany/faktura-wykres.js` — jeden panel, kolumny kwot brutto
+na lewej osi i linie kosztu za m³ bez/ze stałych na prawej, koszt liczony na całą fakturę z `analiza`
+webhooka — i lista) oraz **Dodaj fakturę** (`ekran-faktura-dodaj`: import z PDF, wpis ręczny,
+formularz; po zapisie powrót na Faktury). Lista: od 1.22.0 faktury z arkusza, **każda w ramce**
 (`js/ekrany/faktura-lista.js`, akcja `ostatnie_faktury` z `ile` 100, bufor `faktury_pelne`):
 zwinięty pasek albo rozwinięta ramka z nagłówkiem (numer, daty, plakietki, zielony blok
 z brutto faktury), blokami okresów (belka „Okres i z n”, oś z datami i odczytami, współczynnik,
@@ -169,7 +173,7 @@ kwoty brutto z VAT małą linijką) i panelem „Analiza faktury” liczonym prz
 CAŁEJ faktury (od 1.23.0: dni, zużycie, energia i siatka 2×2 — m³ na dobę, kWh na dobę,
 zł na dobę, zł za m³ bez opłat stałych). Telefon: kolumna, analiza pod okresami, cztery paski i „Pokaż starsze
 faktury”; komputer (od 900 px): okresy po lewej, analiza po prawej, wszystkie faktury;
-lista chowa się przy otwartym formularzu, a po zapisie nowej faktury bufor jest unieważniany.
+po zapisie nowej faktury bufor `faktury_pelne` jest unieważniany, a ekran Faktury ładuje się od nowa.
 Makiety (Claude Design): artefakt „Widok faktury (komputer)”. Poniżej import (od 1.3.0) — import faktury za gaz z PDF: plik
 (base64) → `odczytaj_fakture` (Gemini proponuje, nic nie zapisuje) →
 formularz → `zapisz_fakture`. Zasada jak przy zdjęciu licznika: **model

@@ -1,4 +1,5 @@
-// Lista faktur za gaz na karcie „Faktura” (od 1.22.0): każda faktura w osobnej ramce.
+// Lista faktur za gaz na ekranie Faktury (od 1.22.0): każda faktura w osobnej ramce.
+// Te same dane rysuje też wykres historii nad listą (faktura-wykres.js, od 1.24.0).
 //
 // Dane z akcji `ostatnie_faktury` (tylko do odczytu, przez bufor „stare, potem świeże”).
 // Zwinięta faktura to pasek (numer, daty, kwota brutto); rozwinięta — ramka w zieleni akcji:
@@ -12,9 +13,12 @@
 
 import { pobierzOstatnieFaktury } from '../webhook.js';
 import { element, wczytajBlokPodgladu } from '../wspolne.js';
+import { utworzWykresFaktur } from './faktura-wykres.js';
 
 const statusListyFaktur = document.getElementById('status-listy-faktur');
 const listaFaktur = document.getElementById('lista-faktur');
+// Wykres historii nad listą (od 1.24.0) — dostaje te same dane co lista.
+const wykres = utworzWykresFaktur(document.getElementById('wykres-faktur'), pokazFakture);
 
 const ILE_FAKTUR = 100;            // wszystkie (w arkuszu ok. 40); webhook przyjmuje do 100
 const POCZATKOWO_NA_TELEFONIE = 4; // ile pasków na start; reszta po „Pokaż starsze faktury”
@@ -234,6 +238,7 @@ function renderujListe() {
   }
   faktury.slice(0, widoczne).forEach((f) => {
     const karta = element('div', 'faktura-karta');
+    karta.dataset.nr = f.nr_faktury;
     const przelacz = (otworz) => () => {
       if (otworz) otwarte.add(f.nr_faktury); else otwarte.delete(f.nr_faktury);
       renderujListe();
@@ -252,8 +257,21 @@ function renderujListe() {
   }
 }
 
+// Przycisk „Pokaż na liście” pod wykresem: rozwija fakturę (także starszą, ukrytą za
+// „Pokaż starsze faktury”) i przewija do niej.
+function pokazFakture(nr) {
+  const indeks = faktury.findIndex((f) => f.nr_faktury === nr);
+  if (indeks < 0) return;
+  otwarte.add(nr);
+  widoczne = Math.max(widoczne, indeks + 1);
+  renderujListe();
+  const karta = listaFaktur.querySelector(`[data-nr="${CSS.escape(nr)}"]`);
+  if (karta) karta.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function przyjmijDane(wynik) {
   const nowe = (wynik && wynik.faktury) || [];
+  wykres.ustaw(nowe);
   const pierwszy = faktury.length === 0;
   faktury = nowe;
   // Pierwsze rysowanie po otwarciu ekranu: najnowsza faktura rozwinięta, reszta zwinięta.
