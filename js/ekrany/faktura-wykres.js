@@ -71,12 +71,13 @@ function punkty(faktury) {
 }
 
 // `kontener` — pusty element, w którym wykres buduje całą swoją zawartość.
-// `naWybor(nr)` — wywoływane przyciskiem „Pokaż na liście”.
+// `naWybor(nr)` — wywoływane kliknięciem (stuknięciem) w słupek faktury albo Enterem na wykresie.
 export function utworzWykresFaktur(kontener, naWybor) {
   let dane = [];
   let wybrany = -1;
   let szerokosc = 0;
   let geometria = null;
+  let uchwyty = null;                // elementy SVG, które zmieniają się przy zmianie wyboru
 
   const naglowek = element('div', 'faktura-wykres__naglowek');
   naglowek.appendChild(element('span', 'faktura-sekcja', 'Historia faktur · gaz'));
@@ -128,10 +129,6 @@ export function utworzWykresFaktur(kontener, naWybor) {
     szczegoly.appendChild(wartosc('Brutto', pl(p.brutto, 2), 'zł'));
     szczegoly.appendChild(wartosc('Bez stałych', p.bezStalych === null ? '—' : pl(p.bezStalych, 2), 'zł/m³'));
     szczegoly.appendChild(wartosc('Ze stałymi', p.zeStalymi === null ? '—' : pl(p.zeStalymi, 2), 'zł/m³'));
-    const przycisk = element('button', 'faktura-wykres__lista', 'Pokaż na liście ›');
-    przycisk.type = 'button';
-    przycisk.addEventListener('click', () => naWybor(p.nr));
-    szczegoly.appendChild(przycisk);
   }
 
   function rysuj() {
@@ -157,7 +154,7 @@ export function utworzWykresFaktur(kontener, naWybor) {
     const s = svg('svg', {
       viewBox: `0 0 ${W} ${H}`, width: W, height: H, tabindex: 0, role: 'img',
       'aria-label': `Wykres historii faktur: ${dane.length} faktur od ${dane[0].od.slice(0, 7)} do `
-        + `${dane[dane.length - 1].do.slice(0, 7)}. Strzałki w lewo i w prawo wybierają fakturę.`,
+        + `${dane[dane.length - 1].do.slice(0, 7)}. Strzałki w lewo i w prawo wybierają fakturę, Enter przechodzi do niej na liście.`,
     });
 
     // Siatka pozioma z osi kwot; oś kosztu za m³ ma tyle samo przedziałów, więc jej kreski
@@ -183,14 +180,15 @@ export function utworzWykresFaktur(kontener, naWybor) {
     }
 
     // Kolumny kwot: od początku do końca okresu (włącznie z ostatnim dniem).
-    dane.forEach((p, i) => {
+    const kolumny = dane.map((p) => {
       const x0 = X(dataMs(p.od));
       const x1 = X(dataMs(p.do) + MS_DZIEN);
       const y = Y(os1, p.brutto);
-      s.appendChild(svg('rect', {
-        x: x0 + 0.6, y, width: Math.max(x1 - x0 - 1.2, 1.5), height: g.y + g.h - y, rx: 2,
-        class: `wf-kolumna${i === wybrany ? ' wf-kolumna--wybrana' : ''}`,
-      }));
+      const kolumna = svg('rect', {
+        x: x0 + 0.6, y, width: Math.max(x1 - x0 - 1.2, 1.5), height: g.y + g.h - y, rx: 2, class: 'wf-kolumna',
+      });
+      s.appendChild(kolumna);
+      return kolumna;
     });
 
     // Linie schodkowe kosztu za m³ (prawa oś); brak wartości przerywa linię. Pod każdą
@@ -213,15 +211,13 @@ export function utworzWykresFaktur(kontener, naWybor) {
       s.appendChild(svg('path', { d, class: `wf-linia${klasa}` }));
     });
 
-    // Wybrana faktura: celownik i znaczniki na liniach.
-    const p = dane[wybrany];
-    if (p) {
-      const x = (X(dataMs(p.od)) + X(dataMs(p.do) + MS_DZIEN)) / 2;
-      s.appendChild(svg('line', { x1: x, x2: x, y1: g.y, y2: g.y + g.h, class: 'wf-celownik' }));
-      ['bezStalych', 'zeStalymi'].forEach((klucz) => {
-        if (p[klucz] !== null) s.appendChild(svg('circle', { cx: x, cy: Y(os2, p[klucz]), r: 4, class: 'wf-znacznik' }));
-      });
-    }
+    // Wybrana faktura: celownik i znaczniki na liniach. Przy zmianie wyboru przestawiamy je
+    // w miejscu (aktualizujWybor), zamiast rysować wszystko od nowa — podmiana SVG między
+    // naciśnięciem a puszczeniem przycisku gubiłaby kliknięcie.
+    const celownik = svg('line', { y1: g.y, y2: g.y + g.h, class: 'wf-celownik' });
+    const znaczniki = { bezStalych: svg('circle', { r: 4, class: 'wf-znacznik' }), zeStalymi: svg('circle', { r: 4, class: 'wf-znacznik' }) };
+    s.append(celownik, znaczniki.bezStalych, znaczniki.zeStalymi);
+    uchwyty = { kolumny, celownik, znaczniki, srodekX: (p) => (X(dataMs(p.od)) + X(dataMs(p.do) + MS_DZIEN)) / 2, Y: (v) => Y(os2, v) };
 
     geometria = { L, P, T0, T1, W };
     const mialFokus = pole.contains(document.activeElement);   // rysowanie podmienia cały SVG
@@ -231,13 +227,34 @@ export function utworzWykresFaktur(kontener, naWybor) {
     s.addEventListener('pointerdown', wybierzWPunkcie);
     s.addEventListener('pointermove', wybierzWPunkcie);
     s.addEventListener('keydown', obsluzKlawisz);
+    aktualizujWybor();
+  }
+
+  // Zaznaczenie wybranej faktury na już narysowanym wykresie.
+  function aktualizujWybor() {
+    if (!uchwyty) return;
+    const p = dane[wybrany];
+    uchwyty.kolumny.forEach((k, i) => k.classList.toggle('wf-kolumna--wybrana', i === wybrany));
+    if (!p) return;
+    const x = uchwyty.srodekX(p);
+    uchwyty.celownik.setAttribute('x1', x);
+    uchwyty.celownik.setAttribute('x2', x);
+    Object.entries(uchwyty.znaczniki).forEach(([klucz, znacznik]) => {
+      znacznik.setAttribute('visibility', p[klucz] === null ? 'hidden' : 'visible');
+      if (p[klucz] !== null) {
+        znacznik.setAttribute('cx', x);
+        znacznik.setAttribute('cy', uchwyty.Y(p[klucz]));
+      }
+    });
   }
 
   // Faktura pod wskaźnikiem: ta, której okres obejmuje wskazany dzień, a przy luce między
   // okresami — najbliższa.
-  function wybierzWPunkcie(zdarzenie) {
-    if (!geometria || dane.length === 0) return;
-    const r = zdarzenie.currentTarget.getBoundingClientRect();
+  // `wewnatrz` — wskaźnik leży w okresie tej faktury (nie w luce między okresami ani poza osią).
+  function podWskaznikiem(zdarzenie) {
+    const s = pole.querySelector('svg');
+    if (!geometria || !s || dane.length === 0) return null;
+    const r = s.getBoundingClientRect();
     const x = (zdarzenie.clientX - r.left) * (geometria.W / r.width);
     const ms = geometria.T0 + ((x - geometria.L) / geometria.P) * (geometria.T1 - geometria.T0);
     let najblizsza = 0;
@@ -248,14 +265,26 @@ export function utworzWykresFaktur(kontener, naWybor) {
       const d = ms < od ? od - ms : (ms > doo ? ms - doo : 0);
       if (d < odleglosc) { odleglosc = d; najblizsza = i; }
     });
-    ustawWybor(najblizsza);
+    return { indeks: najblizsza, wewnatrz: odleglosc === 0 };
   }
+
+  function wybierzWPunkcie(zdarzenie) {
+    const trafiona = podWskaznikiem(zdarzenie);
+    if (trafiona) ustawWybor(trafiona.indeks);
+  }
+
+  // Kliknięcie (stuknięcie) w słupek — przejście do faktury na liście.
+  pole.addEventListener('click', (zdarzenie) => {
+    const trafiona = podWskaznikiem(zdarzenie);
+    if (trafiona && trafiona.wewnatrz) naWybor(dane[trafiona.indeks].nr);
+  });
 
   function obsluzKlawisz(zdarzenie) {
     const ruch = { ArrowLeft: -1, ArrowRight: 1 }[zdarzenie.key];
     if (zdarzenie.key === 'Home') ustawWybor(0);
     else if (zdarzenie.key === 'End') ustawWybor(dane.length - 1);
     else if (ruch) ustawWybor(Math.min(Math.max(wybrany + ruch, 0), dane.length - 1));
+    else if ((zdarzenie.key === 'Enter' || zdarzenie.key === ' ') && dane[wybrany]) naWybor(dane[wybrany].nr);
     else return;
     zdarzenie.preventDefault();
   }
@@ -263,7 +292,7 @@ export function utworzWykresFaktur(kontener, naWybor) {
   function ustawWybor(indeks) {
     if (indeks === wybrany) return;
     wybrany = indeks;
-    rysuj();
+    aktualizujWybor();
     pokazSzczegoly();
   }
 

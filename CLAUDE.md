@@ -164,7 +164,7 @@ w kaflu Zbieracz wiersz „ładow.” (`telefon.ladowarka` z akcji `pulpit`): st
 **Karta „Faktura”** — od 1.24.0 dwa ekrany: **Faktury** (`ekran-faktura`: nagłówek z przyciskiem
 „Dodaj fakturę”, wykres historii `js/ekrany/faktura-wykres.js` — jeden panel, kolumny kwot brutto
 na lewej osi i linie kosztu za m³ bez/ze stałych na prawej, koszt liczony na całą fakturę z `analiza`
-webhooka — i lista) oraz **Dodaj fakturę** (`ekran-faktura-dodaj`: import z PDF, wpis ręczny,
+webhooka; kliknięcie w słupek przewija do faktury na liście — i lista) oraz **Dodaj fakturę** (`ekran-faktura-dodaj`: import z PDF, wpis ręczny,
 formularz; po zapisie powrót na Faktury). Lista: od 1.22.0 faktury z arkusza, **każda w ramce**
 (`js/ekrany/faktura-lista.js`, akcja `ostatnie_faktury` z `ile` 100, bufor `faktury_pelne`):
 zwinięty pasek albo rozwinięta ramka z nagłówkiem (numer, daty, plakietki, zielony blok

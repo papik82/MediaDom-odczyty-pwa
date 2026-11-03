@@ -1739,7 +1739,7 @@ body:has(#ekran-start:not(.ukryty)) main {
   display: block;
   max-width: 100%;
   touch-action: pan-y;          /* pionowe przewijanie strony działa także na wykresie */
-  cursor: crosshair;
+  cursor: pointer;
 }
 
 .faktura-wykres__plot svg:focus-visible {
@@ -1809,18 +1809,6 @@ body:has(#ekran-start:not(.ukryty)) main {
 .faktura-wykres__daty {
   font-size: 0.8rem;
   color: var(--laka-podpis);
-}
-
-.faktura-wykres__lista {
-  margin-left: auto;
-  padding: 0.35rem 0;
-  border: none;
-  background: none;
-  color: var(--zielen-akcji);
-  font: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
 }
 
 .faktura-analiza__panel {

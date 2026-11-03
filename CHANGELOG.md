@@ -3,6 +3,18 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.24.1 — 2026-11-03
+
+### Zmienione
+- **Wykres faktur: kliknięcie (stuknięcie) w słupek przewija do tej faktury na liście** i ją
+  rozwija — także starszą, ukrytą za „Pokaż starsze faktury”. Link „Pokaż na liście ›”
+  w prawym dolnym rogu zniknął. Najechanie i przesuwanie palcem nadal tylko podglądają dane
+  faktury; Enter lub spacja na wykresie robią to samo co kliknięcie. Kliknięcie poza okresem
+  faktury (luka, margines osi) nic nie robi.
+- Wybór faktury przestawia teraz celownik, znaczniki i podświetlenie kolumny w miejscu,
+  zamiast rysować wykres od nowa — podmiana SVG między naciśnięciem a puszczeniem przycisku
+  gubiła kliknięcie.
+
 ## 1.24.0 — 2026-11-02
 
 ### Dodane
