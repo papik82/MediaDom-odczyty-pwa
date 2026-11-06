@@ -126,6 +126,13 @@ export function pobierzOstatnieFaktury(ile = 12) {
   return wyslij({ akcja: 'ostatnie_faktury', ile });
 }
 
+// Widoki analiz (ekran „Analizy”, od 1.25.0). Liczy webhook, aplikacja tylko rysuje.
+// `dt_gaz` — okresy między odczytami gazu: ΔT, zużycie na dobę, tryb kotła i status
+// okresu, plus nachylenie regresji każdego sezonu. Tylko do odczytu, więc przez bufor.
+export function pobierzAnalizeDtGaz() {
+  return wyslij({ akcja: 'analiza', widok: 'dt_gaz' });
+}
+
 export function pobierzPomysly(ile = 10) {
   return wyslij({ akcja: 'lista_pomyslow', status: 'wszystkie', ile });
 }

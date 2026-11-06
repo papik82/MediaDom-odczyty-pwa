@@ -3,6 +3,26 @@
 Format na podstawie [Keep a Changelog](https://keepachangelog.com/pl/), wersje
 zgodne z numerem w `js/wersja.js`.
 
+## 1.25.0 — 2026-11-06
+
+### Dodane
+- **Ekran „Analizy”** (BACKLOG pkt 45 i 52): na pulpicie piąty przycisk w rzędzie rzadkich
+  funkcji. Rząd to teraz siatka o stałych czterech kolumnach, więc „Analizy” zaczynają drugi rząd
+  i mają szerokość jednego kafelka, a pionowy podział na cztery zostaje.
+- **Wykres ΔT a zużycie gazu na dobę** (`js/ekrany/wykres-dt-gaz.js`, `js/ekrany/analizy.js`),
+  czysty SVG bez biblioteki. Dwa wykresy z tych samych danych, połączone wyborem okresu:
+  - *punktowy* — jeden punkt to jeden okres między odczytami (zużycie w m³ na dobę, nie surowa
+    różnica wskazań), kolor to tryb kotła, wielkość to liczba dób. Dla jednego sezonu dochodzi
+    prosta regresji (nachylenie, R², liczba okresów z webhooka) i linia bazy CWU;
+  - *oś czasu sezonu* — słupki zużycia na dobę (szerokość = długość okresu) nad linią ΔT, jako dwa
+    osobne panele na wspólnej osi; okresy MIESZANE i NIEZNANY na szaro (luka zostaje luką).
+  Stuknięcie punktu albo słupka, najechanie myszą i strzałki z klawiatury wybierają okres na obu
+  wykresach i pokazują jego szczegóły. Pod każdym wykresem podpis: liczba okresów, zakres dat
+  i liczba pominiętych okresów. Wybór sezonu (domyślnie najnowszy) lub „Wszystkie sezony”.
+- Układ szeroki od 1000 px: wykresy obok siebie, szczegóły pod nimi.
+- Dane z nowej akcji webhooka `analiza` (widok `dt_gaz`, wdrożenie 60), przez bufor „stare, potem
+  świeże” (`analiza_dt_gaz`).
+
 ## 1.24.1 — 2026-11-03
 
 ### Zmienione

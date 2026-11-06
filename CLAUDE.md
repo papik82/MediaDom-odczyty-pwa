@@ -174,6 +174,14 @@ CAŁEJ faktury (od 1.23.0: dni, zużycie, energia i siatka 2×2 — m³ na dobę
 zł na dobę, zł za m³ bez opłat stałych). Telefon: kolumna, analiza pod okresami, cztery paski i „Pokaż starsze
 faktury”; komputer (od 900 px): okresy po lewej, analiza po prawej, wszystkie faktury;
 po zapisie nowej faktury bufor `faktury_pelne` jest unieważniany, a ekran Faktury ładuje się od nowa.
+
+**Ekran „Analizy”** (od 1.25.0, `ekran-analizy`, `js/ekrany/analizy.js`, wykresy w `wykres-dt-gaz.js`; przycisk w rzędzie rzadkich funkcji
+pulpitu — siatka o czterech kolumnach, piąty przycisk zaczyna drugi rząd): tylko do odczytu, akcja `analiza`
+(widok `dt_gaz`; liczy webhook, aplikacja rysuje), bufor `analiza_dt_gaz`. Wykres punktowy ΔT–gaz (okres = punkt,
+kolor = tryb kotła, prosta regresji i baza CWU tylko dla jednego sezonu) i oś czasu sezonu (słupki m³/dobę nad linią ΔT,
+MIESZANE / NIEZNANY na szaro), połączone wyborem okresu. Podpis pod każdym wykresem: liczba okresów i zakres dat (zasada 4).
+Kolejne widoki analiz to kolejne sekcje tego ekranu; wspólne funkcje wykresów (osie, skala) wydzielić do modułu przy drugim widoku.
+Test na atrapie: `narzedzia/atrapa_analiza.py` buduje `.claude/analiza_atrapa.json` z migawki.
 Makiety (Claude Design): artefakt „Widok faktury (komputer)”. Poniżej import (od 1.3.0) — import faktury za gaz z PDF: plik
 (base64) → `odczytaj_fakture` (Gemini proponuje, nic nie zapisuje) →
 formularz → `zapisz_fakture`. Zasada jak przy zdjęciu licznika: **model
@@ -298,6 +306,8 @@ odczyty-pwa/
 │   │   ├── pomysly.js     notatnik pomysłów
 │   │   ├── faktura.js     import faktury z PDF
 │   │   ├── faktura-lista.js lista faktur w ramkach (okresy, analiza całej faktury)
+│   │   ├── analizy.js     ekran Analizy: wybór sezonu i okresu, podpisy
+│   │   ├── wykres-dt-gaz.js wykres punktowy ΔT–gaz i oś czasu sezonu (SVG)
 │   │   ├── ustawienia.js  adres i token, poUstawieniach
 │   │   └── alarmy.js      rysowanie paska alarmów (dane z pulpitu)
 │   ├── ustawienia.js      adres webhooka i token w localStorage

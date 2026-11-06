@@ -472,6 +472,7 @@ html:not([data-pora="noc"]) body:has(#ekran-start:not(.ukryty)) .naglowek__cialo
 .ikona--odczyty { -webkit-mask-image: url(../ikony/odczyty.svg); mask-image: url(../ikony/odczyty.svg); }
 .ikona--faktura { -webkit-mask-image: url(../ikony/faktura.svg); mask-image: url(../ikony/faktura.svg); }
 .ikona--pomysly { -webkit-mask-image: url(../ikony/pomysly.svg); mask-image: url(../ikony/pomysly.svg); }
+.ikona--analizy { -webkit-mask-image: url(../ikony/analizy.svg); mask-image: url(../ikony/analizy.svg); }
 .ikona--ustawienia { -webkit-mask-image: url(../ikony/ustawienia-kafel.svg); mask-image: url(../ikony/ustawienia-kafel.svg); }
 .ikona--aparat { -webkit-mask-image: url(../ikony/aparat.svg); mask-image: url(../ikony/aparat.svg); }
 .ikona--galeria { -webkit-mask-image: url(../ikony/galeria.svg); mask-image: url(../ikony/galeria.svg); }
@@ -938,14 +939,16 @@ body:has(#ekran-start:not(.ukryty)) main {
 .kropka--uwaga + span { color: var(--uwaga); }
 .kropka--problem + span { color: var(--alarm); }
 
-/* Rząd rzadszych funkcji: Odczyty, Faktura, Pomysły, Ustawienia. */
+/* Rzadsze funkcje: Odczyty, Faktura, Pomysły, Ustawienia, a od 1.25.0 w drugim rzędzie
+   Analizy. Siatka ma stałe cztery kolumny (pionowy podział na 4 zostaje), więc piąty
+   przycisk zaczyna nowy rząd i jest tak szeroki jak pozostałe. */
 .pulpit__rzadkie {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--odstep-2);
 }
 
 .pulpit__rzadkie button {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2792,4 +2795,147 @@ body:has(#ekran-start:not(.ukryty)) .stopka__laka {
 
 #stan-ladowarki .pasek-alarmow {
   margin-top: 0;
+}
+
+/* Ekran Analizy (od 1.25.0): wykres punktowy ΔT–gaz i oś czasu sezonu (wykres-dt-gaz.js, analizy.js). */
+.analizy-pasek {
+  display: flex;
+  align-items: center;
+  gap: var(--odstep-3);
+  margin-top: var(--odstep-4);
+}
+
+.analizy-pasek label {
+  font-weight: 600;
+}
+
+.analizy-pasek select {
+  flex: 1;
+  max-width: 16rem;
+  min-height: var(--wys-s);
+  padding: 0.4rem 0.6rem;
+  font: inherit;
+  color: var(--tekst);
+  background: var(--powierzchnia);
+  border: 1px solid var(--obrys-pola);
+  border-radius: var(--promien-karta);
+}
+
+.analizy-siatka {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--odstep-4);
+  margin-top: var(--odstep-4);
+}
+
+.analizy-karta {
+  min-width: 0;
+  padding: var(--odstep-4) var(--odstep-4) var(--odstep-3);
+  background: var(--powierzchnia);
+  border: 1px solid var(--laka-linia);
+  border-radius: var(--promien-karta);
+}
+
+.analizy-karta .podglad__naglowek {
+  margin-top: 0;
+}
+
+.analizy-wykres svg {
+  display: block;
+  max-width: 100%;
+  touch-action: pan-y;          /* pionowe przewijanie strony działa także na wykresie */
+  cursor: pointer;
+}
+
+.analizy-wykres svg:focus-visible {
+  outline: 2px solid var(--zielen-akcji);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.analizy-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--odstep-2) var(--odstep-5);
+  margin-top: var(--odstep-2);
+  font-size: 0.75rem;
+  color: var(--laka-etykieta);
+}
+
+.analizy-podpis {
+  margin: var(--odstep-2) 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--laka-podpis);
+}
+
+.analizy-szczegoly {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--odstep-3) var(--odstep-5);
+  padding: var(--odstep-3) var(--odstep-4);
+  background: var(--powierzchnia);
+  border: 1px solid var(--laka-linia);
+  border-radius: var(--promien-karta);
+}
+
+.analizy-szczegoly .faktura-wykres__opis {
+  flex-basis: 14rem;
+}
+
+.analizy-szczegoly .analizy-podpis {
+  margin: 0;
+}
+
+.analizy-uwaga {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--uwaga);
+}
+
+/* Kolory trybów kotła — te same na obu wykresach i w legendach. Woda i ogrzewanie to kolor
+   główny, samo ogrzewanie i sama woda — kolory obwodów z kafla Kocioł. */
+.wa-pkt { fill-opacity: 0.72; stroke: var(--powierzchnia); stroke-width: 1; }
+.wa-pkt--cwu_co { fill: var(--kolor-glowny); }
+.wa-pkt--co { fill: var(--obwod-co); }
+.wa-pkt--cwu { fill: var(--obwod-cwu); }
+.wa-pkt--off, .wa-pkt--inny { fill: var(--kropka-nieznany); }
+.wa-pkt--wybrany { fill-opacity: 1; stroke: var(--tekst); stroke-width: 1.5; }
+.wa-pierscien { fill: none; stroke: var(--tekst); stroke-width: 1.5; pointer-events: none; }
+.wa-prosta { stroke: var(--kolor-glowny); stroke-width: 2; stroke-linecap: round; }
+.wa-baza { stroke: var(--obwod-cwu); stroke-width: 1.5; stroke-dasharray: 5 4; }
+
+.wa-slupek { fill-opacity: 0.85; }
+.wa-slupek--cwu_co { fill: var(--kolor-glowny); }
+.wa-slupek--co { fill: var(--obwod-co); }
+.wa-slupek--cwu { fill: var(--obwod-cwu); }
+.wa-slupek--off, .wa-slupek--inny { fill: var(--kropka-nieznany); }
+.wa-slupek--pominiety { fill: var(--kropka-zmiany); fill-opacity: 0.55; }
+.wa-dt-linia { fill: none; stroke: var(--obwod-co); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.wa-pasmo { fill: var(--kolor-glowny); fill-opacity: 0.12; pointer-events: none; }
+
+@media (min-width: 900px) {
+  /* Ekran Analizy na komputerze jest szeroki, jak ekran Faktury. */
+  body:has(#ekran-analizy:not(.ukryty)) main {
+    max-width: 1240px;
+  }
+}
+
+@media (min-width: 1000px) {
+  /* Dwa wykresy obok siebie, szczegóły wybranego okresu pod nimi na całą szerokość. */
+  .analizy-siatka {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .analizy-szczegoly {
+    grid-column: 1 / -1;
+  }
+
+  #ekran-analizy .przyciski-formularza {
+    max-width: var(--szerokosc-tresci);
+    margin-inline: auto;
+  }
 }

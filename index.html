@@ -148,6 +148,9 @@
           <button type="button" id="przycisk-faktura"><span class="ikona ikona--faktura" aria-hidden="true"></span>Faktura</button>
           <button type="button" id="przycisk-pomysly"><span class="ikona ikona--pomysly" aria-hidden="true"></span>Pomysły</button>
           <button type="button" data-otworz-ustawienia><span class="ikona ikona--ustawienia" aria-hidden="true"></span>Ustawienia</button>
+          <!-- Piąty przycisk zaczyna drugi rząd: siatka ma stałe cztery kolumny, więc
+               kafelek jest tak szeroki jak pozostałe, a nie rozciągnięty na całość. -->
+          <button type="button" id="przycisk-analizy"><span class="ikona ikona--analizy" aria-hidden="true"></span>Analizy</button>
         </div>
 
         <p id="pulpit-status" class="status-bloku ukryty"></p>
@@ -351,6 +354,42 @@
 
       <div class="przyciski-formularza">
         <button type="button" id="przycisk-zamknij-temperatury" class="przycisk-drugorzedny">Zamknij</button>
+      </div>
+    </section>
+
+    <!-- Ekran Analizy (od 1.25.0) — tylko do odczytu, z akcji `analiza` webhooka
+         (liczy serwer, aplikacja rysuje). Na dziś jeden widok: ΔT a zużycie gazu
+         na dobę — wykres punktowy (okres = punkt) i oś czasu sezonu. Logika:
+         js/ekrany/analizy.js, wykresy: js/ekrany/wykres-dt-gaz.js. Kolejne widoki
+         dochodzą jako kolejne sekcje tego ekranu. -->
+    <section id="ekran-analizy" class="ekran ukryty">
+      <h2>Analizy</h2>
+      <p class="opis-ekranu">Zużycie gazu a różnica temperatur (ΔT = wnętrze − zewnątrz). Zużycie jest przeliczone na dobę, bo odczyty są co 1–14 dni.</p>
+
+      <div class="analizy-pasek">
+        <label for="analizy-sezon">Sezon</label>
+        <select id="analizy-sezon"></select>
+      </div>
+      <p id="status-analiz" class="status-bloku ukryty" role="status"></p>
+
+      <div id="analizy-tresc" class="analizy-siatka ukryty">
+        <section class="analizy-karta" aria-labelledby="analizy-a-tytul">
+          <h3 class="podglad__naglowek" id="analizy-a-tytul">ΔT a zużycie na dobę</h3>
+          <div id="analizy-a" class="analizy-wykres"></div>
+          <div class="analizy-legenda" id="analizy-a-legenda"></div>
+          <p id="analizy-a-podpis" class="analizy-podpis"></p>
+        </section>
+        <section class="analizy-karta" aria-labelledby="analizy-d-tytul">
+          <h3 class="podglad__naglowek" id="analizy-d-tytul">Oś czasu sezonu</h3>
+          <div id="analizy-d" class="analizy-wykres"></div>
+          <div class="analizy-legenda" id="analizy-d-legenda"></div>
+          <p id="analizy-d-podpis" class="analizy-podpis"></p>
+        </section>
+        <div id="analizy-szczegoly" class="analizy-szczegoly" aria-live="polite"></div>
+      </div>
+
+      <div class="przyciski-formularza">
+        <button type="button" id="przycisk-zamknij-analizy" class="przycisk-drugorzedny">Zamknij</button>
       </div>
     </section>
 

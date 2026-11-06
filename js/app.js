@@ -24,6 +24,7 @@ import './ekrany/zbieracz.js';
 import './ekrany/ladowarka.js';
 import './ekrany/pomysly.js';
 import './ekrany/faktura.js';
+import './ekrany/analizy.js';
 
 document.getElementById('numer-wersji').textContent = WERSJA_APLIKACJI;
 
